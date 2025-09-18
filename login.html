@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StudyQuest | Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="login.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+    scholarly
+  </div>
+    <input type="checkbox" id="flip">
+    <div class="forms">
+      <!-- Login Form -->
+      <div class="form login-form">
+        <div class="title">LOGIN</div>
+        <form id="loginForm">
+          <div class="input-box">
+            <i class="fas fa-envelope"></i>
+            <input type="text" placeholder="Email" required id="login-email">
+          </div>
+          <div class="input-box">
+            <i class="fas fa-lock"></i>
+            <input type="password" placeholder="Password" required id="login-password">
+          </div>
+          <div class="text"><a href="#">Forgot password?</a></div>
+          <div class="button input-box">
+            <input type="submit" value="Login">
+          </div>
+          <div class="text">Don't have an account? <label for="flip">Signup now</label></div>
+        </form>
+      </div>
+
+      <!-- Signup Form -->
+      <div class="form signup-form">
+        <div class="title">SIGNUP</div>
+        <form id="signupForm">
+          <div class="input-box">
+            <i class="fas fa-user"></i>
+            <input type="text" placeholder="Username" required>
+          </div>
+          <div class="input-box">
+            <i class="fas fa-envelope"></i>
+            <input type="text" placeholder="Email" required>
+          </div>
+          <div class="input-box">
+            <i class="fas fa-lock"></i>
+            <input type="password" placeholder="Password" required>
+          </div>
+          <div class="button input-box">
+            <input type="submit" value="Signup">
+          </div>
+          <div class="text">Already have an account? <label for="flip">Login now</label></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="login.js"></script>
+</body>
+</html>
