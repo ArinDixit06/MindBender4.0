@@ -1,81 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyQuest</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyQuest</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Player Profile Sidebar -->
-        <aside>
-            <div class="player-profile">
-                <h2>Player Stats</h2>
-                <div class="player-stats">
-                    <div id="player-level" class="player-level">Level 1</div>
-                    <div class="xp-bar-container">
-                        <div id="xp-bar" class="xp-bar"></div>
-                    </div>
-                    <div id="xp-text" class="xp-text">0 / 100 XP</div>
-                </div>
-
-                <h2>Achievements</h2>
-                <ul class="achievements-list">
-                    <li id="quest-badge-1" class="achievement">
-                        <span class="achievement-icon">🏆</span>
-                        <span class="achievement-name">First Quest</span>
-                    </li>
-                    <li class="achievement">
-                        <span class="achievement-icon">🔒</span>
-                        <span class="achievement-name">Math Master</span>
-                    </li>
-                     <li class="achievement">
-                        <span class="achievement-icon">🔒</span>
-                        <span class="achievement-name">History Buff</span>
-                    </li>
-                </ul>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main>
-            <header>
-                <h1>StudyQuest</h1>
-                <button id="profile-button" class="profile-button">Profile</button>
-            </header>
-            <section class="quest-board">
-                <h2>Available Quests</h2>
-                <div class="add-quest">
-                    <input type="text" id="quest-title" placeholder="Quest Title">
-                    <input type="date" id="quest-due-date">
-                    <select id="quest-subject">
-                        <option value="">Select Subject</option>
-                    </select>
-                    <select id="quest-importance">
-                        <option value="low">Low</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                    <button id="add-quest-btn">Add Quest</button>
-                </div>
-                <div class="quest-list" id="quest-list">
-                    <!-- Quests will be dynamically added here -->
-                </div>
-            </section>
-        </main>
-        <div id="profile-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <h2>Manage Subjects</h2>
-                <div id="subject-list">
-                    <!-- Subjects will be dynamically added here -->
-                </div>
-                <input type="text" id="new-subject-input" placeholder="Add new subject">
-                <button id="add-subject-modal-btn">Add Subject</button>
-            </div>
+  <div class="container">
+    <aside>
+      <div class="player-profile">
+        <h2>Player Stats</h2>
+        <div class="player-stats">
+          <div id="player-level" class="player-level">Level 1</div>
+          <div class="xp-bar-container">
+            <div id="xp-bar" class="xp-bar"></div>
+          </div>
+          <div id="xp-text" class="xp-text">0 / 100 XP</div>
         </div>
+
+        <h2>Achievements</h2>
+        <ul class="achievements-list">
+          <li id="quest-badge-1" class="achievement">
+            <span class="achievement-icon">🏆</span>
+            <span class="achievement-name">First Quest</span>
+          </li>
+          <li class="achievement">
+            <span class="achievement-icon">🔒</span>
+            <span class="achievement-name">Math Master</span>
+          </li>
+          <li class="achievement">
+            <span class="achievement-icon">🔒</span>
+            <span class="achievement-name">History Buff</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <h1>StudyQuest</h1>
+        <button id="profile-button" class="profile-button">Profile</button>
+        <button id="logout-btn" class="logout-button">Logout</button>
+      </header>
+      <section class="quest-board">
+        <h2>Available Quests</h2>
+        <div class="add-quest">
+          <input type="text" id="quest-title" placeholder="Quest Title">
+          <input type="date" id="quest-due-date">
+          <select id="quest-subject">
+            <option value="">Select Subject</option>
+          </select>
+          <select id="quest-importance">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+          <button id="add-quest-btn">Add Quest</button>
+        </div>
+        <div class="quest-list" id="quest-list"></div>
+      </section>
+    </main>
+
+    <div id="profile-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>Manage Subjects</h2>
+        <div id="subject-list"></div>
+        <input type="text" id="new-subject-input" placeholder="Add new subject">
+        <button id="add-subject-modal-btn">Add Subject</button>
+      </div>
     </div>
-    <script src="script.js"></script>
+  </div>
+
+<script>
+  // Protect page
+  const user = JSON.parse(localStorage.getItem("loggedInUser"));
+  if (!user) window.location.href = "login.html";
+
+  // Logout
+  document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "login.html";
+  });
+</script>
+<script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,19 @@
+{
+  "name": "mindbenders",
+  "version": "1.0.0",
+  "description": "Backend server for Supabase PostgreSQL (users, students, tests)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.46.1",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "nanoid": "^5.1.5"
+  }
+}
