@@ -2,131 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>StudyQuest | Login</title>
+  <title>Scholarly | Welcome</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="login.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <div class="header">scholarly</div>
-    <input type="checkbox" id="flip">
-    <div class="forms">
-      
-      <!-- Login Form -->
-      <div class="form login-form">
-        <div class="title">LOGIN</div>
-        <form id="loginForm">
-          <div class="input-box">
-            <i class="fas fa-envelope"></i>
-            <input type="text" placeholder="Email" required id="login-email">
-          </div>
-          <div class="input-box">
-            <i class="fas fa-lock"></i>
-            <input type="password" placeholder="Password" required id="login-password">
-          </div>
-          <div class="button input-box">
-            <input type="submit" value="Login">
-          </div>
-          <div class="text">Don't have an account? <label for="flip">Signup now</label></div>
-        </form>
+  <div class="login-container">
+    <div class="login-branding">
+      <div class="branding-content">
+        <div class="logo">📚 Scholarly</div>
+        <h2>Make Learning an Adventure!</h2>
+        <p>Track your progress, complete quests, and get help from your AI study buddy. Your academic journey starts here.</p>
       </div>
-
-<!-- Signup Form -->
-<div class="form signup-form">
-  <div class="title">SIGNUP</div>
-  <form id="signupForm">
-    <!-- Email -->
-    <div class="input-box">
-      <i class="fas fa-envelope"></i>
-      <input type="email" placeholder="Email" id="signup-email" required>
     </div>
-
-    <!-- Password -->
-    <div class="input-box">
-      <i class="fas fa-lock"></i>
-      <input type="password" placeholder="Password" id="signup-password" required>
+    <div class="login-form-area">
+      <input type="checkbox" id="flip">
+      <div class="forms-wrapper">
+        <div class="form login-form">
+          <div class="title">Welcome Back!</div>
+          <form id="loginForm">
+            <div class="input-box"><i class="fas fa-envelope"></i><input type="email" placeholder="Email" required id="login-email"></div>
+            <div class="input-box"><i class="fas fa-lock"></i><input type="password" placeholder="Password" required id="login-password"></div>
+            <div class="button input-box"><input type="submit" value="Start Learning!"></div>
+            <div class="text">New student? <label for="flip">Sign up now</label></div>
+          </form>
+        </div>
+        <div class="form signup-form">
+          <div class="title">Join the Quest</div>
+          <form id="signupForm">
+            <div class="input-box"><i class="fas fa-envelope"></i><input type="email" placeholder="Your Email" id="signup-email" required></div>
+            <div class="input-box"><i class="fas fa-lock"></i><input type="password" placeholder="Create Password" id="signup-password" required></div>
+            <div class="input-box"><i class="fas fa-users"></i><input type="email" placeholder="Parent's Email" id="signup-parent-email" required></div>
+            <div class="input-box"><i class="fas fa-graduation-cap"></i><select id="signup-board" required><option value="">Select Your Board</option><option value="CBSE">CBSE</option><option value="ICSE">ICSE</option><option value="MAHARASHTRA">Maharashtra</option></select></div>
+            <div class="input-box"><i class="fas fa-school"></i><select id="signup-class" required><option value="">Select Your Class</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div>
+            <div class="input-box" id="stream-selection" style="display:none;"><i class="fas fa-book"></i><select id="signup-stream"><option value="">Select Stream</option><option value="Science">Science</option><option value="Commerce">Commerce</option><option value="Arts">Arts</option></select></div>
+            <div class="button input-box"><input type="submit" value="Begin Adventure"></div>
+            <div class="text">Already a member? <label for="flip">Login now</label></div>
+          </form>
+        </div>
+      </div>
     </div>
-
-    <!-- Parent Email -->
-    <div class="input-box">
-      <i class="fas fa-envelope"></i>
-      <input type="email" placeholder="Parent Email" id="signup-parent-email" required>
-    </div>
-
-    <!-- Class -->
-    <div class="input-box">
-      <i class="fas fa-school"></i>
-      <input type="number" placeholder="Class (integer)" id="signup-class" required>
-    </div>
-
-    <div class="button input-box">
-      <input type="submit" value="Signup">
-    </div>
-    <div class="text">Already have an account? <label for="flip">Login now</label></div>
-  </form>
-</div>
-
-
+  </div>
   <script>
     const API_URL = "http://localhost:5000";
-
-    // ----------------- SIGNUP -----------------
-    const signupForm = document.getElementById("signupForm");
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("signup-email").value;
-      const password = document.getElementById("signup-password").value;
-      const parent_email = document.getElementById("signup-parent-email").value;
-      const studentClass = parseInt(document.getElementById("signup-class").value);
-
-      try {
-        const res = await fetch(`${API_URL}/signup`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, parent_email, password, class: studentClass })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert("Signup successful! You can now login.");
-          document.getElementById("flip").checked = false; // switch to login form
-          signupForm.reset();
-        } else {
-          alert("Signup failed: " + data.error);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Signup error: " + err.message);
+    document.getElementById("signup-class").addEventListener("change", e => {
+      const streamDiv = document.getElementById("stream-selection");
+      if (e.target.value === "11" || e.target.value === "12") {
+        streamDiv.style.display = "block";
+        document.getElementById("signup-stream").required = true;
+      } else {
+        streamDiv.style.display = "none";
+        document.getElementById("signup-stream").required = false;
       }
     });
-
-    // ----------------- LOGIN -----------------
-    const loginForm = document.getElementById("loginForm");
-    loginForm.addEventListener("submit", async (e) => {
+    document.getElementById("signupForm").addEventListener("submit", async e => {
       e.preventDefault();
-
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
-
+      const signupData = {
+        email: document.getElementById("signup-email").value,
+        password: document.getElementById("signup-password").value,
+        parent_email: document.getElementById("signup-parent-email").value,
+        studentClass: document.getElementById("signup-class").value,
+        board: document.getElementById("signup-board").value,
+        stream: document.getElementById("signup-stream").value || null
+      };
       try {
-        const res = await fetch(`${API_URL}/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
-        });
+        const res = await fetch(`${API_URL}/signup`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(signupData) });
         const data = await res.json();
         if (res.ok) {
-          // Save logged-in user in localStorage
-          localStorage.setItem("loggedInUser", JSON.stringify(data.data));
-          window.location.href = "index.html"; // redirect to dashboard
-        } else {
-          alert("Login failed: " + data.error);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Login error: " + err.message);
-      }
+          alert(`Welcome to Scholarly! 🎉\nPlease login to start your adventure!`);
+          document.getElementById("flip").checked = false;
+          document.getElementById("signupForm").reset();
+        } else { alert("Signup failed: " + data.error); }
+      } catch (err) { alert("Connection error. Is the server running?"); }
+    });
+    document.getElementById("loginForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      try {
+        const res = await fetch(`${API_URL}/login`, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: 'include', body: JSON.stringify({ email: document.getElementById("login-email").value, password: document.getElementById("login-password").value }) });
+        if (res.ok) { window.location.href = "index.html"; } 
+        else { const data = await res.json(); alert("Login failed: " + data.error); }
+      } catch (err) { alert("Connection error. Is the server running?"); }
     });
   </script>
 </body>
