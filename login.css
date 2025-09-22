@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 * {
   margin: 0;
@@ -7,25 +7,22 @@
 }
 
 body {
-  font-family: 'Press Start 2P', cursive;
-  background: linear-gradient(135deg, #0f0f2e, #1a1a3b);
-  color: #fff;
+  font-family: 'Inter', sans-serif;
+  background: #f5f7fa;
+  color: #333;
   min-height: 100vh;
   display: flex;
-  align-items: center;
   justify-content: center;
-  transition: background 0.5s ease;
+  align-items: center;
 }
 
 .container {
   width: 100%;
-  max-width: 480px;
+  max-width: 420px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  position: relative;
 }
 
 #flip {
@@ -34,11 +31,11 @@ body {
 
 .forms {
   width: 100%;
-  background: rgba(26, 26, 59, 0.95);
-  padding: 40px;
-  border-radius: 14px;
-  box-shadow: 0 0 30px rgba(94, 100, 224, 0.6);
-  transition: all 0.6s ease;
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease;
   overflow: hidden;
 }
 
@@ -56,106 +53,105 @@ body {
 }
 
 .header {
-  font-family: 'Press Start 2P', monospace;
   font-size: 2rem;
-  color: #fff;
+  font-weight: 600;
+  color: #4a4a4a;
   text-align: center;
-  margin-bottom: 30px;
-  letter-spacing: 2px;
-  text-shadow: 0 0 8px #ff1c80, 0 0 15px #ff69b4;
-  user-select: none;
+  margin-bottom: 25px;
 }
 
 .title {
-  font-size: 1rem;
-  color: #b9c15d;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4a4a4a;
   text-align: center;
   margin-bottom: 25px;
-  text-shadow: 0 0 6px #7969ff;
 }
 
 .input-box {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .input-box input {
   width: 100%;
-  padding: 14px 14px 14px 45px;
-  background: #0f0f2e;
-  border: 2px solid #444;
+  padding: 14px 14px 14px 12px;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  color: #fff;
-  font-size: 0.8rem;
-  font-family: 'Press Start 2P', cursive;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
+  outline: none;
 }
 
 .input-box input:focus {
-  border-color: #ff69b4;
-  outline: none;
-  box-shadow: 0 0 12px #ff69b4;
+  border-color: #6366f1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .input-box i {
   position: absolute;
-  left: 14px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #ff69b4;
+  color: #6366f1;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
 }
 
 .button input {
   width: 100%;
-  background: #ff1493;
+  background: #6366f1;
   border: none;
   padding: 14px;
-  border-radius: 8px;
-  font-size: 0.8rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: #fff;
   cursor: pointer;
-  font-family: 'Press Start 2P', cursive;
   transition: all 0.3s ease;
 }
 
 .button input:hover {
-  background: #ff69b4;
-  box-shadow: 0 0 15px #ff69b4;
+  background: #4f46e5;
+  box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
 }
 
 .text {
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   text-align: center;
-  color: #fff;
+  color: #6b7280;
   margin-top: 12px;
 }
 
 .text a,
 .text label {
-  color: #ff69b4;
+  color: #6366f1;
   cursor: pointer;
-  transition: color 0.3s ease;
+  font-weight: 600;
 }
 
 .text a:hover,
 .text label:hover {
-  color: #ff92c0;
+  color: #4f46e5;
   text-decoration: underline;
 }
 
-/* Responsive tweak */
-@media (max-width: 500px) {
+/* Responsive */
+@media (max-width: 480px) {
   .forms {
     padding: 30px 20px;
   }
-  .input-box input,
-  .button input {
-    font-size: 0.75rem;
-    padding: 12px;
-  }
+
   .header {
     font-size: 1.6rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .input-box input,
+  .button input {
+    font-size: 0.85rem;
+    padding: 12px;
   }
 }
