@@ -32,44 +32,46 @@
         </form>
       </div>
 
-<!-- Signup Form -->
-<div class="form signup-form">
-  <div class="title">SIGNUP</div>
-  <form id="signupForm">
-    <!-- Email -->
-    <div class="input-box">
-      <i class="fas fa-envelope"></i>
-      <input type="email" placeholder="Email" id="signup-email" required>
-    </div>
+      <!-- Signup Form -->
+      <div class="form signup-form">
+        <div class="title">SIGNUP</div>
+        <form id="signupForm">
+          <!-- Email -->
+          <div class="input-box">
+            <i class="fas fa-envelope"></i>
+            <input type="email" placeholder="Email" id="signup-email" required>
+          </div>
 
-    <!-- Password -->
-    <div class="input-box">
-      <i class="fas fa-lock"></i>
-      <input type="password" placeholder="Password" id="signup-password" required>
-    </div>
+          <!-- Password -->
+          <div class="input-box">
+            <i class="fas fa-lock"></i>
+            <input type="password" placeholder="Password" id="signup-password" required>
+          </div>
 
-    <!-- Parent Email -->
-    <div class="input-box">
-      <i class="fas fa-envelope"></i>
-      <input type="email" placeholder="Parent Email" id="signup-parent-email" required>
-    </div>
+          <!-- Parent Email -->
+          <div class="input-box">
+            <i class="fas fa-envelope"></i>
+            <input type="email" placeholder="Parent Email" id="signup-parent-email" required>
+          </div>
 
-    <!-- Class -->
-    <div class="input-box">
-      <i class="fas fa-school"></i>
-      <input type="number" placeholder="Class (integer)" id="signup-class" required>
-    </div>
+          <!-- Class -->
+          <div class="input-box">
+            <i class="fas fa-school"></i>
+            <input type="number" placeholder="Class (integer)" id="signup-class" required>
+          </div>
 
-    <div class="button input-box">
-      <input type="submit" value="Signup">
+          <div class="button input-box">
+            <input type="submit" value="Signup">
+          </div>
+          <div class="text">Already have an account? <label for="flip">Login now</label></div>
+        </form>
+      </div>
     </div>
-    <div class="text">Already have an account? <label for="flip">Login now</label></div>
-  </form>
-</div>
-
+  </div>
 
   <script>
-    const API_URL = "http://localhost:5000";
+    // ✅ Use Render backend instead of localhost
+    const API_URL = "https://mindbender4-0.onrender.com";
 
     // ----------------- SIGNUP -----------------
     const signupForm = document.getElementById("signupForm");
