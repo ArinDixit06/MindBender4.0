@@ -73,9 +73,19 @@ body {
   margin-bottom: 18px;
 }
 
+.input-box i {
+  position: absolute;
+  left: 12px;           /* distance from left */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6366f1;
+  font-size: 0.9rem;
+  pointer-events: none;  /* icons won’t block typing */
+}
+
 .input-box input {
   width: 100%;
-  padding: 14px 14px 14px 12px;
+  padding: 14px 14px 14px 35px; /* add left padding to avoid icon overlap */
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -88,14 +98,6 @@ body {
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
-.input-box i {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6366f1;
-  font-size: 0.9rem;
-}
 
 .button input {
   width: 100%;
@@ -155,3 +157,4 @@ body {
     padding: 12px;
   }
 }
+
