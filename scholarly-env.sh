@@ -1,0 +1,12 @@
+# Supabase Configuration
+SUPABASE_URL= https://xuvbvkyhxxfrsejiaaxx.supabase.co
+SUPABASE_KEY= eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1dmJ2a3loeHhmcnNlamlhYXh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg1MDgwMzksImV4cCI6MjA3NDA4NDAzOX0.hz7UtYp70kC0X2GuNm4Dp1ekg8m5SuW3NRKZH0z-ZEc
+
+# Google Gemini AI Configuration
+GEMINI_API_KEY= AIzaSyA8oupvWHHjw6_McnNJwtCLfUbM6L0ZzTw
+
+# Session Secret (generate a random string)
+SESSION_SECRET= s3YwO7sf6y
+
+# Server Configuration
+PORT=5000
