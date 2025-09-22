@@ -4,23 +4,36 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
+import fetch from "node-fetch";
+import bcrypt from "bcrypt"; // <-- Added for password hashing
 
 dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+const saltRounds = 10; // For bcrypt
 
 // ---------- Middleware ----------
-app.use(cors({
-  origin: "*", // allow all for now (change later to your frontend URL)
-  credentials: true
-}));
+// FIX: Correct CORS configuration
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:3000", // Be specific in production
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
+
+// FIX: Secure session configuration
 app.use(
   session({
-    secret: "supersecret", // change in production
+    secret: process.env.SESSION_SECRET, // <-- Use an environment variable for the secret
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } // true if HTTPS
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production (HTTPS)
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
+    },
   })
 );
 
@@ -30,42 +43,50 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// ---------- AUTH ROUTES ----------
+// Gemini API Key
+const geminiApiKey = process.env.GEMINI_API_KEY;
 
-// Signup (store plain password)
+// ---------- Serve Static Files ----------
+// NOTE: Assumes chat.html, style.css, and chat.js are in a 'public' folder.
+app.use(express.static("public"));
+
+// ---------- AUTH ROUTES ----------
 app.post("/signup", async (req, res) => {
   const { email, parent_email, password, class: studentClass } = req.body;
-
   try {
-    // create student first
+    // CRITICAL FIX: Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const { data: student, error: studentError } = await supabase
       .from("students")
       .insert([{ name: email.split("@")[0], class: studentClass }])
       .select()
       .single();
-
     if (studentError) throw studentError;
 
-    // create user with plain password
     const { data: user, error: userError } = await supabase
       .from("users")
-      .insert([{ student_id: student.student_id, email, parent_email, password }])
+      .insert([
+        {
+          student_id: student.student_id,
+          email,
+          parent_email,
+          password: hashedPassword, // <-- Store the hashed password
+        },
+      ])
       .select()
       .single();
-
     if (userError) throw userError;
 
-    res.json({ message: "Signup successful", user });
+    res.status(201).json({ message: "Signup successful", user });
   } catch (err) {
     console.error("Signup error:", err);
     res.status(400).json({ error: err.message });
   }
 });
 
-// Login (compare plain password)
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const { data: user, error } = await supabase
       .from("users")
@@ -74,56 +95,87 @@ app.post("/login", async (req, res) => {
       .single();
 
     if (error || !user) {
-      return res.status(400).json({ error: "User not found" });
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // plain text comparison
-    if (user.password !== password) {
-      return res.status(400).json({ error: "Invalid password" });
+    // CRITICAL FIX: Compare password with the stored hash
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
+    // Save user ID in session (remove password from session data)
     req.session.userId = user.id;
-    res.json({ message: "Login successful", data: user });
+    const { password: _, ...userData } = user; // Exclude password from response
+    res.json({ message: "Login successful", data: userData });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Logout
 app.post("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.json({ message: "Logged out" });
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: "Could not log out." });
+    }
+    res.clearCookie("connect.sid"); // Clear the session cookie
+    res.json({ message: "Logged out successfully" });
   });
 });
 
-// Check session
-app.get("/api/me", (req, res) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ error: "Not logged in" });
+// ---------- CHAT ROUTE USING GEMINI API ----------
+app.post("/chat", async (req, res) => {
+  const { message, subject } = req.body;
+  if (!geminiApiKey) {
+    return res.status(500).json({ error: "Gemini API key not configured" });
   }
-  res.json({ userId: req.session.userId });
+
+  // FIX: Correct Gemini API endpoint and request body structure
+  const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`;
+
+  try {
+    const response = await fetch(geminiApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: `Subject: ${
+                  subject || "General"
+                }. Question: ${message}`,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Gemini API Error:", errorData);
+        throw new Error(`Gemini API responded with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // FIX: Correctly parse the Gemini API response
+    const reply = data.candidates[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
+
+    res.json({ reply });
+  } catch (err) {
+    console.error("Gemini API error:", err);
+    res.status(500).json({ error: "Failed to get response from Gemini API" });
+  }
 });
 
-// ---------- STUDENTS + TESTS ----------
-
-app.get("/students", async (req, res) => {
-  const { data, error } = await supabase.from("students").select("*");
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
-
-app.post("/tests", async (req, res) => {
-  const { student_id, subject, score } = req.body;
-  const { data, error } = await supabase
-    .from("tests")
-    .insert([{ student_id, subject, score }])
-    .select()
-    .single();
-
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
-});
+// ---------- REMOVED /chat.js ROUTE ----------
+// It's much better to place chat.js in your 'public' folder
+// and let `app.use(express.static("public"));` serve it automatically.
 
 // ---------- START SERVER ----------
 app.listen(PORT, () => {
