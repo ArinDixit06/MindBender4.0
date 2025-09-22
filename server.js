@@ -5,32 +5,35 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
-import bcrypt from "bcrypt"; // <-- Added for password hashing
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const saltRounds = 10; // For bcrypt
 
 // ---------- Middleware ----------
-// FIX: Correct CORS configuration
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000", // Be specific in production
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   })
 );
 app.use(bodyParser.json());
 
-// FIX: Secure session configuration
+// **SECURITY RISK**: Using a hardcoded secret is not recommended.
+// The proper way is to set SESSION_SECRET in your .env file and on your deployment server.
+const sessionSecret = process.env.SESSION_SECRET || "a-temporary-secret-for-testing";
+if (sessionSecret === "a-temporary-secret-for-testing") {
+    console.warn("WARNING: Using a temporary, insecure session secret. Please set SESSION_SECRET in your environment variables for production.");
+}
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET, // <-- Use an environment variable for the secret
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production (HTTPS)
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
@@ -50,13 +53,10 @@ const geminiApiKey = process.env.GEMINI_API_KEY;
 // NOTE: Assumes chat.html, style.css, and chat.js are in a 'public' folder.
 app.use(express.static("public"));
 
-// ---------- AUTH ROUTES ----------
+// ---------- AUTH ROUTES (USING PLAINTEXT PASSWORDS - NOT RECOMMENDED) ----------
 app.post("/signup", async (req, res) => {
   const { email, parent_email, password, class: studentClass } = req.body;
   try {
-    // CRITICAL FIX: Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
     const { data: student, error: studentError } = await supabase
       .from("students")
       .insert([{ name: email.split("@")[0], class: studentClass }])
@@ -71,7 +71,7 @@ app.post("/signup", async (req, res) => {
           student_id: student.student_id,
           email,
           parent_email,
-          password: hashedPassword, // <-- Store the hashed password
+          password: password, // <-- STORING PLAINTEXT PASSWORD (INSECURE)
         },
       ])
       .select()
@@ -98,13 +98,12 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // CRITICAL FIX: Compare password with the stored hash
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
+    // <-- COMPARING PLAINTEXT PASSWORD (INSECURE)
+    if (user.password !== password) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // Save user ID in session (remove password from session data)
+    // Save user ID in session
     req.session.userId = user.id;
     const { password: _, ...userData } = user; // Exclude password from response
     res.json({ message: "Login successful", data: userData });
@@ -119,7 +118,7 @@ app.post("/logout", (req, res) => {
     if (err) {
       return res.status(500).json({ message: "Could not log out." });
     }
-    res.clearCookie("connect.sid"); // Clear the session cookie
+    res.clearCookie("connect.sid");
     res.json({ message: "Logged out successfully" });
   });
 });
@@ -131,7 +130,6 @@ app.post("/chat", async (req, res) => {
     return res.status(500).json({ error: "Gemini API key not configured" });
   }
 
-  // FIX: Correct Gemini API endpoint and request body structure
   const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`;
 
   try {
@@ -163,8 +161,7 @@ app.post("/chat", async (req, res) => {
 
     const data = await response.json();
     
-    // FIX: Correctly parse the Gemini API response
-    const reply = data.candidates[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
+    const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
 
     res.json({ reply });
   } catch (err) {
@@ -172,10 +169,6 @@ app.post("/chat", async (req, res) => {
     res.status(500).json({ error: "Failed to get response from Gemini API" });
   }
 });
-
-// ---------- REMOVED /chat.js ROUTE ----------
-// It's much better to place chat.js in your 'public' folder
-// and let `app.use(express.static("public"));` serve it automatically.
 
 // ---------- START SERVER ----------
 app.listen(PORT, () => {
