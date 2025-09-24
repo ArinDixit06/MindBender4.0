@@ -5,7 +5,6 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
-import bcrypt from "bcrypt"; // Import bcrypt for password hashing
 
 dotenv.config();
 
@@ -40,12 +39,11 @@ if (!sessionSecret) {
     process.exit(1);
 }
 
-// --- CORRECTED SESSION CONFIGURATION ---
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Trust the reverse proxy when in production (e.g., on Render)
 if (isProduction) {
-    app.set('trust proxy', 1); 
+    app.set('trust proxy', 1);
 }
 
 app.use(
@@ -54,7 +52,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: isProduction, // true in production, false in development
+      secure: isProduction,
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
       sameSite: isProduction ? 'None' : 'Lax',
@@ -86,10 +84,6 @@ app.post("/signup", async (req, res) => {
     if (existingUser) {
         return res.status(409).json({ error: "User with this email already exists" });
     }
-    
-    // Hash the password before storing
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const { data: student, error: studentError } = await supabase
       .from("students")
@@ -105,7 +99,7 @@ app.post("/signup", async (req, res) => {
           student_id: student.student_id,
           email,
           parent_email,
-          password: hashedPassword, // Store the hashed password
+          password: password, // Storing plaintext password
         },
       ])
       .select()
@@ -132,9 +126,8 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // Compare the provided password with the stored hash
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
+    // Comparing plaintext password
+    if (user.password !== password) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
