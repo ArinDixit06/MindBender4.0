@@ -5,24 +5,18 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
-import bcrypt from "bcrypt"; // For hashing passwords
 
+// BCrypt import removed
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const saltRounds = 10; // Cost factor for bcrypt hashing
 
 // ---------- Middleware ----------
-
-// FIX #1: Flexible CORS configuration for a live server
-// Flexible CORS configuration for a live server
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests from any localhost, file URLs (null origin), and your future deployed site
       const isAllowed = !origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
-      
       if (isAllowed) {
         callback(null, true);
       } else {
@@ -38,7 +32,7 @@ app.use(bodyParser.json());
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
     console.error("FATAL ERROR: SESSION_SECRET is not set. Please set it in your .env file.");
-    process.exit(1); // Exit if the secret is not configured
+    process.exit(1);
 }
 
 app.use(
@@ -47,7 +41,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Set to true when on Render
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
@@ -61,10 +55,6 @@ const supabase = createClient(
 );
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
-// ---------- Serve Static Files (Optional) ----------
-// If your frontend is in a 'public' folder, this can serve it
-app.use(express.static("public"));
-
 // ---------- AUTH ROUTES ----------
 app.post("/signup", async (req, res) => {
   const { email, parent_email, password, class: studentClass } = req.body;
@@ -73,9 +63,18 @@ app.post("/signup", async (req, res) => {
   }
 
   try {
-    // FIX #2: Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Check if user already exists
+    const { data: existingUser } = await supabase
+        .from("users")
+        .select("email")
+        .eq("email", email)
+        .single();
 
+    if (existingUser) {
+        return res.status(409).json({ error: "User with this email already exists" });
+    }
+
+    // BCrypt hashing removed
     const { data: student, error: studentError } = await supabase
       .from("students")
       .insert([{ name: email.split("@")[0], class: studentClass }])
@@ -90,7 +89,7 @@ app.post("/signup", async (req, res) => {
           student_id: student.student_id,
           email,
           parent_email,
-          password: hashedPassword, // Store the hashed password
+          password: password, // Storing plaintext password
         },
       ])
       .select()
@@ -117,9 +116,8 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // FIX #2: Compare the provided password with the stored hash
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
+    // Comparing plaintext password
+    if (user.password !== password) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
@@ -132,51 +130,48 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Other routes (logout, chat) remain the same...
+
 app.post("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Could not log out." });
-    }
-    res.clearCookie("connect.sid");
-    res.json({ message: "Logged out successfully" });
-  });
-});
-
-// ---------- CHAT ROUTE ----------
-app.post("/chat", async (req, res) => {
-  const { message, subject } = req.body;
-  if (!geminiApiKey) {
-    return res.status(500).json({ error: "Gemini API key not configured" });
-  }
-
-const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`;
-  try {
-    const response = await fetch(geminiApiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: `Subject: ${subject || "General"}. Question: ${message}` }] }],
-      }),
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: "Could not log out." });
+        }
+        res.clearCookie("connect.sid");
+        res.json({ message: "Logged out successfully" });
     });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Gemini API Error:", errorData);
-      throw new Error(`Gemini API responded with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
-    res.json({ reply });
-  } catch (err) {
-    console.error("Gemini API error:", err);
-    res.status(500).json({ error: "Failed to get response from Gemini API" });
-  }
 });
+
+app.post("/chat", async (req, res) => {
+    const { message, subject } = req.body;
+    if (!geminiApiKey) {
+        return res.status(500).json({ error: "Gemini API key not configured" });
+    }
+    const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`;
+    try {
+        const response = await fetch(geminiApiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Subject: ${subject || "General"}. Question: ${message}` }] }],
+            }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Gemini API Error:", errorData);
+            throw new Error(`Gemini API responded with status ${response.status}`);
+        }
+        const data = await response.json();
+        const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
+        res.json({ reply });
+    } catch (err) {
+        console.error("Gemini API error:", err);
+        res.status(500).json({ error: "Failed to get response from Gemini API" });
+    }
+});
+
 
 // ---------- START SERVER ----------
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-
-
