@@ -16,17 +16,14 @@ const saltRounds = 10; // Cost factor for bcrypt hashing
 // ---------- Middleware ----------
 
 // FIX #1: Flexible CORS configuration for a live server
-const allowedOrigins = [
-  'http://127.0.0.1:5500', // For VS Code Live Server
-  'http://localhost:3000',  // For local React/Vue dev server
-  // Add the URL of your deployed frontend here in the future
-];
-
+// Flexible CORS configuration for a live server
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (e.g., mobile apps, Postman)
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      // Allow requests from any localhost, file URLs (null origin), and your future deployed site
+      const isAllowed = !origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1');
+      
+      if (isAllowed) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
@@ -181,4 +178,5 @@ const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/ge
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
 
