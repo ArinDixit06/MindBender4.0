@@ -20,8 +20,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-// **SECURITY RISK**: Using a hardcoded secret is not recommended.
-// The proper way is to set SESSION_SECRET in your .env file and on your deployment server.
 const sessionSecret = process.env.SESSION_SECRET || "a-temporary-secret-for-testing";
 if (sessionSecret === "a-temporary-secret-for-testing") {
     console.warn("WARNING: Using a temporary, insecure session secret. Please set SESSION_SECRET in your environment variables for production.");
@@ -50,10 +48,9 @@ const supabase = createClient(
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
 // ---------- Serve Static Files ----------
-// NOTE: Assumes chat.html, style.css, and chat.js are in a 'public' folder.
 app.use(express.static("public"));
 
-// ---------- AUTH ROUTES (USING PLAINTEXT PASSWORDS - NOT RECOMMENDED) ----------
+// ---------- AUTH ROUTES ----------
 app.post("/signup", async (req, res) => {
   const { email, parent_email, password, class: studentClass } = req.body;
   try {
@@ -71,7 +68,8 @@ app.post("/signup", async (req, res) => {
           student_id: student.student_id,
           email,
           parent_email,
-          password: password, // <-- STORING PLAINTEXT PASSWORD (INSECURE)
+          // WARNING: Storing plaintext password
+          password: password,
         },
       ])
       .select()
@@ -98,7 +96,7 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // <-- COMPARING PLAINTEXT PASSWORD (INSECURE)
+    // WARNING: Comparing plaintext password
     if (user.password !== password) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
