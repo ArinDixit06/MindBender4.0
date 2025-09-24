@@ -5,24 +5,43 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
+import bcrypt from "bcrypt"; // For hashing passwords
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const saltRounds = 10; // Cost factor for bcrypt hashing
 
 // ---------- Middleware ----------
+
+// FIX #1: Flexible CORS configuration for a live server
+const allowedOrigins = [
+  'http://127.0.0.1:5500', // For VS Code Live Server
+  'http://localhost:3000',  // For local React/Vue dev server
+  // Add the URL of your deployed frontend here in the future
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (e.g., mobile apps, Postman)
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
+
 app.use(bodyParser.json());
 
-const sessionSecret = process.env.SESSION_SECRET || "a-temporary-secret-for-testing";
-if (sessionSecret === "a-temporary-secret-for-testing") {
-    console.warn("WARNING: Using a temporary, insecure session secret. Please set SESSION_SECRET in your environment variables for production.");
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+    console.error("FATAL ERROR: SESSION_SECRET is not set. Please set it in your .env file.");
+    process.exit(1); // Exit if the secret is not configured
 }
 
 app.use(
@@ -31,29 +50,35 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // Set to true when on Render
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   })
 );
 
-// ---------- Supabase Init ----------
+// ---------- Supabase & API Init ----------
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
-
-// Gemini API Key
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
-// ---------- Serve Static Files ----------
+// ---------- Serve Static Files (Optional) ----------
+// If your frontend is in a 'public' folder, this can serve it
 app.use(express.static("public"));
 
 // ---------- AUTH ROUTES ----------
 app.post("/signup", async (req, res) => {
   const { email, parent_email, password, class: studentClass } = req.body;
+  if (!password) {
+    return res.status(400).json({ error: "Password is required" });
+  }
+
   try {
+    // FIX #2: Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const { data: student, error: studentError } = await supabase
       .from("students")
       .insert([{ name: email.split("@")[0], class: studentClass }])
@@ -68,15 +93,14 @@ app.post("/signup", async (req, res) => {
           student_id: student.student_id,
           email,
           parent_email,
-          // WARNING: Storing plaintext password
-          password: password,
+          password: hashedPassword, // Store the hashed password
         },
       ])
       .select()
       .single();
     if (userError) throw userError;
 
-    res.status(201).json({ message: "Signup successful", user });
+    res.status(201).json({ message: "Signup successful" });
   } catch (err) {
     console.error("Signup error:", err);
     res.status(400).json({ error: err.message });
@@ -96,14 +120,14 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // WARNING: Comparing plaintext password
-    if (user.password !== password) {
+    // FIX #2: Compare the provided password with the stored hash
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // Save user ID in session
     req.session.userId = user.id;
-    const { password: _, ...userData } = user; // Exclude password from response
+    const { password: _, ...userData } = user;
     res.json({ message: "Login successful", data: userData });
   } catch (err) {
     console.error("Login error:", err);
@@ -121,7 +145,7 @@ app.post("/logout", (req, res) => {
   });
 });
 
-// ---------- CHAT ROUTE USING GEMINI API ----------
+// ---------- CHAT ROUTE ----------
 app.post("/chat", async (req, res) => {
   const { message, subject } = req.body;
   if (!geminiApiKey) {
@@ -133,34 +157,20 @@ app.post("/chat", async (req, res) => {
   try {
     const response = await fetch(geminiApiUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `Subject: ${
-                  subject || "General"
-                }. Question: ${message}`,
-              },
-            ],
-          },
-        ],
+        contents: [{ parts: [{ text: `Subject: ${subject || "General"}. Question: ${message}` }] }],
       }),
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Gemini API Error:", errorData);
-        throw new Error(`Gemini API responded with status ${response.status}`);
+      const errorData = await response.json();
+      console.error("Gemini API Error:", errorData);
+      throw new Error(`Gemini API responded with status ${response.status}`);
     }
 
     const data = await response.json();
-    
     const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
-
     res.json({ reply });
   } catch (err) {
     console.error("Gemini API error:", err);
