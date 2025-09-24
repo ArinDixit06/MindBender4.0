@@ -152,8 +152,7 @@ app.post("/chat", async (req, res) => {
     return res.status(500).json({ error: "Gemini API key not configured" });
   }
 
-  const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`;
-
+const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`;
   try {
     const response = await fetch(geminiApiUrl, {
       method: "POST",
@@ -182,3 +181,4 @@ app.post("/chat", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
