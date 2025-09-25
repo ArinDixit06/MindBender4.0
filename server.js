@@ -53,7 +53,7 @@ app.use(
     cookie: {
       secure: isProduction,
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
       sameSite: isProduction ? 'None' : 'Lax',
     },
   })
@@ -98,7 +98,7 @@ app.post("/signup", async (req, res) => {
           student_id: student.student_id,
           email,
           parent_email,
-          password: password,
+          password: password, // Storing plaintext password as requested
         },
       ])
       .select()
@@ -129,8 +129,7 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // THE KEY FIX: save student_id to session
-    req.session.userId = user.student_id;
+    req.session.userId = user.student_id; // Using integer student_id for the session
     const { password: _, ...userData } = user;
     res.json({ message: "Login successful", data: userData });
   } catch (err) {
@@ -189,15 +188,7 @@ app.post("/api/quests", async (req, res) => {
     }
     const { title, due_date, subject, importance } = req.body;
     try {
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
-        const student_id = userSession.student_id;
+        const student_id = req.session.userId;
         const { data: quest, error } = await supabase
             .from("quests")
             .insert([{ student_id, title, due_date, subject, importance, status: 'pending' }])
@@ -216,15 +207,7 @@ app.get("/api/quests", async (req, res) => {
         return res.status(401).json({ message: "Unauthorized" });
     }
     try {
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
-        const student_id = userSession.student_id;
+        const student_id = req.session.userId;
         const { data: quests, error } = await supabase
             .from("quests")
             .select("*")
@@ -244,24 +227,18 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
     }
     const questId = req.params.id;
     try {
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
-        const student_id = userSession.student_id;
+        const student_id = req.session.userId;
         const { data: quest, error: questError } = await supabase
             .from("quests")
             .select("importance")
             .eq("quest_id", questId)
             .eq("student_id", student_id)
             .single();
+
         if (questError || !quest) {
             throw new Error("Quest not found or not authorized.");
         }
+
         let xpAmount = 0;
         switch (quest.importance) {
             case 'low': xpAmount = 10; break;
@@ -269,12 +246,14 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
             case 'high': xpAmount = 50; break;
             default: xpAmount = 25;
         }
+
         const { error: updateQuestError } = await supabase
             .from("quests")
             .update({ status: 'completed' })
             .eq("quest_id", questId)
             .eq("student_id", student_id);
         if (updateQuestError) throw updateQuestError;
+
         const { data: student, error: studentError } = await supabase
             .from("students")
             .select("xp, level")
@@ -283,6 +262,7 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
         if (studentError || !student) {
             throw new Error("Student not found.");
         }
+
         let newXp = student.xp + xpAmount;
         let newLevel = student.level;
         let xpToNextLevel = 100;
@@ -297,7 +277,9 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
             .from("students")
             .update({ xp: newXp, level: newLevel })
             .eq("student_id", student_id);
+
         if (updateStudentError) throw updateStudentError;
+
         res.json({ message: "Quest completed, XP and level updated!" });
     } catch (err) {
         console.error("Complete quest error:", err);
@@ -314,27 +296,12 @@ app.post("/api/chat-sessions", async (req, res) => {
 
     try {
         const { title = "New Chat" } = req.body;
-
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
-
-        const student_id = userSession.student_id;
+        // ✅ FIX: Directly use the student ID from the session. No need for another DB query.
+        const student_id = req.session.userId;
 
         const { data: session, error } = await supabase
             .from("chat_sessions")
-            .insert([{
-                student_id,
-                title,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            }])
+            .insert([{ student_id, title }])
             .select()
             .single();
 
@@ -354,17 +321,8 @@ app.get("/api/chat-sessions", async (req, res) => {
     }
 
     try {
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
-
-        const student_id = userSession.student_id;
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
 
         const { data: sessions, error } = await supabase
             .from("chat_sessions")
@@ -389,27 +347,19 @@ app.post("/api/chat-messages", async (req, res) => {
 
     try {
         const { session_id, message_type, content } = req.body;
-
         if (!session_id || !message_type || !content) {
             return res.status(400).json({ error: "session_id, message_type, and content are required" });
         }
-
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
+        
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
 
         // Verify the session belongs to the user
         const { data: chatSession, error: sessionError } = await supabase
             .from("chat_sessions")
             .select("id")
             .eq("id", session_id)
-            .eq("student_id", userSession.student_id)
+            .eq("student_id", student_id) // Use the direct student_id from session
             .single();
 
         if (sessionError || !chatSession) {
@@ -418,12 +368,7 @@ app.post("/api/chat-messages", async (req, res) => {
 
         const { data: message, error } = await supabase
             .from("chat_messages")
-            .insert([{
-                session_id,
-                message_type,
-                content,
-                timestamp: new Date().toISOString()
-            }])
+            .insert([{ session_id, message_type, content }])
             .select()
             .single();
 
@@ -450,23 +395,15 @@ app.get("/api/chat-messages/:sessionId", async (req, res) => {
 
     try {
         const { sessionId } = req.params;
-
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
 
         // Verify the session belongs to the user
         const { data: chatSession, error: sessionError } = await supabase
             .from("chat_sessions")
             .select("id")
             .eq("id", sessionId)
-            .eq("student_id", userSession.student_id)
+            .eq("student_id", student_id)
             .single();
 
         if (sessionError || !chatSession) {
@@ -488,6 +425,7 @@ app.get("/api/chat-messages/:sessionId", async (req, res) => {
     }
 });
 
+
 // Update chat session title
 app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
     if (!req.session.userId) {
@@ -497,31 +435,22 @@ app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
     try {
         const { sessionId } = req.params;
         const { title } = req.body;
-
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
         }
-
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
+        
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
 
         const { data: session, error } = await supabase
             .from("chat_sessions")
             .update({ title, updated_at: new Date().toISOString() })
             .eq("id", sessionId)
-            .eq("student_id", userSession.student_id)
+            .eq("student_id", student_id)
             .select()
             .single();
 
         if (error) throw error;
-
         if (!session) {
             return res.status(404).json({ error: "Chat session not found" });
         }
@@ -532,6 +461,8 @@ app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
         res.status(500).json({ error: err.message || "Failed to update chat session." });
     }
 });
+
+
 // ---------- NOTE MANAGEMENT ROUTES ----------
 // Create a new note
 app.post("/api/notes", async (req, res) => {
@@ -543,23 +474,17 @@ app.post("/api/notes", async (req, res) => {
         return res.status(400).json({ message: "Title and content are required" });
     }
     try {
-        const { data: userSession, error } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (error || !userSession) throw new Error("Invalid session");
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
 
         const { data: note, error: insertError } = await supabase
             .from("notes")
             .insert([{
-                student_id: userSession.student_id,
+                student_id,
                 title,
                 tags,
                 priority: priority || "normal",
                 content,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
             }])
             .select()
             .single();
@@ -577,49 +502,19 @@ app.get("/api/notes", async (req, res) => {
         return res.status(401).json({ message: "Unauthorized" });
     }
     try {
-        const { data: userSession, error } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (error || !userSession) throw new Error("Invalid session");
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
+
         const { data: notes, error: notesError } = await supabase
             .from("notes")
             .select("*")
-            .eq("student_id", userSession.student_id)
+            .eq("student_id", student_id)
             .order("updated_at", { ascending: false });
         if (notesError) throw notesError;
         res.json({ notes });
     } catch (err) {
         console.error("Fetch notes error:", err);
         res.status(500).json({ error: err.message || "Failed to fetch notes." });
-    }
-});
-
-// Get one note by id (for edit)
-app.get("/api/notes/:id", async (req, res) => {
-    if (!req.session.userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
-    const noteId = req.params.id;
-    try {
-        const { data: userSession, error } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (error || !userSession) throw new Error("Invalid session");
-        const { data: note, error: getError } = await supabase
-            .from("notes")
-            .select("*")
-            .eq("id", noteId)
-            .eq("student_id", userSession.student_id)
-            .single();
-        if (getError || !note) return res.status(404).json({ error: "Note not found" });
-        res.json(note);
-    } catch (err) {
-        console.error("Get note error:", err);
-        res.status(500).json({ error: err.message || "Failed to fetch note." });
     }
 });
 
@@ -631,12 +526,9 @@ app.patch("/api/notes/:id", async (req, res) => {
     const noteId = req.params.id;
     const { title, tags, priority, content } = req.body;
     try {
-        const { data: userSession, error } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (error || !userSession) throw new Error("Invalid session");
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
+
         const update = {
             updated_at: new Date().toISOString()
         };
@@ -644,11 +536,12 @@ app.patch("/api/notes/:id", async (req, res) => {
         if (tags !== undefined) update.tags = tags;
         if (priority !== undefined) update.priority = priority;
         if (content !== undefined) update.content = content;
+
         const { error: updateError } = await supabase
             .from("notes")
             .update(update)
             .eq("id", noteId)
-            .eq("student_id", userSession.student_id);
+            .eq("student_id", student_id);
         if (updateError) throw updateError;
         res.json({ message: "Note updated" });
     } catch (err) {
@@ -664,17 +557,14 @@ app.delete("/api/notes/:id", async (req, res) => {
     }
     const noteId = req.params.id;
     try {
-        const { data: userSession, error } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (error || !userSession) throw new Error("Invalid session");
+        // ✅ FIX: Directly use the student ID from the session.
+        const student_id = req.session.userId;
+
         const { error: delError } = await supabase
             .from("notes")
             .delete()
             .eq("id", noteId)
-            .eq("student_id", userSession.student_id);
+            .eq("student_id", student_id);
         if (delError) throw delError;
         res.json({ message: "Note deleted" });
     } catch (err) {
@@ -682,6 +572,7 @@ app.delete("/api/notes/:id", async (req, res) => {
         res.status(500).json({ error: err.message || "Failed to delete note." });
     }
 });
+
 
 // ---------- AI ROUTES ----------
 app.post("/chat", async (req, res) => {
@@ -698,44 +589,38 @@ app.post("/chat", async (req, res) => {
                 contents: [{ parts: [{ text: `Subject: ${subject || "General"}. Question: ${message}` }] }],
             }),
         });
+
         if (!response.ok) {
             const errorData = await response.json();
             console.error("Gemini API Error:", errorData);
             throw new Error(`Gemini API responded with status ${response.status}`);
         }
+
         const data = await response.json();
         const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
 
+        // Save messages to DB if session_id is provided
         if (session_id && req.session.userId) {
-            try {
-                await fetch(`${req.protocol}://${req.get('host')}/api/chat-messages`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Cookie': req.headers.cookie
-                    },
-                    body: JSON.stringify({
-                        session_id,
-                        message_type: 'user',
-                        content: message
-                    })
-                });
-
-                await fetch(`${req.protocol}://${req.get('host')}/api/chat-messages`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Cookie': req.headers.cookie
-                    },
-                    body: JSON.stringify({
-                        session_id,
-                        message_type: 'bot',
-                        content: reply
-                    })
-                });
-            } catch (saveError) {
-                console.error("Error saving chat messages:", saveError);
-            }
+            const saveMessage = async (type, content) => {
+                 try {
+                     await fetch(`${req.protocol}://${req.get('host')}/api/chat-messages`, {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'Cookie': req.headers.cookie // Forward the cookie for authentication
+                         },
+                         body: JSON.stringify({
+                             session_id,
+                             message_type: type,
+                             content
+                         })
+                     });
+                 } catch (saveError) {
+                      console.error("Error saving chat message:", saveError);
+                 }
+            };
+            await saveMessage('user', message);
+            await saveMessage('bot', reply);
         }
 
         res.json({ reply });
@@ -770,19 +655,23 @@ app.post("/api/generate-plan", async (req, res) => {
                 contents: [{ parts: [{ text: prompt }] }],
             }),
         });
+
         if (!response.ok) {
             const errorData = await response.json();
             console.error("Gemini API Error:", errorData);
             throw new Error(`Gemini API responded with status ${response.status}`);
         }
+
         const data = await response.json();
         const geminiReplyText = data.candidates?.[0]?.content?.parts[0]?.text;
+
         if (!geminiReplyText) {
             throw new Error("Gemini API did not return a valid plan.");
         }
+
         let studyPlan;
         try {
-            const jsonMatch = geminiReplyText.match(/``````/);
+            const jsonMatch = geminiReplyText.match(/```json\n([\s\S]*?)\n```/);
             if (jsonMatch && jsonMatch[1]) {
                 studyPlan = JSON.parse(jsonMatch[1]);
             } else {
@@ -793,42 +682,40 @@ app.post("/api/generate-plan", async (req, res) => {
             console.log("Raw Gemini response:", geminiReplyText);
             throw new Error("Failed to parse study plan from AI response.");
         }
+
         if (!Array.isArray(studyPlan)) {
             throw new Error("AI response is not a JSON array.");
         }
-        const { data: userSession, error: userSessionError } = await supabase
-            .from("users")
-            .select("student_id")
-            .eq("student_id", req.session.userId)
-            .single();
-        if (userSessionError || !userSession) {
-            throw new Error("Could not find student_id for the current user.");
-        }
-        const student_id = userSession.student_id;
+
+        const student_id = req.session.userId;
         const questsToInsert = studyPlan.map(planItem => ({
-            student_id: student_id,
+            student_id,
             title: planItem.title,
             subject: planItem.subject || topic,
             due_date: deadline,
             importance: 'medium',
             status: 'pending'
         }));
+
         const { data: insertedQuests, error: insertError } = await supabase
             .from("quests")
             .insert(questsToInsert)
             .select();
+
         if (insertError) {
             throw insertError;
         }
+
         res.json({ message: "Study plan generated and quests added!", quests: insertedQuests });
+
     } catch (err) {
         console.error("Generate plan API error:", err);
         res.status(500).json({ error: err.message || "Failed to generate study plan." });
     }
 });
 
+
 // ---------- START SERVER ----------
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-
