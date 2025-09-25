@@ -532,6 +532,156 @@ app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
         res.status(500).json({ error: err.message || "Failed to update chat session." });
     }
 });
+// ---------- NOTE MANAGEMENT ROUTES ----------
+// Create a new note
+app.post("/api/notes", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const { title, tags, priority, content } = req.body;
+    if (!title || !content) {
+        return res.status(400).json({ message: "Title and content are required" });
+    }
+    try {
+        const { data: userSession, error } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("student_id", req.session.userId)
+            .single();
+        if (error || !userSession) throw new Error("Invalid session");
+
+        const { data: note, error: insertError } = await supabase
+            .from("notes")
+            .insert([{
+                student_id: userSession.student_id,
+                title,
+                tags,
+                priority: priority || "normal",
+                content,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+        if (insertError) throw insertError;
+        res.status(201).json({ message: "Note saved", note });
+    } catch (err) {
+        console.error("Add note error:", err);
+        res.status(500).json({ error: err.message || "Failed to save note." });
+    }
+});
+
+// Get all notes for logged in student
+app.get("/api/notes", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    try {
+        const { data: userSession, error } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("student_id", req.session.userId)
+            .single();
+        if (error || !userSession) throw new Error("Invalid session");
+        const { data: notes, error: notesError } = await supabase
+            .from("notes")
+            .select("*")
+            .eq("student_id", userSession.student_id)
+            .order("updated_at", { ascending: false });
+        if (notesError) throw notesError;
+        res.json({ notes });
+    } catch (err) {
+        console.error("Fetch notes error:", err);
+        res.status(500).json({ error: err.message || "Failed to fetch notes." });
+    }
+});
+
+// Get one note by id (for edit)
+app.get("/api/notes/:id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const noteId = req.params.id;
+    try {
+        const { data: userSession, error } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("student_id", req.session.userId)
+            .single();
+        if (error || !userSession) throw new Error("Invalid session");
+        const { data: note, error: getError } = await supabase
+            .from("notes")
+            .select("*")
+            .eq("id", noteId)
+            .eq("student_id", userSession.student_id)
+            .single();
+        if (getError || !note) return res.status(404).json({ error: "Note not found" });
+        res.json(note);
+    } catch (err) {
+        console.error("Get note error:", err);
+        res.status(500).json({ error: err.message || "Failed to fetch note." });
+    }
+});
+
+// Update a note
+app.patch("/api/notes/:id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const noteId = req.params.id;
+    const { title, tags, priority, content } = req.body;
+    try {
+        const { data: userSession, error } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("student_id", req.session.userId)
+            .single();
+        if (error || !userSession) throw new Error("Invalid session");
+        const update = {
+            updated_at: new Date().toISOString()
+        };
+        if (title !== undefined) update.title = title;
+        if (tags !== undefined) update.tags = tags;
+        if (priority !== undefined) update.priority = priority;
+        if (content !== undefined) update.content = content;
+        const { error: updateError } = await supabase
+            .from("notes")
+            .update(update)
+            .eq("id", noteId)
+            .eq("student_id", userSession.student_id);
+        if (updateError) throw updateError;
+        res.json({ message: "Note updated" });
+    } catch (err) {
+        console.error("Update note error:", err);
+        res.status(500).json({ error: err.message || "Failed to update note." });
+    }
+});
+
+// Delete a note
+app.delete("/api/notes/:id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const noteId = req.params.id;
+    try {
+        const { data: userSession, error } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("student_id", req.session.userId)
+            .single();
+        if (error || !userSession) throw new Error("Invalid session");
+        const { error: delError } = await supabase
+            .from("notes")
+            .delete()
+            .eq("id", noteId)
+            .eq("student_id", userSession.student_id);
+        if (delError) throw delError;
+        res.json({ message: "Note deleted" });
+    } catch (err) {
+        console.error("Delete note error:", err);
+        res.status(500).json({ error: err.message || "Failed to delete note." });
+    }
+});
 
 // ---------- AI ROUTES ----------
 app.post("/chat", async (req, res) => {
@@ -681,3 +831,4 @@ app.post("/api/generate-plan", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
