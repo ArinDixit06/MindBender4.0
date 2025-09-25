@@ -38,42 +38,64 @@
         </ul>
     </nav>
 
-    <main class="chat-container">
-        <div class="chat-header">
-            <h1>🤖 AI Study Buddy</h1>
-            <button id="clear-chat-btn" class="action-btn" style="background-color: #3e4a61;">
-                <i class="fas fa-trash"></i> Clear Chat
-            </button>
-            <div class="subject-selector">
-                <label for="chat-subject">Subject Context:</label>
-                <select id="chat-subject">
-                    <option value="">General</option>
-                </select>
+    <main class="chat-layout">
+        <!-- Chat Interface - Left Side -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>🤖 AI Study Buddy</h1>
+                <div class="chat-controls">
+                    <button id="new-chat-btn" class="action-btn" style="background-color: #8b5cf6;">
+                        <i class="fas fa-plus"></i> New Chat
+                    </button>
+                    <button id="clear-chat-btn" class="action-btn" style="background-color: #3e4a61;">
+                        <i class="fas fa-trash"></i> Clear Chat
+                    </button>
+                </div>
+                <div class="subject-selector">
+                    <label for="chat-subject">Subject Context:</label>
+                    <select id="chat-subject">
+                        <option value="">General</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="chat-window" class="chat-window">
+                <div class="message bot-message">
+                    <p>Hello! I'm Scholarly, your AI Study Buddy! 📚</p>
+                    <p>I'm here to help you with your studies. I know you're studying <span id="student-info-chat"></span>.</p>
+                    <p>What would you like to learn about today?</p>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <textarea id="chat-input" placeholder="Ask me anything about your subjects..." rows="2"></textarea>
+                <button id="send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <!-- Quick prompts for common questions -->
+            <div id="quick-prompts" style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
+                <button class="quick-prompt" data-prompt="Explain this concept in simple terms">Explain Simply</button>
+                <button class="quick-prompt" data-prompt="Give me an example">Give Example</button>
+                <button class="quick-prompt" data-prompt="How is this useful in real life?">Real Life Use</button>
+                <button class="quick-prompt" data-prompt="Create a practice question">Practice Question</button>
+                <button class="quick-prompt" data-prompt="Summarize this chapter">Summarize</button>
             </div>
         </div>
 
-        <div id="chat-window" class="chat-window">
-            <div class="message bot-message">
-                <p>Hello! I'm Scholarly, your AI Study Buddy! 📚</p>
-                <p>I'm here to help you with your studies. I know you're studying <span id="student-info-chat"></span>.</p>
-                <p>What would you like to learn about today?</p>
+        <!-- Chat History - Right Side -->
+        <div class="chat-history-container">
+            <div class="history-header">
+                <h2><i class="fas fa-history"></i> Chat History</h2>
             </div>
-        </div>
-
-        <div class="chat-input-area">
-            <textarea id="chat-input" placeholder="Ask me anything about your subjects..." rows="2"></textarea>
-            <button id="send-btn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-
-        <!-- Quick prompts for common questions -->
-        <div id="quick-prompts" style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
-            <button class="quick-prompt" data-prompt="Explain this concept in simple terms">Explain Simply</button>
-            <button class="quick-prompt" data-prompt="Give me an example">Give Example</button>
-            <button class="quick-prompt" data-prompt="How is this useful in real life?">Real Life Use</button>
-            <button class="quick-prompt" data-prompt="Create a practice question">Practice Question</button>
-            <button class="quick-prompt" data-prompt="Summarize this chapter">Summarize</button>
+            
+            <div class="history-list" id="history-list">
+                <div class="history-placeholder">
+                    <i class="fas fa-comments"></i>
+                    <p>Your chat history will appear here</p>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -91,6 +113,30 @@
         .quick-prompt:hover {
             background-color: #e94560;
             color: white;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            color: white;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all var(--transition-speed);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
     </style>
 
