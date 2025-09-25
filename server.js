@@ -306,9 +306,237 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
     }
 });
 
+// ---------- CHAT HISTORY ROUTES ----------
+// Create a new chat session
+app.post("/api/chat-sessions", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+        const { title = "New Chat" } = req.body;
+        
+        const { data: userSession, error: userSessionError } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("id", req.session.userId)
+            .single();
+        
+        if (userSessionError || !userSession) {
+            throw new Error("Could not find student_id for the current user.");
+        }
+        
+        const student_id = userSession.student_id;
+        
+        const { data: session, error } = await supabase
+            .from("chat_sessions")
+            .insert([{ 
+                student_id, 
+                title,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+            
+        if (error) throw error;
+        
+        res.status(201).json({ session });
+    } catch (err) {
+        console.error("Create chat session error:", err);
+        res.status(500).json({ error: err.message || "Failed to create chat session." });
+    }
+});
+
+// Get all chat sessions for a user
+app.get("/api/chat-sessions", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+        const { data: userSession, error: userSessionError } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("id", req.session.userId)
+            .single();
+        
+        if (userSessionError || !userSession) {
+            throw new Error("Could not find student_id for the current user.");
+        }
+        
+        const student_id = userSession.student_id;
+        
+        const { data: sessions, error } = await supabase
+            .from("chat_sessions")
+            .select("*")
+            .eq("student_id", student_id)
+            .order("updated_at", { ascending: false });
+            
+        if (error) throw error;
+        
+        res.json({ sessions });
+    } catch (err) {
+        console.error("Fetch chat sessions error:", err);
+        res.status(500).json({ error: err.message || "Failed to fetch chat sessions." });
+    }
+});
+
+// Save a message to a chat session
+app.post("/api/chat-messages", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+        const { session_id, message_type, content } = req.body;
+        
+        if (!session_id || !message_type || !content) {
+            return res.status(400).json({ error: "session_id, message_type, and content are required" });
+        }
+        
+        const { data: userSession, error: userSessionError } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("id", req.session.userId)
+            .single();
+        
+        if (userSessionError || !userSession) {
+            throw new Error("Could not find student_id for the current user.");
+        }
+        
+        // Verify the session belongs to the user
+        const { data: chatSession, error: sessionError } = await supabase
+            .from("chat_sessions")
+            .select("id")
+            .eq("id", session_id)
+            .eq("student_id", userSession.student_id)
+            .single();
+            
+        if (sessionError || !chatSession) {
+            return res.status(403).json({ error: "Chat session not found or unauthorized" });
+        }
+        
+        const { data: message, error } = await supabase
+            .from("chat_messages")
+            .insert([{
+                session_id,
+                message_type,
+                content,
+                timestamp: new Date().toISOString()
+            }])
+            .select()
+            .single();
+            
+        if (error) throw error;
+        
+        // Update the session's updated_at timestamp
+        await supabase
+            .from("chat_sessions")
+            .update({ updated_at: new Date().toISOString() })
+            .eq("id", session_id);
+        
+        res.status(201).json({ message });
+    } catch (err) {
+        console.error("Save chat message error:", err);
+        res.status(500).json({ error: err.message || "Failed to save chat message." });
+    }
+});
+
+// Get all messages for a chat session
+app.get("/api/chat-messages/:sessionId", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+        const { sessionId } = req.params;
+        
+        const { data: userSession, error: userSessionError } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("id", req.session.userId)
+            .single();
+        
+        if (userSessionError || !userSession) {
+            throw new Error("Could not find student_id for the current user.");
+        }
+        
+        // Verify the session belongs to the user
+        const { data: chatSession, error: sessionError } = await supabase
+            .from("chat_sessions")
+            .select("id")
+            .eq("id", sessionId)
+            .eq("student_id", userSession.student_id)
+            .single();
+            
+        if (sessionError || !chatSession) {
+            return res.status(403).json({ error: "Chat session not found or unauthorized" });
+        }
+        
+        const { data: messages, error } = await supabase
+            .from("chat_messages")
+            .select("*")
+            .eq("session_id", sessionId)
+            .order("timestamp", { ascending: true });
+            
+        if (error) throw error;
+        
+        res.json({ messages });
+    } catch (err) {
+        console.error("Fetch chat messages error:", err);
+        res.status(500).json({ error: err.message || "Failed to fetch chat messages." });
+    }
+});
+
+// Update chat session title
+app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+        const { sessionId } = req.params;
+        const { title } = req.body;
+        
+        if (!title) {
+            return res.status(400).json({ error: "Title is required" });
+        }
+        
+        const { data: userSession, error: userSessionError } = await supabase
+            .from("users")
+            .select("student_id")
+            .eq("id", req.session.userId)
+            .single();
+        
+        if (userSessionError || !userSession) {
+            throw new Error("Could not find student_id for the current user.");
+        }
+        
+        const { data: session, error } = await supabase
+            .from("chat_sessions")
+            .update({ title, updated_at: new Date().toISOString() })
+            .eq("id", sessionId)
+            .eq("student_id", userSession.student_id)
+            .select()
+            .single();
+            
+        if (error) throw error;
+        
+        if (!session) {
+            return res.status(404).json({ error: "Chat session not found" });
+        }
+        
+        res.json({ session });
+    } catch (err) {
+        console.error("Update chat session error:", err);
+        res.status(500).json({ error: err.message || "Failed to update chat session." });
+    }
+});
+
 // ---------- AI ROUTES ----------
 app.post("/chat", async (req, res) => {
-    const { message, subject } = req.body;
+    const { message, subject, session_id } = req.body;
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
@@ -328,6 +556,42 @@ app.post("/chat", async (req, res) => {
         }
         const data = await response.json();
         const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
+        
+        // If session_id is provided, save both user message and bot reply
+        if (session_id && req.session.userId) {
+            try {
+                // Save user message
+                await fetch(`${req.protocol}://${req.get('host')}/api/chat-messages`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Cookie': req.headers.cookie
+                    },
+                    body: JSON.stringify({
+                        session_id,
+                        message_type: 'user',
+                        content: message
+                    })
+                });
+                
+                // Save bot reply
+                await fetch(`${req.protocol}://${req.get('host')}/api/chat-messages`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Cookie': req.headers.cookie
+                    },
+                    body: JSON.stringify({
+                        session_id,
+                        message_type: 'bot',
+                        content: reply
+                    })
+                });
+            } catch (saveError) {
+                console.error("Error saving chat messages:", saveError);
+            }
+        }
+        
         res.json({ reply });
     } catch (err) {
         console.error("Gemini API error:", err);
@@ -372,7 +636,7 @@ app.post("/api/generate-plan", async (req, res) => {
         }
         let studyPlan;
         try {
-            const jsonMatch = geminiReplyText.match(/```json\n([\s\S]*?)\n```/);
+            const jsonMatch = geminiReplyText.match(/``````/);
             if (jsonMatch && jsonMatch[1]) {
                 studyPlan = JSON.parse(jsonMatch[1]);
             } else {
