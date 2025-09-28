@@ -715,21 +715,132 @@ header {
 }
 
 @media (max-width: 480px) {
+  .chat-layout {
+    padding: 10px; /* Smaller overall padding for the layout */
+    gap: 15px;
+  }
+
+  .chat-sidebar {
+    padding: 15px; /* Smaller sidebar padding */
+    max-height: 180px; /* Slightly reduce max height */
+  }
+
+  .player-profile h2 {
+    font-size: 12px; /* Smaller player profile heading */
+  }
+
+  .player-level {
+    font-size: 14px; /* Already set, keeping it explicit */
+  }
+
+  .player-stats {
+    padding: 10px; /* Smaller player stats padding */
+  }
+
+  .chat-history-container {
+    padding: 10px; /* Smaller chat history padding */
+  }
+
+  .history-header h3 {
+    font-size: 10px; /* Smaller history header font */
+  }
+
+  .history-item {
+    padding: 6px; /* Smaller history item padding */
+  }
+
+  .history-item-title {
+    font-size: 11px; /* Smaller history item title font */
+  }
+
+  .history-item-date {
+    font-size: 9px; /* Smaller history item date font */
+  }
+  
   .chat-container {
-    padding: 15px;
+    padding: 15px; /* Already set, keeping it explicit */
   }
   
   .center-title {
-    font-size: 18px;
+    font-size: 18px; /* Already set, keeping it explicit */
+  }
+
+  .chat-header h2 {
+    font-size: 14px; /* Smaller chat header title */
+    margin-bottom: 15px;
+  }
+
+  .chat-controls {
+    padding: 10px; /* Smaller chat controls padding */
+    gap: 8px;
+  }
+
+  .action-btn {
+    padding: 8px 15px; /* Smaller action button padding */
+    font-size: 11px; /* Smaller action button font */
+  }
+
+  .subject-selector select {
+    padding: 6px; /* Smaller select padding */
+    font-size: 0.8rem;
   }
   
-  .player-level {
-    font-size: 14px;
+  .chat-window {
+    padding: 10px; /* Smaller chat window padding */
   }
-  
-  .nav-item .nav-link {
-    padding: 8px 12px;
-    font-size: 12px;
+
+  .chat-window::before {
+    font-size: 7px; /* Smaller terminal active text */
+    top: -10px;
+  }
+
+  .message {
+    margin-bottom: 10px;
+    max-width: 95%; /* Allow messages to take more width */
+  }
+
+  .message p {
+    padding: 10px; /* Smaller message bubble padding */
+    font-size: 0.85rem; /* Smaller message font */
+  }
+
+  .intro-row {
+    flex-direction: column; /* Stack intro messages vertically */
+    gap: 10px;
+  }
+
+  .intro-row .message {
+    max-width: 100%; /* Full width for intro messages */
+  }
+
+  .chat-input-area {
+    gap: 8px;
+  }
+
+  .chat-input-area::before {
+    font-size: 7px; /* Smaller user input text */
+    top: -12px;
+  }
+
+  .chat-input-area textarea {
+    padding: 8px; /* Smaller textarea padding */
+    font-size: 0.85rem;
+  }
+
+  .chat-input-area button {
+    padding: 8px 15px; /* Smaller send button padding */
+    font-size: 0.85rem;
+    min-width: 50px;
+  }
+
+  #quick-prompts {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .quick-prompt {
+    padding: 6px 12px; /* Smaller quick prompt padding */
+    font-size: 10px; /* Smaller quick prompt font */
   }
 }
 

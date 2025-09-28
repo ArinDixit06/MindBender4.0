@@ -139,21 +139,40 @@ body {
 
 /* Responsive */
 @media (max-width: 480px) {
+  .container {
+    padding: 15px; /* Reduce container padding for very small screens */
+  }
+
   .forms {
-    padding: 30px 20px;
+    padding: 25px 15px; /* Further reduce form padding */
   }
 
   .header {
-    font-size: 1.6rem;
+    font-size: 1.5rem; /* Slightly smaller header font */
+    margin-bottom: 20px;
   }
 
   .title {
-    font-size: 1rem;
+    font-size: 0.95rem; /* Slightly smaller title font */
+    margin-bottom: 20px;
   }
 
-  .input-box input,
+  .input-box input {
+    font-size: 0.8rem; /* Smaller input font */
+    padding: 10px 10px 10px 30px; /* Adjust padding, especially left for icon */
+  }
+
+  .input-box i {
+    left: 8px; /* Adjust icon position */
+    font-size: 0.8rem;
+  }
+
   .button input {
-    font-size: 0.85rem;
+    font-size: 0.9rem; /* Smaller button font */
     padding: 12px;
+  }
+
+  .text {
+    font-size: 0.75rem; /* Smaller text font */
   }
 }

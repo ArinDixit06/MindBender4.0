@@ -202,6 +202,37 @@ select:disabled {
     }
 }
 
+@media (max-width: 480px) {
+    .knowledge-map-layout {
+        padding: 0 0.5rem; /* Reduce overall padding for very small screens */
+    }
+
+    .sidebar {
+        padding: 1rem; /* Smaller padding for sidebar */
+    }
+
+    .page-description {
+        font-size: 0.9rem; /* Slightly smaller font for description */
+    }
+
+    .topic-node {
+        width: 95%; /* Make topic nodes take up more width */
+        padding: 1rem; /* Smaller padding for topic nodes */
+    }
+
+    .topic-node h3 {
+        font-size: 0.9rem; /* Smaller heading font */
+    }
+
+    .topic-node p {
+        font-size: 0.85rem; /* Smaller body font */
+    }
+
+    .topic-view-content {
+        padding: 1.5rem; /* Adjust modal padding for smaller screens */
+    }
+}
+
 /* ====================================
 5. MODAL STYLES (for topic content)
 ==================================== */

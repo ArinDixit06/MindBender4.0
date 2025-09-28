@@ -372,10 +372,59 @@ main {
   .add-quest { flex-direction: column; }
   .add-quest input, .add-quest select { min-width: 100%; }
 }
-@media (max-width:480px){
-  main{padding:10px;}
-  .center-title { font-size: 22px;}
-  .calendar-container{padding:15px;}
-  .badge-icon{width:60px;height:60px;}
-  .badge-icon span{font-size:18px;}
+@media (max-width: 480px) {
+  body {
+    font-size: 14px; /* Smaller base font size for mobile */
+  }
+
+  header {
+    padding: 15px 0 0 0; /* Adjust header padding */
+  }
+
+  .center-title {
+    font-size: 20px; /* Smaller title font size */
+  }
+
+  .navbar.horizontal-navbar {
+    margin-bottom: 10px; /* Reduce margin */
+  }
+
+  .navbar-nav {
+    flex-direction: column; /* Stack nav items vertically */
+    gap: 0; /* Remove gap when stacked */
+    align-items: center; /* Center items */
+  }
+
+  .nav-item .nav-link {
+    padding: 10px 15px; /* Adjust nav link padding */
+    font-size: 16px; /* Smaller nav link font size */
+    width: 100%; /* Full width for clickable area */
+    justify-content: center; /* Center text and icon */
+  }
+
+  .nav-item .nav-link i {
+    margin-right: 5px; /* Smaller margin for icon */
+  }
+
+  main {
+    padding: 10px; /* Already set, keeping it explicit */
+  }
+
+  .calendar-container {
+    padding: 15px; /* Already set, keeping it explicit */
+  }
+
+  .badge-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .badge-icon span {
+    font-size: 18px;
+  }
+
+  .modal-content {
+    width: 95%; /* Make modal wider on small screens */
+    margin: 10% auto; /* Adjust vertical position */
+  }
 }

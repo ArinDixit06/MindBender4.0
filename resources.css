@@ -191,3 +191,49 @@ header h1 {
         font-size: 1.2rem;
     }
 }
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.2rem; /* Smaller header title */
+        gap: 10px;
+    }
+
+    .container {
+        padding: 0 0.5rem; /* Reduce container padding */
+    }
+
+    .resource-section {
+        padding: 15px; /* Smaller section padding */
+        margin-bottom: 20px;
+    }
+
+    .resource-section h2 {
+        font-size: 1rem; /* Smaller section heading */
+    }
+
+    .section-description {
+        font-size: 0.9rem; /* Smaller description font */
+    }
+
+    .resource-grid {
+        grid-template-columns: 1fr; /* Stack resources vertically */
+        gap: 15px;
+    }
+
+    .resource-card {
+        padding: 15px; /* Smaller card padding */
+    }
+
+    .resource-card h3 {
+        font-size: 1rem; /* Smaller card title */
+    }
+
+    .resource-card p {
+        font-size: 0.85rem; /* Smaller card text */
+    }
+
+    .resource-btn {
+        padding: 8px 15px; /* Smaller button padding */
+        font-size: 0.9rem;
+    }
+}
