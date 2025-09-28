@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 const geminiApiKey = "AIzaSyAWZI5sD7YqqTqMgh4KsKvktrPTOQe4hHM"; // Hardcoded as per user request
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 const geminiProModel = genAI.getGenerativeModel({ model: "gemini-pro" });
-const geminiFlashModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }); // Keep flash model if needed elsewhere
+const geminiFlashModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Updated as per user feedback
 
 // ---------- Middleware ----------
 app.use(
@@ -646,14 +646,14 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
     `;
 
     try {
-        const result = await geminiFlashModel.generateContent(prompt); // Using geminiFlashModel
+        const result = await geminiProModel.generateContent(prompt); // Temporarily using geminiProModel for debugging
         const response = await result.response;
         const content = response.text();
 
         res.json({ content });
     } catch (err) {
-        console.error("Teach Topic API error:", err.message, err);
-        res.status(500).json({ error: "Failed to get explanation from AI." });
+        console.error("Teach Topic API error:", err); // Log the full error object
+        res.status(500).json({ error: "Failed to get explanation from AI.", details: err.message || "Unknown error" });
     }
 });
 
