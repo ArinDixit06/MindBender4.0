@@ -7,6 +7,54 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="knowledge_map_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        const API_URL = "https://mindbender4-0.onrender.com"; // Ensure this matches your deployed backend URL
+
+        // Function to check session and redirect if unauthorized
+        async function checkSession() {
+            try {
+                const res = await fetch(`${API_URL}/api/me`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (!res.ok) {
+                    // If session is not valid, redirect to login page
+                    window.location.href = "login.html";
+                }
+                // If res.ok, session is valid, no action needed (user stays on page)
+            } catch (error) {
+                console.error("Session check failed:", error);
+                window.location.href = "login.html"; // Redirect on network error
+            }
+        }
+
+        // Call checkSession when the page loads
+        document.addEventListener("DOMContentLoaded", checkSession);
+
+        // Logout functionality
+        document.getElementById("logout-btn").addEventListener("click", async (e) => {
+            e.preventDefault();
+            try {
+                const res = await fetch(`${API_URL}/logout`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (res.ok) {
+                    window.location.href = "login.html";
+                } else {
+                    const data = await res.json();
+                    alert("Logout failed: " + (data.message || "Unknown error"));
+                }
+            } catch (error) {
+                console.error("Logout error:", error);
+                alert("Logout error: " + error.message);
+            }
+        });
+    </script>
     <script src="knowledge_map_js.js" defer></script>
 </head>
 <body>

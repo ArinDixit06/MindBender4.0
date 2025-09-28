@@ -147,29 +147,51 @@
     </div>
 
     <script>
-        // Your JavaScript remains the same
-        const API_URL = "https://mindbender4-0.onrender.com";
+        const API_URL = "https://mindbender4-0.onrender.com"; // Ensure this matches your deployed backend URL
 
-        (async function checkAuth() {
+        // Function to check session and redirect if unauthorized
+        async function checkSession() {
             try {
-                const res = await fetch(`${API_URL}/api/me`, { credentials: 'include' });
-                if (!res.ok) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                const data = await res.json();
-                // Any other logic you need can go here
-            } catch (err) {
-                console.error("Auth check failed", err);
-                window.location.href = 'login.html';
-            }
-        })();
+                const res = await fetch(`${API_URL}/api/me`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
 
-        document.querySelector('.logout-link').addEventListener('click', async (e) => {
+                if (!res.ok) {
+                    // If session is not valid, redirect to login page
+                    window.location.href = "login.html";
+                }
+                // If res.ok, session is valid, no action needed (user stays on page)
+            } catch (error) {
+                console.error("Session check failed:", error);
+                window.location.href = "login.html"; // Redirect on network error
+            }
+        }
+
+        // Call checkSession when the page loads
+        document.addEventListener("DOMContentLoaded", checkSession);
+
+        // Logout functionality
+        document.getElementById("logout-btn").addEventListener("click", async (e) => {
             e.preventDefault();
-            await fetch(`${API_URL}/logout`, { method: 'POST', credentials: 'include' });
-            localStorage.clear();
-            window.location.href = 'login.html';
+            try {
+                const res = await fetch(`${API_URL}/logout`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (res.ok) {
+                    window.location.href = "login.html";
+                } else {
+                    const data = await res.json();
+                    alert("Logout failed: " + (data.message || "Unknown error"));
+                }
+            } catch (error) {
+                console.error("Logout error:", error);
+                alert("Logout error: " + error.message);
+            }
         });
     </script>
 </body>
