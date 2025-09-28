@@ -7,21 +7,79 @@ body {
     font-family: var(--font-body);
 }
 
-.container {
-    padding: 2rem;
-    /* REMOVED: margin-left: 80px; */ /* Removed to allow centering */
-    max-width: 1400px;
-    margin: 0 auto; /* This now correctly centers the container */
+/* Header styling */
+header {
+    text-align: center; /* Center the h1 inside */
+    padding: 20px 10px;
 }
 
-/* Header styling */
 header h1 {
     font-family: var(--font-heading);
     color: var(--color-accent-orange);
     text-shadow: 2px 2px #000;
-    font-size: 2rem;
+    font-size: 2.2rem;
+    margin: 0;
+    display: inline-flex; /* Helps align icon and text */
+    align-items: center;
+    gap: 15px;
+}
+
+/* Horizontal Navbar Fixes */
+.navbar.horizontal-navbar {
+    width: 100%;
+    background-color: var(--color-bg-deep-blue);
+    border-bottom: 2px solid var(--color-bg-medium-blue);
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0 1rem; /* Add some padding on the sides for smaller screens */
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap; /* Allows items to wrap on very small screens */
+}
+
+.nav-item .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    font-size: 1rem; /* Slightly reduced font for better fit */
+    color: var(--color-accent-orange);
+    font-family: var(--font-heading);
+    text-decoration: none;
+    transition: all var(--transition-speed);
+    border-radius: var(--border-radius-md);
+    text-transform: uppercase;
+}
+
+.nav-item .nav-link:hover,
+.nav-item .nav-link.active { /* Style for the current page link */
+    color: var(--color-accent-red);
+    background: rgba(252, 163, 17, 0.08);
+}
+
+.nav-item .nav-link i {
+    margin-right: 8px;
+    font-size: 1rem;
+}
+
+/* Main Content Area */
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 2rem 0;
+}
+
+.container {
+    width: 100%;
+    padding: 0 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
     text-align: center;
-    margin-bottom: 30px;
 }
 
 /* Resource section styling */
@@ -31,7 +89,6 @@ header h1 {
     border-radius: var(--border-radius-lg);
     border: 2px solid var(--color-bg-deep-blue);
     margin-bottom: 30px;
-    text-align: center; /* ADDED: Centers all inline/text content in the section */
 }
 
 .resource-section h2 {
@@ -64,7 +121,7 @@ header h1 {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: center; /* ADDED: Centers flex items (h3, p, btn) horizontally */
+    align-items: center;
 }
 
 .resource-card:hover {
@@ -82,7 +139,7 @@ header h1 {
     color: var(--color-text-light);
     font-size: 0.95rem;
     line-height: 1.5;
-    flex-grow: 1; 
+    flex-grow: 1;
 }
 
 .resource-list {
@@ -98,15 +155,7 @@ header h1 {
 .resource-list a {
     color: var(--color-text-light);
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
     transition: color var(--transition-speed);
-}
-
-.resource-list a::before {
-    content: '📚';
-    margin-right: 8px;
-    font-size: 1.1rem;
 }
 
 .resource-list a:hover {
@@ -122,7 +171,6 @@ header h1 {
     text-decoration: none;
     border-radius: var(--border-radius-sm);
     transition: all var(--transition-speed);
-    text-align: center;
     font-weight: bold;
 }
 
@@ -134,20 +182,12 @@ header h1 {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .container {
-        margin-left: 0;
-        padding: 1rem;
-        padding-bottom: 80px;
+        padding: 0 1rem;
     }
-
     header h1 {
         font-size: 1.5rem;
     }
-
     .resource-section h2 {
         font-size: 1.2rem;
-    }
-
-    .resource-grid {
-        grid-template-columns: 1fr;
     }
 }

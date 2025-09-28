@@ -4,89 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Knowledge Map</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="knowledge_map_style.css">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="knowledge_map_js.js" defer></script>
 </head>
 <body>
-    <!-- Your Provided Navbar -->
+    <header>
+        <h1 class="center-title">Knowledge Map</h1>
+    </header>
+
     <nav id="navbar" class="navbar horizontal-navbar">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a href="index.html" class="nav-link">
-            <i class="fas fa-tasks"></i>
-            <span class="link-text">Quests</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="chat.html" class="nav-link">
-            <i class="fas fa-robot"></i>
-            <span class="link-text">AI Buddy</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="resources.html" class="nav-link">
-            <i class="fas fa-book"></i>
-            <span class="link-text">Resources</span>
-          </a>
-        </li>
-        <li class="nav-item">
-            <a href="notemaking.html" class="nav-link">
-              <i class="fas fa-book"></i>
-              <span class="link-text">Notes</span>
-            </a>
-          </li>
-        <li class="nav-item">
-          <a href="knowledge_map.html" class="nav-link active"> <!-- Active class for current page -->
-            <i class="fas fa-map"></i>
-            <span class="link-text">Knowledge Map</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link logout-link" id="logout-btn">
-            <i class="fas fa-sign-out-alt"></i>
-            <span class="link-text">Logout</span>
-          </a>
-        </li>
-      </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a href="index.html" class="nav-link"><i class="fas fa-tasks"></i><span class="link-text">Quests</span></a></li>
+            <li class="nav-item"><a href="chat.html" class="nav-link"><i class="fas fa-robot"></i><span class="link-text">AI Buddy</span></a></li>
+            <li class="nav-item"><a href="resources.html" class="nav-link"><i class="fas fa-book"></i><span class="link-text">Resources</span></a></li>
+            <li class="nav-item"><a href="notemaking.html" class="nav-link"><i class="fas fa-book"></i><span class="link-text">Notes</span></a></li>
+            <li class="nav-item"><a href="knowledge_map.html" class="nav-link active"><i class="fas fa-map"></i><span class="link-text">Knowledge Map</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link logout-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i><span class="link-text">Logout</span></a></li>
+        </ul>
     </nav>
 
-    <main class="container">
-        <h1>Explore Your Knowledge Map</h1>
-        <p>Select a subject and chapter to see how concepts are connected. Click on a topic to learn more!</p>
-
-        <div class="controls">
-            <div class="select-wrapper">
-                <label for="subject-select">Subject:</label>
-                <select id="subject-select">
-                    <option value="">-- Select a Subject --</option>
-                    <option value="Maths">Maths (Class 10)</option>
-                    <!-- Add other subjects here later -->
-                </select>
+    <main class="knowledge-map-layout">
+        
+        <aside class="sidebar">
+            <p class="page-description">Select a subject and chapter to see how concepts are connected. Click a topic to learn more!</p>
+            <div class="controls">
+                <div class="select-wrapper">
+                    <label for="subject-select">Subject:</label>
+                    <select id="subject-select">
+                        <option value="">-- Select a Subject --</option>
+                        <option value="Maths">Maths (Class 10)</option>
+                    </select>
+                </div>
+                <div class="select-wrapper">
+                    <label for="chapter-select">Chapter:</label>
+                    <select id="chapter-select" disabled>
+                        <option value="">-- Select a subject first --</option>
+                    </select>
+                </div>
             </div>
-            <div class="select-wrapper">
-                <label for="chapter-select">Chapter:</label>
-                <select id="chapter-select" disabled>
-                    <option value="">-- Select a subject first --</option>
-                </select>
-            </div>
-        </div>
+        </aside>
 
-        <div class="flowchart-container" id="flowchart">
-            <!-- Topics will be dynamically inserted here -->
+        <div class="map-panel">
+            <div class="flowchart-container" id="flowchart">
+                 <div class="flowchart-placeholder">Select a chapter to begin your quest!</div>
+                </div>
         </div>
     </main>
 
-    <!-- Modal for displaying topic content -->
     <div class="topic-view" id="topic-view">
         <div class="topic-view-content">
             <button class="close-btn" id="close-btn">&times;</button>
             <div id="topic-content">
-                <!-- AI-generated content will be inserted here -->
-            </div>
+                </div>
         </div>
     </div>
-
 </body>
 </html>
