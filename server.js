@@ -25,6 +25,7 @@ app.use(
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'https://mindbender4-0.onrender.com'
+        'https://scholarli.netlify.app'
         // Add your frontend URL here if it's different
       ];
       const isAllowed = !origin || allowedOrigins.includes(origin);
@@ -661,3 +662,4 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
