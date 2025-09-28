@@ -559,7 +559,7 @@ app.post("/chat", async (req, res) => {
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
-    const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`;
+    const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`;
     try {
         const response = await fetch(geminiApiUrl, {
             method: "POST",
@@ -654,8 +654,13 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Gemini API responded with status ${response.status}: ${errorData.error.message}`);
+            let errorData = {};
+            try {
+                errorData = await response.json();
+            } catch (jsonError) {
+                console.error("Failed to parse Gemini API error response:", jsonError);
+            }
+            throw new Error(`Gemini API responded with status ${response.status}. Details: ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
@@ -663,7 +668,7 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
 
         res.json({ content });
     } catch (err) {
-        console.error("Teach Topic API error:", err);
+        console.error("Teach Topic API error:", err.message, err);
         res.status(500).json({ error: "Failed to get explanation from AI." });
     }
 });
