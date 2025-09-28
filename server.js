@@ -34,6 +34,9 @@ app.use(
 
 app.use(bodyParser.json());
 
+// Serve static files from the current directory
+app.use(express.static('.'));
+
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
     console.error("FATAL ERROR: SESSION_SECRET is not set. Please set it in your .env file.");
