@@ -646,7 +646,7 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
     `;
 
     try {
-        const result = await geminiProModel.generateContent(prompt); // Temporarily using geminiProModel for debugging
+        const result = await geminiFlashModel.generateContent(prompt); // Using geminiFlashModel as requested
         const response = await result.response;
         const content = response.text();
 
