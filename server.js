@@ -5,11 +5,18 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import fetch from "node-fetch";
+import { GoogleGenerativeAI } from "@google/generative-ai"; // Import the SDK
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize Gemini AI
+const geminiApiKey = "AIzaSyAWZI5sD7YqqTqMgh4KsKvktrPTOQe4hHM"; // Hardcoded as per user request
+const genAI = new GoogleGenerativeAI(geminiApiKey);
+const geminiProModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+const geminiFlashModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }); // Keep flash model if needed elsewhere
 
 // ---------- Middleware ----------
 app.use(
@@ -71,7 +78,6 @@ if (!supabaseUrl || !supabaseKey) {
     process.exit(1);
 }
 const supabase = createClient(supabaseUrl, supabaseKey);
-const geminiApiKey = process.env.GEMINI_API_KEY;
 
 
 // ---------- KNOWLEDGE MAP DATA (NEW) ----------
@@ -559,21 +565,10 @@ app.post("/chat", async (req, res) => {
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
-    const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`;
     try {
-        const response = await fetch(geminiApiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: `Subject: ${subject || "General"}. Question: ${message}` }] }],
-            }),
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Gemini API responded with status ${response.status}`);
-        }
-        const data = await response.json();
-        const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
+        const result = await geminiProModel.generateContent(`Subject: ${subject || "General"}. Question: ${message}`);
+        const response = await result.response;
+        const reply = response.text();
         if (session_id && req.session.userId) {
             // Function to save message to database
         }
@@ -595,8 +590,16 @@ app.post("/api/generate-plan", async (req, res) => {
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
-    // ... logic for generating plan via Gemini API ...
-    res.status(501).json({ message: "Generate plan endpoint is under construction" });
+    try {
+        const prompt = `Generate a study plan for the topic "${topic}" for a Class ${studentClass} student, with a deadline of ${deadline}.`;
+        const result = await geminiProModel.generateContent(prompt);
+        const response = await result.response;
+        const plan = response.text();
+        res.json({ plan });
+    } catch (err) {
+        console.error("Generate plan API error:", err);
+        res.status(500).json({ error: "Failed to generate study plan from AI." });
+    }
 });
 
 // ---------- KNOWLEDGE MAP ROUTES (NEW) ----------
@@ -628,8 +631,6 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
         return res.status(400).json({ error: "Topic and chapter are required." });
     }
 
-    const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`;
-
     const prompt = `
     Act as a friendly and engaging tutor for a Class 10 student.
     Explain the following topic in a simple and interesting way.
@@ -645,26 +646,9 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
     `;
 
     try {
-        const response = await fetch(geminiApiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-            }),
-        });
-
-        if (!response.ok) {
-            let errorData = {};
-            try {
-                errorData = await response.json();
-            } catch (jsonError) {
-                console.error("Failed to parse Gemini API error response:", jsonError);
-            }
-            throw new Error(`Gemini API responded with status ${response.status}. Details: ${JSON.stringify(errorData)}`);
-        }
-
-        const data = await response.json();
-        const content = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate an explanation. Please try again.";
+        const result = await geminiFlashModel.generateContent(prompt); // Using geminiFlashModel
+        const response = await result.response;
+        const content = response.text();
 
         res.json({ content });
     } catch (err) {
