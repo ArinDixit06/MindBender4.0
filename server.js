@@ -4,7 +4,6 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import fetch from "node-fetch";
 import { GoogleGenerativeAI } from "@google/generative-ai"; // Import the SDK
 
 dotenv.config();
@@ -16,7 +15,7 @@ const PORT = process.env.PORT || 3000;
 const geminiApiKey = "AIzaSyAWZI5sD7YqqTqMgh4KsKvktrPTOQe4hHM"; // Hardcoded as per user request
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 const geminiProModel = genAI.getGenerativeModel({ model: "gemini-pro" });
-const geminiFlashModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Updated as per user feedback
+const geminiFlashModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Using a stable model identifier for Flash
 
 // ---------- Middleware ----------
 app.use(
@@ -566,7 +565,7 @@ app.post("/chat", async (req, res) => {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
     try {
-        const result = await geminiProModel.generateContent(`Subject: ${subject || "General"}. Question: ${message}`);
+        const result = await geminiFlashModel.generateContent(`Subject: ${subject || "General"}. Question: ${message}`);
         const response = await result.response;
         const reply = response.text();
         if (session_id && req.session.userId) {
@@ -592,7 +591,7 @@ app.post("/api/generate-plan", async (req, res) => {
     }
     try {
         const prompt = `Generate a study plan for the topic "${topic}" for a Class ${studentClass} student, with a deadline of ${deadline}.`;
-        const result = await geminiProModel.generateContent(prompt);
+        const result = await geminiFlashModel.generateContent(prompt);
         const response = await result.response;
         const plan = response.text();
         res.json({ plan });
