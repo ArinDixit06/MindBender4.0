@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = "http://localhost:5000"; 
+    const API_URL = "https://mindbender4-0.onrender.com"; 
     
     // DOM Elements
     const chatWindow = document.getElementById('chat-window');

@@ -1,0 +1,153 @@
+/* resources.css */
+
+/* General styling for the resources page */
+body {
+    background-color: var(--color-bg-dark-blue);
+    color: var(--color-text-light);
+    font-family: var(--font-body);
+}
+
+.container {
+    padding: 2rem;
+    /* REMOVED: margin-left: 80px; */ /* Removed to allow centering */
+    max-width: 1400px;
+    margin: 0 auto; /* This now correctly centers the container */
+}
+
+/* Header styling */
+header h1 {
+    font-family: var(--font-heading);
+    color: var(--color-accent-orange);
+    text-shadow: 2px 2px #000;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Resource section styling */
+.resource-section {
+    background-color: var(--color-bg-medium-blue);
+    padding: 25px;
+    border-radius: var(--border-radius-lg);
+    border: 2px solid var(--color-bg-deep-blue);
+    margin-bottom: 30px;
+    text-align: center; /* ADDED: Centers all inline/text content in the section */
+}
+
+.resource-section h2 {
+    font-family: var(--font-heading);
+    color: var(--color-accent-red);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.section-description {
+    color: var(--color-text-medium);
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+/* Resource grid and card styling */
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.resource-card {
+    background-color: var(--color-bg-deep-blue);
+    padding: 20px;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-accent-red);
+    transition: all var(--transition-speed);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center; /* ADDED: Centers flex items (h3, p, btn) horizontally */
+}
+
+.resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.resource-card h3 {
+    color: var(--color-accent-orange);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.resource-card p {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    flex-grow: 1; 
+}
+
+.resource-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.resource-list li {
+    margin-bottom: 10px;
+}
+
+.resource-list a {
+    color: var(--color-text-light);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: color var(--transition-speed);
+}
+
+.resource-list a::before {
+    content: '📚';
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.resource-list a:hover {
+    color: var(--color-accent-orange);
+}
+
+.resource-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--color-accent-red), #ff6b6b);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-speed);
+    text-align: center;
+    font-weight: bold;
+}
+
+.resource-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        margin-left: 0;
+        padding: 1rem;
+        padding-bottom: 80px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .resource-section h2 {
+        font-size: 1.2rem;
+    }
+
+    .resource-grid {
+        grid-template-columns: 1fr;
+    }
+}

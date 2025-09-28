@@ -5,16 +5,16 @@
 
 :root {
   --font-primary: 'Poppins', sans-serif;
-  
+
   /* Gamified Color Palette */
-  --color-bg-deep: #111827;       /* Deep space blue */
-  --color-surface-dark: #1f2937;  /* Darker UI panel */
+  --color-bg-deep: #111827;
+  --color-surface-dark: #1f2937;
   --color-border: #374151;
-  
+
   --color-text-primary: #f9fafb;
   --color-text-secondary: #9ca3af;
-  
-  --color-primary: #8b5cf6;        /* Vibrant Purple */
+
+  --color-primary: #8b5cf6;
   --color-primary-hover: #7c3aed;
   --color-accent-vibrant: #22d3ee; /* Bright Cyan */
   --color-xp-bar: linear-gradient(90deg, #34d399, #fbbf24); /* Green to Gold */
@@ -315,6 +315,21 @@ body, html {
   margin-bottom: 1rem;
 }
 
+/* ---- ADD: horizontal gap for intro greeting boxes --- */
+.intro-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;           /* Adjust this value as desired */
+  margin-bottom: 1.5rem;
+}
+
+.intro-row .message {
+  margin-bottom: 0;
+  max-width: 340px;    /* Prevent too wide */
+  flex: 1 1 0;
+}
+/* ---- END intro-row patch ---- */
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -345,7 +360,7 @@ body, html {
 }
 
 .bot-message p {
-  background-color: #374151; /* A slightly lighter grey for the bot */
+  background-color: #374151;
   color: var(--color-text-primary);
 }
 
@@ -417,7 +432,7 @@ body, html {
   background-color: transparent;
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
-  border-radius: 99px; /* Pill shape */
+  border-radius: 99px;
   cursor: pointer;
   transition: all var(--transition-speed);
   font-size: 0.875rem;
@@ -436,7 +451,7 @@ body, html {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
   }
-  
+
   .chat-history-container {
     height: 200px;
   }
@@ -446,7 +461,7 @@ body, html {
   .chat-layout {
     margin-left: 0;
     padding: 1rem;
-    padding-bottom: 80px; /* Space for bottom nav */
+    padding-bottom: 80px;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr auto;
     height: calc(100vh - 2rem - 80px);
@@ -462,16 +477,16 @@ body, html {
   }
 
   #navbar:hover {
-    width: 100%; /* Disable hover effect on mobile */
+    width: 100%;
   }
 
   .navbar-nav {
     flex-direction: row;
     justify-content: space-around;
   }
-  
+
   .link-text {
-    display: none !important; /* Always hide text on mobile nav */
+    display: none !important;
   }
 
   .nav-item:last-child {
@@ -481,12 +496,12 @@ body, html {
   .chat-container {
     padding: 1rem;
   }
-  
+
   .chat-history-container {
     height: 150px;
     padding: 1rem;
   }
-  
+
   .chat-controls {
     flex-wrap: wrap;
   }

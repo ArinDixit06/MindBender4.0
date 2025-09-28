@@ -13,7 +13,6 @@
     <input type="checkbox" id="flip">
     <div class="forms">
       
-      <!-- Login Form -->
       <div class="form login-form">
         <div class="title">LOGIN</div>
         <form id="loginForm">
@@ -32,29 +31,24 @@
         </form>
       </div>
 
-      <!-- Signup Form -->
       <div class="form signup-form">
         <div class="title">SIGNUP</div>
         <form id="signupForm">
-          <!-- Email -->
           <div class="input-box">
             <i class="fas fa-envelope"></i>
             <input type="email" placeholder="Email" id="signup-email" required>
           </div>
 
-          <!-- Password -->
           <div class="input-box">
             <i class="fas fa-lock"></i>
             <input type="password" placeholder="Password" id="signup-password" required>
           </div>
 
-          <!-- Parent Email -->
           <div class="input-box">
             <i class="fas fa-envelope"></i>
             <input type="email" placeholder="Parent Email" id="signup-parent-email" required>
           </div>
 
-          <!-- Class -->
           <div class="input-box">
             <i class="fas fa-school"></i>
             <input type="number" placeholder="Class (integer)" id="signup-class" required>
@@ -70,7 +64,6 @@
   </div>
 
   <script>
-    // ✅ Use Render backend instead of localhost
     const API_URL = "https://mindbender4-0.onrender.com";
 
     // ----------------- SIGNUP -----------------
@@ -87,7 +80,9 @@
         const res = await fetch(`${API_URL}/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, parent_email, password, class: studentClass })
+          body: JSON.stringify({ email, parent_email, password, class: studentClass }),
+          // THIS LINE IS CRUCIAL to handle cookies correctly
+          credentials: 'include', 
         });
         const data = await res.json();
         if (res.ok) {
@@ -115,12 +110,14 @@
         const res = await fetch(`${API_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password }),
+          // THIS LINE IS CRUCIAL to send and receive cookies
+          credentials: 'include', 
         });
         const data = await res.json();
         if (res.ok) {
-          // Save logged-in user in localStorage
-          localStorage.setItem("loggedInUser", JSON.stringify(data.data));
+          // You no longer need to save the user in localStorage for session management
+          // localStorage.setItem("loggedInUser", JSON.stringify(data.data));
           window.location.href = "index.html"; // redirect to dashboard
         } else {
           alert("Login failed: " + data.error);
