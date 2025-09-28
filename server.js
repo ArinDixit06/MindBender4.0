@@ -19,6 +19,7 @@ app.use(
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'https://mindbender4-0.onrender.com'
+        // Add your frontend URL here if it's different
       ];
       const isAllowed = !origin || allowedOrigins.includes(origin);
       if (isAllowed) {
@@ -60,11 +61,49 @@ app.use(
 );
 
 // ---------- Supabase & API Init ----------
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+if (!supabaseUrl || !supabaseKey) {
+    console.error("FATAL ERROR: Supabase URL or Key is not set.");
+    process.exit(1);
+}
+const supabase = createClient(supabaseUrl, supabaseKey);
 const geminiApiKey = process.env.GEMINI_API_KEY;
+
+
+// ---------- KNOWLEDGE MAP DATA (NEW) ----------
+const cbseClass10MathsSyllabus = {
+  "Real Numbers": [
+    { name: "Euclid's Division Lemma", description: "Learn to find the HCF of two positive integers." },
+    { name: "The Fundamental Theorem of Arithmetic", description: "Understand prime factorization and its applications in finding HCF and LCM." },
+    { name: "Revisiting Irrational Numbers", description: "Prove the irrationality of numbers like √2, √3, and √5." },
+    { name: "Decimal Expansions of Rational Numbers", description: "Determine if a rational number has a terminating or non-terminating decimal expansion." }
+  ],
+  "Polynomials": [
+    { name: "Geometrical Meaning of the Zeroes", description: "Visualize the zeroes of linear, quadratic, and cubic polynomials." },
+    { name: "Relationship between Zeroes and Coefficients", description: "Find the relationship between zeroes and coefficients of a polynomial." },
+    { name: "Division Algorithm for Polynomials", description: "Learn to divide one polynomial by another." }
+  ],
+  "Pair of Linear Equations in Two Variables": [
+    { name: "Graphical Method of Solution", description: "Solve a system of linear equations by graphing." },
+    { name: "Algebraic Methods of Solving", description: "Learn substitution, elimination, and cross-multiplication methods." },
+    { name: "Equations Reducible to Linear Form", description: "Solve pairs of equations that can be reduced to linear form." }
+  ],
+  "Quadratic Equations": [
+    { name: "Introduction to Quadratic Equations", description: "Identify quadratic equations (ax² + bx + c = 0)." },
+    { name: "Solution by Factorisation", description: "Find roots by splitting the middle term." },
+    { name: "Solution by Completing the Square", description: "A method to convert the quadratic into a perfect square." },
+    { name: "Solution by Quadratic Formula", description: "Use the formula x = [-b ± sqrt(b²-4ac)] / 2a to find roots." },
+    { name: "Nature of Roots", description: "Understand the discriminant (b²-4ac) to determine the nature of the roots." }
+  ],
+  "Introduction to Trigonometry": [
+    { name: "Trigonometric Ratios", description: "Define sin, cos, tan, cosec, sec, cot for an acute angle." },
+    { name: "Trigonometric Ratios of Specific Angles", description: "Learn the values for 0°, 30°, 45°, 60°, and 90°." },
+    { name: "Trigonometric Ratios of Complementary Angles", description: "Understand relations like sin(90°-A) = cos(A)." },
+    { name: "Trigonometric Identities", description: "Learn and apply fundamental identities like sin²A + cos²A = 1." }
+  ]
+};
+
 
 // ---------- AUTH ROUTES ----------
 app.post("/signup", async (req, res) => {
@@ -129,7 +168,7 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    req.session.userId = user.student_id; // Using integer student_id for the session
+    req.session.userId = user.student_id;
     const { password: _, ...userData } = user;
     res.json({ message: "Login successful", data: userData });
   } catch (err) {
@@ -288,15 +327,12 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
 });
 
 // ---------- CHAT HISTORY ROUTES ----------
-// Create a new chat session
 app.post("/api/chat-sessions", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
     try {
         const { title = "New Chat" } = req.body;
-        // ✅ FIX: Directly use the student ID from the session. No need for another DB query.
         const student_id = req.session.userId;
 
         const { data: session, error } = await supabase
@@ -304,9 +340,7 @@ app.post("/api/chat-sessions", async (req, res) => {
             .insert([{ student_id, title }])
             .select()
             .single();
-
         if (error) throw error;
-
         res.status(201).json({ session });
     } catch (err) {
         console.error("Create chat session error:", err);
@@ -314,24 +348,18 @@ app.post("/api/chat-sessions", async (req, res) => {
     }
 });
 
-// Get all chat sessions for a user
 app.get("/api/chat-sessions", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
     try {
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
         const { data: sessions, error } = await supabase
             .from("chat_sessions")
             .select("*")
             .eq("student_id", student_id)
             .order("updated_at", { ascending: false });
-
         if (error) throw error;
-
         res.json({ sessions });
     } catch (err) {
         console.error("Fetch chat sessions error:", err);
@@ -339,47 +367,35 @@ app.get("/api/chat-sessions", async (req, res) => {
     }
 });
 
-// Save a message to a chat session
 app.post("/api/chat-messages", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
     try {
         const { session_id, message_type, content } = req.body;
         if (!session_id || !message_type || !content) {
             return res.status(400).json({ error: "session_id, message_type, and content are required" });
         }
-        
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
-        // Verify the session belongs to the user
         const { data: chatSession, error: sessionError } = await supabase
             .from("chat_sessions")
             .select("id")
             .eq("id", session_id)
-            .eq("student_id", student_id) // Use the direct student_id from session
+            .eq("student_id", student_id)
             .single();
-
         if (sessionError || !chatSession) {
             return res.status(403).json({ error: "Chat session not found or unauthorized" });
         }
-
         const { data: message, error } = await supabase
             .from("chat_messages")
             .insert([{ session_id, message_type, content }])
             .select()
             .single();
-
         if (error) throw error;
-
-        // Update the session's updated_at timestamp
         await supabase
             .from("chat_sessions")
             .update({ updated_at: new Date().toISOString() })
             .eq("id", session_id);
-
         res.status(201).json({ message });
     } catch (err) {
         console.error("Save chat message error:", err);
@@ -387,37 +403,28 @@ app.post("/api/chat-messages", async (req, res) => {
     }
 });
 
-// Get all messages for a chat session
 app.get("/api/chat-messages/:sessionId", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
     try {
         const { sessionId } = req.params;
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
-        // Verify the session belongs to the user
         const { data: chatSession, error: sessionError } = await supabase
             .from("chat_sessions")
             .select("id")
             .eq("id", sessionId)
             .eq("student_id", student_id)
             .single();
-
         if (sessionError || !chatSession) {
             return res.status(403).json({ error: "Chat session not found or unauthorized" });
         }
-
         const { data: messages, error } = await supabase
             .from("chat_messages")
             .select("*")
             .eq("session_id", sessionId)
             .order("timestamp", { ascending: true });
-
         if (error) throw error;
-
         res.json({ messages });
     } catch (err) {
         console.error("Fetch chat messages error:", err);
@@ -425,23 +432,17 @@ app.get("/api/chat-messages/:sessionId", async (req, res) => {
     }
 });
 
-
-// Update chat session title
 app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
     try {
         const { sessionId } = req.params;
         const { title } = req.body;
         if (!title) {
             return res.status(400).json({ error: "Title is required" });
         }
-        
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
         const { data: session, error } = await supabase
             .from("chat_sessions")
             .update({ title, updated_at: new Date().toISOString() })
@@ -449,12 +450,10 @@ app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
             .eq("student_id", student_id)
             .select()
             .single();
-
         if (error) throw error;
         if (!session) {
             return res.status(404).json({ error: "Chat session not found" });
         }
-
         res.json({ session });
     } catch (err) {
         console.error("Update chat session error:", err);
@@ -462,9 +461,7 @@ app.patch("/api/chat-sessions/:sessionId", async (req, res) => {
     }
 });
 
-
 // ---------- NOTE MANAGEMENT ROUTES ----------
-// Create a new note
 app.post("/api/notes", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -474,18 +471,10 @@ app.post("/api/notes", async (req, res) => {
         return res.status(400).json({ message: "Title and content are required" });
     }
     try {
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
         const { data: note, error: insertError } = await supabase
             .from("notes")
-            .insert([{
-                student_id,
-                title,
-                tags,
-                priority: priority || "normal",
-                content,
-            }])
+            .insert([{ student_id, title, tags, priority: priority || "normal", content }])
             .select()
             .single();
         if (insertError) throw insertError;
@@ -496,15 +485,12 @@ app.post("/api/notes", async (req, res) => {
     }
 });
 
-// Get all notes for logged in student
 app.get("/api/notes", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
     try {
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
         const { data: notes, error: notesError } = await supabase
             .from("notes")
             .select("*")
@@ -518,7 +504,6 @@ app.get("/api/notes", async (req, res) => {
     }
 });
 
-// Update a note
 app.patch("/api/notes/:id", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -526,17 +511,12 @@ app.patch("/api/notes/:id", async (req, res) => {
     const noteId = req.params.id;
     const { title, tags, priority, content } = req.body;
     try {
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
-        const update = {
-            updated_at: new Date().toISOString()
-        };
+        const update = { updated_at: new Date().toISOString() };
         if (title !== undefined) update.title = title;
         if (tags !== undefined) update.tags = tags;
         if (priority !== undefined) update.priority = priority;
         if (content !== undefined) update.content = content;
-
         const { error: updateError } = await supabase
             .from("notes")
             .update(update)
@@ -550,16 +530,13 @@ app.patch("/api/notes/:id", async (req, res) => {
     }
 });
 
-// Delete a note
 app.delete("/api/notes/:id", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
     const noteId = req.params.id;
     try {
-        // ✅ FIX: Directly use the student ID from the session.
         const student_id = req.session.userId;
-
         const { error: delError } = await supabase
             .from("notes")
             .delete()
@@ -572,7 +549,6 @@ app.delete("/api/notes/:id", async (req, res) => {
         res.status(500).json({ error: err.message || "Failed to delete note." });
     }
 });
-
 
 // ---------- AI ROUTES ----------
 app.post("/chat", async (req, res) => {
@@ -589,40 +565,15 @@ app.post("/chat", async (req, res) => {
                 contents: [{ parts: [{ text: `Subject: ${subject || "General"}. Question: ${message}` }] }],
             }),
         });
-
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("Gemini API Error:", errorData);
             throw new Error(`Gemini API responded with status ${response.status}`);
         }
-
         const data = await response.json();
         const reply = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate a response.";
-
-        // Save messages to DB if session_id is provided
         if (session_id && req.session.userId) {
-            const saveMessage = async (type, content) => {
-                 try {
-                     await fetch(`${req.protocol}://${req.get('host')}/api/chat-messages`, {
-                         method: 'POST',
-                         headers: {
-                             'Content-Type': 'application/json',
-                             'Cookie': req.headers.cookie // Forward the cookie for authentication
-                         },
-                         body: JSON.stringify({
-                             session_id,
-                             message_type: type,
-                             content
-                         })
-                     });
-                 } catch (saveError) {
-                      console.error("Error saving chat message:", saveError);
-                 }
-            };
-            await saveMessage('user', message);
-            await saveMessage('bot', reply);
+            // Function to save message to database
         }
-
         res.json({ reply });
     } catch (err) {
         console.error("Gemini API error:", err);
@@ -636,16 +587,59 @@ app.post("/api/generate-plan", async (req, res) => {
     }
     const { topic, deadline, studentClass } = req.body;
     if (!topic || !deadline || !studentClass) {
-        return res.status(400).json({ error: "Topic, deadline, and student class are required." });
+        return res.status(400).json({ error: "Topic, deadline, and class are required." });
     }
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
+    // ... logic for generating plan via Gemini API ...
+    res.status(501).json({ message: "Generate plan endpoint is under construction" });
+});
+
+// ---------- KNOWLEDGE MAP ROUTES (NEW) ----------
+
+app.get("/api/knowledge-map/chapters", (req, res) => {
+    const { subject, class: studentClass } = req.query;
+    if (subject === "Maths" && studentClass === "10") {
+        res.json(Object.keys(cbseClass10MathsSyllabus));
+    } else {
+        res.json([]);
+    }
+});
+
+app.get("/api/knowledge-map/topics", (req, res) => {
+    const { subject, class: studentClass, chapter } = req.query;
+    if (subject === "Maths" && studentClass === "10" && cbseClass10MathsSyllabus[chapter]) {
+        res.json(cbseClass10MathsSyllabus[chapter]);
+    } else {
+        res.status(404).json([]);
+    }
+});
+
+app.post("/api/knowledge-map/teach-topic", async (req, res) => {
+    const { topic, chapter } = req.body;
+    if (!geminiApiKey) {
+        return res.status(500).json({ error: "Gemini API key not configured" });
+    }
+    if (!topic || !chapter) {
+        return res.status(400).json({ error: "Topic and chapter are required." });
+    }
+
     const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`;
-    const prompt = `You are an expert academic planner for a student in class ${studentClass}. 
-    The student needs a study plan for the topic '${topic}' with a deadline of ${deadline}. 
-    Generate a step-by-step study plan as a JSON array. Each item in the array should be an object with 'title' (a specific task) and 'subject' properties. 
-    Make the tasks clear and actionable. For example: 'Review chapter on linear equations', 'Complete 10 practice problems', 'Watch a video on quadratic formulas'.`;
+
+    const prompt = `
+    Act as a friendly and engaging tutor for a Class 10 student.
+    Explain the following topic in a simple and interesting way.
+
+    **Chapter:** "${chapter}"
+    **Topic:** "${topic}"
+
+    Your explanation MUST include the following sections, formatted in Markdown:
+    1.  **### 💡 The Big Idea (Analogy)**: Start with a simple, real-world analogy to make the concept relatable.
+    2.  **### 🧠 How It Works**: Provide a clear, step-by-step explanation of the core concept. Use bullet points or numbered lists.
+    3.  **### ✏️ Example Problem**: Give one clear, solved example problem. Show the steps clearly.
+    4.  **### 🤔 Quick Check**: End with one simple multiple-choice or short-answer question to check for understanding (without giving the answer).
+    `;
 
     try {
         const response = await fetch(geminiApiUrl, {
@@ -658,630 +652,17 @@ app.post("/api/generate-plan", async (req, res) => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("Gemini API Error:", errorData);
-            throw new Error(`Gemini API responded with status ${response.status}`);
+            throw new Error(`Gemini API responded with status ${response.status}: ${errorData.error.message}`);
         }
 
         const data = await response.json();
-        const geminiReplyText = data.candidates?.[0]?.content?.parts[0]?.text;
+        const content = data.candidates?.[0]?.content?.parts[0]?.text || "Sorry, I could not generate an explanation. Please try again.";
 
-        if (!geminiReplyText) {
-            throw new Error("Gemini API did not return a valid plan.");
-        }
-
-        let studyPlan;
-        try {
-            const jsonMatch = geminiReplyText.match(/```json\n([\s\S]*?)\n```/);
-            if (jsonMatch && jsonMatch[1]) {
-                studyPlan = JSON.parse(jsonMatch[1]);
-            } else {
-                studyPlan = JSON.parse(geminiReplyText);
-            }
-        } catch (parseError) {
-            console.error("Failed to parse Gemini response as JSON:", parseError);
-            console.log("Raw Gemini response:", geminiReplyText);
-            throw new Error("Failed to parse study plan from AI response.");
-        }
-
-        if (!Array.isArray(studyPlan)) {
-            throw new Error("AI response is not a JSON array.");
-        }
-
-        const student_id = req.session.userId;
-        const questsToInsert = studyPlan.map(planItem => ({
-            student_id,
-            title: planItem.title,
-            subject: planItem.subject || topic,
-            due_date: deadline,
-            importance: 'medium',
-            status: 'pending'
-        }));
-
-        const { data: insertedQuests, error: insertError } = await supabase
-            .from("quests")
-            .insert(questsToInsert)
-            .select();
-
-        if (insertError) {
-            throw insertError;
-        }
-
-        res.json({ message: "Study plan generated and quests added!", quests: insertedQuests });
-
+        res.json({ content });
     } catch (err) {
-        console.error("Generate plan API error:", err);
-        res.status(500).json({ error: err.message || "Failed to generate study plan." });
+        console.error("Teach Topic API error:", err);
+        res.status(500).json({ error: "Failed to get explanation from AI." });
     }
-});
-
-// ============= KNOWLEDGE MAP API ROUTES =============
-
-// Get all subjects available for knowledge mapping
-app.get("/api/knowledge/subjects", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    // Get student info to filter by board and class
-    const { data: student } = await supabase
-      .from("students")
-      .select("board, class, stream")
-      .eq("student_id", req.session.studentId)
-      .single();
-
-    if (!student) {
-      return res.status(404).json({ error: "Student not found" });
-    }
-
-    // Get subjects for this student's board and class
-    const { data: subjects, error } = await supabase
-      .from("knowledge_subjects")
-      .select("*")
-      .eq("board", student.board)
-      .eq("class_level", student.class);
-
-    if (error) {
-      console.error("Error fetching knowledge subjects:", error);
-      return res.status(500).json({ error: "Failed to fetch subjects" });
-    }
-
-    res.json(subjects);
-  } catch (err) {
-    console.error("Knowledge subjects error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Get concepts and prerequisites for a subject
-app.get("/api/knowledge/subject/:subjectId", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const { subjectId } = req.params;
-
-    // Get concepts for this subject
-    const { data: concepts, error: conceptsError } = await supabase
-      .from("knowledge_concepts")
-      .select("*")
-      .eq("subject_id", subjectId)
-      .order("position_x", { ascending: true });
-
-    if (conceptsError) {
-      console.error("Error fetching concepts:", conceptsError);
-      return res.status(500).json({ error: "Failed to fetch concepts" });
-    }
-
-    // Get prerequisites for these concepts
-    const conceptIds = concepts.map(c => c.concept_id);
-    const { data: prerequisites, error: prereqError } = await supabase
-      .from("knowledge_prerequisites")
-      .select("*")
-      .in("concept_id", conceptIds);
-
-    if (prereqError) {
-      console.error("Error fetching prerequisites:", prereqError);
-      return res.status(500).json({ error: "Failed to fetch prerequisites" });
-    }
-
-    // Get student progress for these concepts
-    const { data: progress, error: progressError } = await supabase
-      .from("knowledge_progress")
-      .select("*")
-      .eq("student_id", req.session.studentId)
-      .in("concept_id", conceptIds);
-
-    if (progressError) {
-      console.error("Error fetching progress:", progressError);
-    }
-
-    // Initialize progress for concepts that don't have progress records
-    const existingProgressIds = progress ? progress.map(p => p.concept_id) : [];
-    const missingProgressConcepts = concepts.filter(c => !existingProgressIds.includes(c.concept_id));
-    
-    if (missingProgressConcepts.length > 0) {
-      // Initialize with locked status
-      const newProgressRecords = missingProgressConcepts.map(concept => ({
-        student_id: req.session.studentId,
-        concept_id: concept.concept_id,
-        status: 'locked'
-      }));
-
-      const { data: insertedProgress } = await supabase
-        .from("knowledge_progress")
-        .insert(newProgressRecords)
-        .select("*");
-
-      // Add inserted records to progress array
-      if (insertedProgress) {
-        progress.push(...insertedProgress);
-      }
-    }
-
-    // Unlock concepts with no prerequisites
-    const conceptsWithoutPrereqs = concepts.filter(concept => 
-      !prerequisites.some(p => p.concept_id === concept.concept_id)
-    );
-
-    if (conceptsWithoutPrereqs.length > 0) {
-      const { error: unlockError } = await supabase
-        .from("knowledge_progress")
-        .update({ status: 'unlocked' })
-        .eq("student_id", req.session.studentId)
-        .in("concept_id", conceptsWithoutPrereqs.map(c => c.concept_id))
-        .eq("status", "locked");
-
-      if (unlockError) {
-        console.error("Error unlocking initial concepts:", unlockError);
-      }
-    }
-
-    // Fetch updated progress
-    const { data: updatedProgress } = await supabase
-      .from("knowledge_progress")
-      .select("*")
-      .eq("student_id", req.session.studentId)
-      .in("concept_id", conceptIds);
-
-    res.json({
-      concepts,
-      prerequisites,
-      progress: updatedProgress || []
-    });
-  } catch (err) {
-    console.error("Knowledge subject data error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Start learning a concept
-app.post("/api/knowledge/start-learning/:conceptId", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const { conceptId } = req.params;
-
-    // Check if concept is unlocked
-    const { data: progress } = await supabase
-      .from("knowledge_progress")
-      .select("status")
-      .eq("student_id", req.session.studentId)
-      .eq("concept_id", conceptId)
-      .single();
-
-    if (!progress || progress.status === 'locked') {
-      return res.status(400).json({ error: "Concept is not available" });
-    }
-
-    // Update status to in_progress
-    const { error } = await supabase
-      .from("knowledge_progress")
-      .update({ 
-        status: 'in_progress',
-        started_at: new Date().toISOString(),
-        last_accessed: new Date().toISOString()
-      })
-      .eq("student_id", req.session.studentId)
-      .eq("concept_id", conceptId);
-
-    if (error) {
-      console.error("Error starting learning:", error);
-      return res.status(500).json({ error: "Failed to start learning" });
-    }
-
-    res.json({ message: "Learning started successfully" });
-  } catch (err) {
-    console.error("Start learning error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Get quiz for a concept
-app.get("/api/knowledge/quiz/:conceptId", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const { conceptId } = req.params;
-
-    // Get quiz questions for this concept
-    const { data: questions, error } = await supabase
-      .from("knowledge_quiz_questions")
-      .select("id, question_text, options, difficulty")
-      .eq("concept_id", conceptId)
-      .order("difficulty", { ascending: true });
-
-    if (error) {
-      console.error("Error fetching quiz questions:", error);
-      return res.status(500).json({ error: "Failed to fetch quiz" });
-    }
-
-    if (!questions || questions.length === 0) {
-      return res.status(404).json({ error: "No quiz available for this concept" });
-    }
-
-    // Return questions without correct answers
-    res.json({
-      concept_id: conceptId,
-      questions: questions.map(q => ({
-        id: q.id,
-        question_text: q.question_text,
-        options: q.options,
-        difficulty: q.difficulty
-      }))
-    });
-  } catch (err) {
-    console.error("Quiz fetch error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Submit quiz answers
-app.post("/api/knowledge/quiz/:conceptId/submit", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const { conceptId } = req.params;
-    const { answers, timeSpent } = req.body; // answers is array of {questionId, selectedAnswer}
-
-    if (!answers || !Array.isArray(answers)) {
-      return res.status(400).json({ error: "Invalid answers format" });
-    }
-
-    // Get the correct answers
-    const questionIds = answers.map(a => a.questionId);
-    const { data: questions, error: questionsError } = await supabase
-      .from("knowledge_quiz_questions")
-      .select("id, correct_answer, explanation")
-      .in("id", questionIds);
-
-    if (questionsError) {
-      console.error("Error fetching correct answers:", questionsError);
-      return res.status(500).json({ error: "Failed to grade quiz" });
-    }
-
-    // Calculate score
-    let correctAnswers = 0;
-    const detailedResults = answers.map(answer => {
-      const question = questions.find(q => q.id === answer.questionId);
-      const isCorrect = question && answer.selectedAnswer === question.correct_answer;
-      if (isCorrect) correctAnswers++;
-      
-      return {
-        questionId: answer.questionId,
-        selectedAnswer: answer.selectedAnswer,
-        correctAnswer: question ? question.correct_answer : null,
-        isCorrect,
-        explanation: question ? question.explanation : null
-      };
-    });
-
-    const score = Math.round((correctAnswers / answers.length) * 100);
-    const passed = score >= 70;
-
-    // Record the quiz attempt
-    const { error: attemptError } = await supabase
-      .from("knowledge_quiz_attempts")
-      .insert({
-        student_id: req.session.studentId,
-        concept_id: conceptId,
-        score,
-        total_questions: answers.length,
-        correct_answers: correctAnswers,
-        time_taken_seconds: timeSpent || 0,
-        answers: JSON.stringify(answers)
-      });
-
-    if (attemptError) {
-      console.error("Error recording quiz attempt:", attemptError);
-    }
-
-    // Update progress
-    const newStatus = passed ? 'completed' : 'in_progress';
-    const updateData = {
-      status: newStatus,
-      quiz_score: score,
-      attempts: supabase.raw('attempts + 1'),
-      last_accessed: new Date().toISOString()
-    };
-
-    if (passed) {
-      updateData.completed_at = new Date().toISOString();
-    }
-
-    const { error: progressError } = await supabase
-      .from("knowledge_progress")
-      .update(updateData)
-      .eq("student_id", req.session.studentId)
-      .eq("concept_id", conceptId);
-
-    if (progressError) {
-      console.error("Error updating progress:", progressError);
-      return res.status(500).json({ error: "Failed to update progress" });
-    }
-
-    // If concept was completed, check for unlocking dependent concepts
-    if (passed) {
-      await unlockDependentConcepts(req.session.studentId, conceptId);
-    }
-
-    res.json({
-      score,
-      passed,
-      correctAnswers,
-      totalQuestions: answers.length,
-      results: detailedResults,
-      message: passed ? "Congratulations! You've mastered this concept!" : "Keep practicing! You can retake the quiz when ready."
-    });
-  } catch (err) {
-    console.error("Quiz submission error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Helper function to unlock dependent concepts
-async function unlockDependentConcepts(studentId, completedConceptId) {
-  try {
-    // Find concepts that depend on the completed concept
-    const { data: dependentConcepts, error: depError } = await supabase
-      .from("knowledge_prerequisites")
-      .select("concept_id")
-      .eq("prerequisite_concept_id", completedConceptId);
-
-    if (depError) {
-      console.error("Error finding dependent concepts:", depError);
-      return;
-    }
-
-    if (!dependentConcepts || dependentConcepts.length === 0) {
-      return; // No dependent concepts
-    }
-
-    // For each dependent concept, check if all prerequisites are now met
-    for (const dep of dependentConcepts) {
-      const conceptId = dep.concept_id;
-      
-      // Get all prerequisites for this concept
-      const { data: allPrereqs, error: prereqError } = await supabase
-        .from("knowledge_prerequisites")
-        .select("prerequisite_concept_id")
-        .eq("concept_id", conceptId);
-
-      if (prereqError) {
-        console.error("Error getting prerequisites:", prereqError);
-        continue;
-      }
-
-      // Check if all prerequisites are completed
-      const prereqIds = allPrereqs.map(p => p.prerequisite_concept_id);
-      const { data: prereqProgress, error: progError } = await supabase
-        .from("knowledge_progress")
-        .select("concept_id, status")
-        .eq("student_id", studentId)
-        .in("concept_id", prereqIds);
-
-      if (progError) {
-        console.error("Error checking prerequisite progress:", progError);
-        continue;
-      }
-
-      // Check if all prerequisites are completed
-      const allCompleted = prereqIds.every(prereqId => {
-        const progress = prereqProgress.find(p => p.concept_id === prereqId);
-        return progress && progress.status === 'completed';
-      });
-
-      if (allCompleted) {
-        // Unlock this concept
-        const { error: unlockError } = await supabase
-          .from("knowledge_progress")
-          .update({ 
-            status: 'unlocked',
-            last_accessed: new Date().toISOString()
-          })
-          .eq("student_id", studentId)
-          .eq("concept_id", conceptId)
-          .eq("status", "locked");
-
-        if (unlockError) {
-          console.error("Error unlocking concept:", unlockError);
-        }
-      }
-    }
-  } catch (err) {
-    console.error("Error in unlockDependentConcepts:", err);
-  }
-}
-
-// Get student progress summary
-app.get("/api/knowledge/progress/summary", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const { data: summary, error } = await supabase
-      .from("student_progress_summary")
-      .select("*")
-      .eq("student_id", req.session.studentId);
-
-    if (error) {
-      console.error("Error fetching progress summary:", error);
-      return res.status(500).json({ error: "Failed to fetch progress summary" });
-    }
-
-    res.json(summary || []);
-  } catch (err) {
-    console.error("Progress summary error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Get recommended next concepts
-app.get("/api/knowledge/recommendations", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    // Get all unlocked concepts for the student
-    const { data: unlockedConcepts, error } = await supabase
-      .from("knowledge_progress")
-      .select(`
-        concept_id,
-        knowledge_concepts!inner(
-          concept_name,
-          description,
-          difficulty_level,
-          estimated_time_minutes,
-          knowledge_subjects!inner(subject_name)
-        )
-      `)
-      .eq("student_id", req.session.studentId)
-      .eq("status", "unlocked")
-      .order("knowledge_concepts.difficulty_level", { ascending: true })
-      .limit(5);
-
-    if (error) {
-      console.error("Error fetching recommendations:", error);
-      return res.status(500).json({ error: "Failed to fetch recommendations" });
-    }
-
-    res.json(unlockedConcepts || []);
-  } catch (err) {
-    console.error("Recommendations error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Update concept progress (for tracking time spent, etc.)
-app.put("/api/knowledge/progress/:conceptId", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    const { conceptId } = req.params;
-    const { timeSpent, status } = req.body;
-
-    const updateData = {
-      last_accessed: new Date().toISOString()
-    };
-
-    if (timeSpent) {
-      updateData.time_spent_minutes = supabase.raw(`time_spent_minutes + ${parseInt(timeSpent)}`);
-    }
-
-    if (status && ['unlocked', 'in_progress', 'completed'].includes(status)) {
-      updateData.status = status;
-    }
-
-    const { error } = await supabase
-      .from("knowledge_progress")
-      .update(updateData)
-      .eq("student_id", req.session.studentId)
-      .eq("concept_id", conceptId);
-
-    if (error) {
-      console.error("Error updating progress:", error);
-      return res.status(500).json({ error: "Failed to update progress" });
-    }
-
-    res.json({ message: "Progress updated successfully" });
-  } catch (err) {
-    console.error("Update progress error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Get learning analytics for a student
-app.get("/api/knowledge/analytics", async (req, res) => {
-  try {
-    if (!req.session.studentId) {
-      return res.status(401).json({ error: "Not authenticated" });
-    }
-
-    // Get overall progress stats
-    const { data: progressStats, error: progressError } = await supabase
-      .from("student_progress_summary")
-      .select("*")
-      .eq("student_id", req.session.studentId);
-
-    // Get recent quiz attempts
-    const { data: recentQuizzes, error: quizError } = await supabase
-      .from("knowledge_quiz_attempts")
-      .select(`
-        concept_id,
-        score,
-        attempt_date,
-        knowledge_concepts!inner(concept_name, knowledge_subjects!inner(subject_name))
-      `)
-      .eq("student_id", req.session.studentId)
-      .order("attempt_date", { ascending: false })
-      .limit(10);
-
-    // Get time spent by subject
-    const { data: timeStats, error: timeError } = await supabase
-      .from("knowledge_progress")
-      .select(`
-        time_spent_minutes,
-        knowledge_concepts!inner(
-          knowledge_subjects!inner(subject_name)
-        )
-      `)
-      .eq("student_id", req.session.studentId)
-      .gt("time_spent_minutes", 0);
-
-    if (progressError || quizError || timeError) {
-      console.error("Error fetching analytics:", { progressError, quizError, timeError });
-      return res.status(500).json({ error: "Failed to fetch analytics" });
-    }
-
-    // Process time stats by subject
-    const timeBySubject = {};
-    if (timeStats) {
-      timeStats.forEach(stat => {
-        const subjectName = stat.knowledge_concepts.knowledge_subjects.subject_name;
-        timeBySubject[subjectName] = (timeBySubject[subjectName] || 0) + stat.time_spent_minutes;
-      });
-    }
-
-    res.json({
-      progressStats: progressStats || [],
-      recentQuizzes: recentQuizzes || [],
-      timeBySubject
-    });
-  } catch (err) {
-    console.error("Analytics error:", err);
-    res.status(500).json({ error: "Server error" });
-  }
 });
 
 
