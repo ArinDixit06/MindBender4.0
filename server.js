@@ -244,49 +244,41 @@ app.get("/api/quests", async (req, res) => {
     }
     try {
         const student_id = req.session.userId;
-        const { search, status } = req.query;
+        const { search } = req.query;
 
+        // Fetch all quests and join with student_quests for the specific user
         let query = supabase
-            .from("quests") // Fetch directly from the 'quests' table
+            .from('quests')
             .select(`
-                quest_id,
-                title,
-                subject,
-                importance,
-                xp_reward,
-                created_at,
-                student_quests!left(status, due_date, completed_at) // Left join with student_quests
-            `);
+                *,
+                student_quests (
+                    status,
+                    due_date
+                )
+            `)
+            .eq('student_quests.student_id', student_id);
 
         if (search) {
-            query = query.ilike("title", `%${search}%`); // Search directly on the 'quests' title
+            query = query.ilike("title", `%${search}%`);
         }
-
-        // Filter by status if provided, but apply it to the joined student_quests
-        if (status) {
-            query = query.eq("student_quests.status", status);
-        }
-
-        const { data: allQuests, error } = await query;
+        
+        const { data: questsData, error } = await query;
 
         if (error) throw error;
-
-        // Map the data to flatten the structure and ensure student_quests data is correctly associated
-        const quests = allQuests.map(quest => {
-            const studentQuestData = quest.student_quests.find(sq => sq.student_id === student_id); // Find relevant student_quest entry
-            return {
-                quest_id: quest.quest_id,
-                title: quest.title,
-                subject: quest.subject,
-                importance: quest.importance,
-                xp_reward: quest.xp_reward,
-                created_at: quest.created_at,
-                status: studentQuestData ? studentQuestData.status : 'not_assigned', // Default status if no student_quest entry
-                due_date: studentQuestData ? studentQuestData.due_date : null,
-                completed_at: studentQuestData ? studentQuestData.completed_at : null,
-                student_id: student_id
-            };
+        
+        // Filter out quests that the student has completed
+        const availableQuests = questsData.filter(quest => {
+            // If there's no entry in student_quests, it's available.
+            // If there is an entry, it's available only if the status is NOT 'completed'.
+            return quest.student_quests.length === 0 || quest.student_quests[0].status !== 'completed';
         });
+
+        // Clean up the structure for the frontend
+        const quests = availableQuests.map(({ student_quests, ...rest }) => ({
+            ...rest,
+            status: student_quests.length > 0 ? student_quests[0].status : 'pending',
+            due_date: student_quests.length > 0 ? student_quests[0].due_date : null
+        }));
 
         res.json({ quests });
     } catch (err) {
@@ -294,6 +286,7 @@ app.get("/api/quests", async (req, res) => {
         res.status(500).json({ error: err.message || "Failed to fetch quests." });
     }
 });
+
 
 app.patch("/api/quests/:id/complete", async (req, res) => {
     if (!req.session.userId) {
@@ -315,15 +308,22 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
         }
 
         const xpAmount = questData.xp_reward;
+        
+        // Upsert the student_quests entry to mark it as completed
+        const { error: upsertError } = await supabase
+            .from('student_quests')
+            .upsert({
+                student_id: student_id,
+                quest_id: questId,
+                status: 'completed',
+                completed_at: new Date().toISOString()
+            }, {
+                onConflict: 'student_id, quest_id'
+            });
 
-        // Update the status and completed_at in the student_quests table
-        const { error: updateStudentQuestError } = await supabase
-            .from("student_quests")
-            .update({ status: 'completed', completed_at: new Date().toISOString() })
-            .eq("quest_id", questId)
-            .eq("student_id", student_id);
-        if (updateStudentQuestError) throw updateStudentQuestError;
+        if (upsertError) throw upsertError;
 
+        // Fetch current student stats
         const { data: student, error: studentError } = await supabase
             .from("students")
             .select("xp, level")
@@ -335,19 +335,26 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
 
         let newXp = student.xp + xpAmount;
         let newLevel = student.level;
-        // Base XP to next level, with a slight variation based on student_id
-        let base_xp_to_next_level = 100 + (student_id % 10); // Adds a unique factor per student
-        let xpToNextLevel = base_xp_to_next_level;
 
-        // Scale XP requirement for higher levels
-        for (let i = 1; i < newLevel; i++) {
-            xpToNextLevel = Math.floor(xpToNextLevel * 1.5);
-        }
+        // Helper function to calculate XP needed for a given level
+        const calculateXpForLevel = (level) => {
+            let xpNeeded = 100 + (student_id % 10); // Base XP
+            for (let i = 1; i < level; i++) {
+                xpNeeded = Math.floor(xpNeeded * 1.5);
+            }
+            return xpNeeded;
+        };
+        
+        let requiredXp = calculateXpForLevel(newLevel);
 
-        if (newXp >= xpToNextLevel) {
+        // *** FIX: Use a while loop to handle multiple level-ups ***
+        while (newXp >= requiredXp) {
             newLevel++;
-            newXp -= xpToNextLevel;
+            newXp -= requiredXp;
+            requiredXp = calculateXpForLevel(newLevel); // Recalculate for the next level
         }
+
+        // Update student's new level and XP
         const { error: updateStudentError } = await supabase
             .from("students")
             .update({ xp: newXp, level: newLevel })
@@ -361,6 +368,7 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
         res.status(500).json({ error: err.message || "Failed to complete quest." });
     }
 });
+
 
 // New endpoint to reset student stats
 app.patch("/api/students/:student_id/reset-stats", async (req, res) => {
