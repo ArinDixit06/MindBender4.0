@@ -229,6 +229,7 @@ app.get("/api/me", async (req, res) => {
             return res.status(500).json({ message: "Error fetching student info", user });
         }
 
+        console.log("API /api/me returning studentInfo:", studentInfo); // Added for debugging
         res.json({ user, studentInfo });
     } catch (err) {
         console.error("Error in /api/me:", err);
