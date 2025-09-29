@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StudyQuest</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Font Awesome CDN for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
@@ -40,8 +39,7 @@
       </li>
       <li class="nav-item">
         <a href="knowledge_map_page.html" class="nav-link">
-          <i class="fas fa-map"></i> <!-- Using a map icon, you can choose a different one if preferred -->
-          <span class="link-text">Knowledge Map</span>
+          <i class="fas fa-map"></i> <span class="link-text">Knowledge Map</span>
         </a>
       </li>
       <li class="nav-item">
@@ -67,15 +65,15 @@
         <h2>Achievements</h2>
         <ul class="achievements-list">
           <li id="quest-badge-1" class="achievement">
-            <span class="achievement-icon">🏆</span>
+            <span class="achievement-icon">醇</span>
             <span class="achievement-name">First Quest</span>
           </li>
           <li class="achievement">
-            <span class="achievement-icon">🔒</span>
+            <span class="achievement-icon">白</span>
             <span class="achievement-name">Math Master</span>
           </li>
           <li class="achievement">
-            <span class="achievement-icon">🔒</span>
+            <span class="achievement-icon">白</span>
             <span class="achievement-name">History Buff</span>
           </li>
         </ul>
@@ -153,7 +151,10 @@
     try {
       const res = await fetch(`${API_URL}/api/me`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache" 
+        },
         credentials: 'include',
       });
 
@@ -193,11 +194,11 @@
     }
   });
 
-  // --- Player Stats Logic (Moved from script.js) ---
+  // --- Player Stats Logic ---
   let player = {
-    level: 0, // Initialize with 0, will be updated by fetchPlayerStats
-    xp: 0,    // Initialize with 0, will be updated by fetchPlayerStats
-    xpToNextLevel: 100, // Default, will be dynamically calculated based on fetched level
+    level: 0, 
+    xp: 0,    
+    xpToNextLevel: 100, 
   };
 
   const levelDisplay = document.getElementById('player-level');
@@ -213,7 +214,6 @@
     xpBar.style.width = `${xpPercentage}%`;
     xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
 
-    // Call other UI update functions
     fetchAndRenderQuests();
     renderSubjectsInModal();
     renderCalendar();
@@ -223,7 +223,10 @@
     try {
       const res = await fetch(`${API_URL}/api/me`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache" // FIX: Prevent browser from using old data
+        },
         credentials: 'include',
       });
 
@@ -243,11 +246,10 @@
       }
     } catch (error) {
       console.error("Error fetching player stats:", error);
-      // Optionally, redirect to login or show an error message
     }
   }
 
-  // --- Other Functionalities (Moved from script.js) ---
+  // --- Other Functionalities ---
   let streakData = JSON.parse(localStorage.getItem('streakData')) || {};
   let subjects = JSON.parse(localStorage.getItem('subjects')) || [];
 
@@ -270,20 +272,6 @@
   let currentDate = new Date();
   let currentMonth = currentDate.getMonth();
   let currentYear = currentDate.getFullYear();
-
-  function addXp(amount) {
-    player.xp += amount;
-    if (player.xp >= player.xpToNextLevel) {
-      player.level++;
-      player.xp -= player.xpToNextLevel;
-      player.xpToNextLevel = Math.floor(player.xpToNextLevel * 1.5);
-    }
-    if (!firstQuestBadge.classList.contains('unlocked')) {
-      firstQuestBadge.classList.add('unlocked');
-    }
-    // Player stats are now saved on the backend when a quest is completed
-    updateUI();
-  }
 
   function renderCalendar() {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -314,12 +302,6 @@
       'July','August','September','October','November','December'];
     currentMonthSpan.textContent = `${monthNames[currentMonth]} ${currentYear}`;
   }
-  function updateStreak(date, status) {
-    const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    streakData[dateKey] = status;
-    localStorage.setItem('streakData', JSON.stringify(streakData));
-    renderCalendar();
-  }
 
   function saveSubjects() { localStorage.setItem('subjects', JSON.stringify(subjects)); }
 
@@ -329,19 +311,18 @@
       const url = searchQuery ? `${API_URL}/api/quests?search=${encodeURIComponent(searchQuery)}` : `${API_URL}/api/quests`;
       const res = await fetch(url, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache" // FIX: Prevent browser from using old data
+        },
         credentials: 'include',
       });
-
-      console.log("Raw API response:", res); // Log the raw response
 
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      const responseData = await res.json(); // Get the full response data
-      console.log("Parsed API response data:", responseData); // Log the parsed data
-      const { quests } = responseData; // Destructure quests from the response data
-      console.log("Quests array:", quests); // Log the quests array
+      const responseData = await res.json();
+      const { quests } = responseData;
       renderQuests(quests);
     } catch (error) {
       console.error("Error fetching quests:", error);
@@ -351,7 +332,7 @@
 
   function renderQuests(quests) {
     questListDiv.innerHTML = '';
-    if (quests.length === 0) {
+    if (!quests || quests.length === 0) {
       questListDiv.innerHTML = '<p>No quests found.</p>';
       return;
     }
@@ -360,7 +341,7 @@
       questCard.classList.add('quest-card');
       questCard.innerHTML = `
         <h3>Quest: ${quest.title}</h3>
-        <p>Due: ${new Date(quest.due_date).toLocaleDateString() || 'N/A'}</p>
+        <p>Due: ${quest.due_date ? new Date(quest.due_date).toLocaleDateString() : 'N/A'}</p>
         <p>Subject: ${quest.subject || 'N/A'}</p>
         <p>Importance: ${quest.importance || 'N/A'}</p>
         <p>XP Reward: ${quest.xp_reward || 0}</p>
@@ -391,11 +372,9 @@
 
       const data = await res.json();
       alert(data.message);
-      // Re-fetch quests to update the list
-      fetchAndRenderQuests(questSearchInput.value.trim());
-      // After completing a quest, fetch updated player stats from the backend
+      
       await fetchPlayerStats();
-      updateUI(); // This will re-render player stats with fresh data
+      updateUI(); 
     } catch (error) {
       console.error("Error completing quest:", error);
       alert("Failed to complete quest: " + error.message);
@@ -454,7 +433,6 @@
     fetchAndRenderQuests(searchQuery);
   });
 
-  // Profile modal logic with badge button only
   profileButton.addEventListener('click', openProfileModal);
   closeModalButton.addEventListener('click', closeProfileModal);
   addSubjectModalBtn.addEventListener('click', addSubjectFromModal);
@@ -479,13 +457,11 @@
     if (event.target === profileModal) closeProfileModal();
   });
 
-  // Logout via navbar
   document.querySelectorAll('.logout-link').forEach(el => el.addEventListener('click', () => {
     localStorage.removeItem("loggedInUser");
     window.location.href = "login.html";
   }));
 
-  // Initial setup for player stats and other UI elements
   document.addEventListener('DOMContentLoaded', () => {
     fetchPlayerStats().then(() => {
       updateUI();
