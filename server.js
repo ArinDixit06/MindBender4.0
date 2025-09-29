@@ -513,6 +513,30 @@ app.get("/api/notes", async (req, res) => {
     }
 });
 
+app.get("/api/notes/:id", async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const noteId = req.params.id;
+    try {
+        const student_id = req.session.userId;
+        const { data: note, error: noteError } = await supabase
+            .from("notes")
+            .select("*")
+            .eq("id", noteId)
+            .eq("student_id", student_id)
+            .single();
+        if (noteError) throw noteError;
+        if (!note) {
+            return res.status(404).json({ message: "Note not found or unauthorized" });
+        }
+        res.json(note);
+    } catch (err) {
+        console.error("Fetch single note error:", err);
+        res.status(500).json({ error: err.message || "Failed to fetch note." });
+    }
+});
+
 app.patch("/api/notes/:id", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -662,4 +686,3 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-
