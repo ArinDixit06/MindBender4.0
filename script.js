@@ -1,18 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   let player = {
-    level: 1,
-    xp: 0,
-    xpToNextLevel: 100, // This will be dynamically calculated based on level
+    level: 0, // Initialize with 0, will be updated by fetchPlayerStats
+    xp: 0,    // Initialize with 0, will be updated by fetchPlayerStats
+    xpToNextLevel: 100, // Default, will be dynamically calculated based on fetched level
   };
 
   let streakData = JSON.parse(localStorage.getItem('streakData')) || {};
   let subjects = JSON.parse(localStorage.getItem('subjects')) || [];
-
-  // No longer saving player stats to local storage directly from frontend
-  // Player stats are now managed by the backend (Supabase)
-  // function savePlayerStats() {
-  //   localStorage.setItem('playerStats', JSON.stringify(player));
-  // }
 
   const levelDisplay = document.getElementById('player-level');
   const levelNumber = document.getElementById('level-number');
@@ -248,21 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const { studentInfo } = await res.json();
 
-      // Check if the fetched level is the default '9' and reset if necessary
-      if (studentInfo.level === 9 && studentInfo.xp === 250) { // Assuming 9 and 250 are the initial default values
-        player.level = 1;
-        player.xp = 0;
-        // Update the backend with the reset values
-        await fetch(`${API_URL}/api/students/${studentInfo.student_id}/reset-stats`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          credentials: 'include',
-          body: JSON.stringify({ level: 1, xp: 0 })
-        });
-      } else {
-        player.level = studentInfo.level;
-        player.xp = studentInfo.xp;
-      }
+      player.level = studentInfo.level;
+      player.xp = studentInfo.xp;
 
       // Recalculate xpToNextLevel based on the fetched level
       let base_xp_to_next_level = 100 + (studentInfo.student_id % 10); // Match server-side logic
