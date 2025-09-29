@@ -2,14 +2,31 @@
 ===================================================
 KNOWLEDGE MAP STYLES
 - Two-column layout with VERTICAL flowchart
+- Themed with custom color palette
 ===================================================
 */
 
-/* Inherit retro theme variables from style.css */
+:root {
+  /* 🎨 Color Palette */
+  --color-bg-parchment: #E6D3A3;      /* Main backdrop */
+  --color-bg-off-white: #F9F4E3;      /* Lighter background for panels/inputs */
+  --color-text-brown: #4B2E2E;        /* Titles & dark backgrounds */
+  --color-text-charcoal: #333333;     /* Main body text */
+  --color-accent-blue: #00AEEF;       /* Interactive elements, borders */
+  --color-accent-gold: #F4C542;       /* Labels, hover states, highlights */
+  --color-highlight-orange: #E5B87A;  /* Softer accents, like input borders */
+
+  /* Sizing & Transitions */
+  --border-radius-lg: 12px;
+  --border-radius-md: 8px;
+  --border-radius-sm: 6px;
+  --transition-speed: 0.3s ease;
+}
+
 body {
-    background-color: var(--color-bg-dark-blue);
-    color: var(--color-text-light);
-    font-family: var(--font-body);
+    background-color: var(--color-bg-parchment);
+    color: var(--color-text-charcoal);
+    font-family: 'Inter', sans-serif; /* Assuming Inter from previous example */
 }
 
 header {
@@ -24,7 +41,7 @@ header {
     display: flex;
     gap: 2rem;
     max-width: 1600px;
-    margin: 1.5rem auto; /* Center the layout on the page */
+    margin: 1.5rem auto;
     padding: 0 2rem;
 }
 
@@ -32,15 +49,15 @@ header {
 2. SIDEBAR (LEFT PANEL)
 ==================================== */
 .sidebar {
-    flex: 0 0 300px; /* Fixed width of 300px */
-    background-color: var(--color-bg-medium-blue);
+    flex: 0 0 300px;
+    background-color: var(--color-bg-off-white);
     border-radius: var(--border-radius-lg);
     padding: 1.5rem;
-    align-self: flex-start; /* Prevents sidebar from stretching vertically */
+    align-self: flex-start;
 }
 
 .page-description {
-    color: var(--color-text-medium);
+    color: var(--color-text-charcoal);
     font-size: 1rem;
     line-height: 1.5;
     margin: 0 0 2rem 0;
@@ -51,30 +68,31 @@ header {
 .controls {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* Space between dropdowns */
+    gap: 1.5rem;
 }
 
 .select-wrapper label {
     display: block;
     margin-bottom: 0.75rem;
-    font-family: var(--font-heading);
+    font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */
     font-size: 0.9rem;
-    color: var(--color-accent-orange);
+    color: var(--color-accent-gold);
     text-align: left;
 }
 
 select {
-    font-family: var(--font-body);
+    font-family: inherit; /* Inherit from body */
     width: 100%;
     padding: 12px;
     font-size: 1rem;
-    border: 2px solid var(--color-bg-deep-blue);
+    border: 2px solid var(--color-highlight-orange);
     border-radius: var(--border-radius-sm);
-    background-color: var(--color-bg-deep-blue);
-    color: var(--color-text-light);
+    background-color: var(--color-text-brown);
+    color: var(--color-bg-off-white);
     cursor: pointer;
     appearance: none;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FCA311%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+    /* Updated SVG fill color to match the theme's gold */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23F4C542%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 0.8em;
@@ -83,7 +101,7 @@ select {
 
 select:focus {
     outline: none;
-    border-color: var(--color-accent-orange);
+    border-color: var(--color-accent-gold);
 }
 
 select:disabled {
@@ -95,103 +113,97 @@ select:disabled {
 3. KNOWLEDGE MAP (RIGHT PANEL)
 ==================================== */
 .map-panel {
-    flex: 1; /* Takes up all remaining space */
-    background-color: var(--color-bg-medium-blue);
+    flex: 1;
+    background-color: var(--color-bg-off-white);
     border-radius: var(--border-radius-lg);
     padding: 1.5rem;
     min-height: 60vh;
-    /* --- EDITED FOR CENTERING --- */
-    display: grid;          /* Use grid layout */
-    place-items: center;    /* This centers its child both vertically and horizontally */
-    overflow: auto;         /* Add scrollbars if the flowchart is too big */
+    display: grid;
+    place-items: center;
+    overflow: auto;
 }
 
-/* --- VERTICAL FLOWCHART CORE STYLES --- */
 .flowchart-container {
     display: flex;
-    flex-direction: column; /* Stacks nodes vertically */
-    align-items: center;    /* Horizontally centers the nodes */
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     padding: 2rem;
     box-sizing: border-box;
 }
 
 .flowchart-placeholder {
-    font-family: var(--font-heading);
-    color: var(--color-text-medium);
+    font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */
+    color: var(--color-text-charcoal);
     font-size: 1.2rem;
     text-align: center;
 }
 
 .topic-node {
     position: relative;
-    background-color: var(--color-bg-deep-blue);
-    border: 2px solid var(--color-accent-red);
+    background-color: var(--color-text-brown);
+    border: 2px solid var(--color-accent-blue);
     border-radius: var(--border-radius-md);
     padding: 1.5rem;
-    width: 350px; /* You can adjust width as needed */
+    width: 350px;
     max-width: 100%;
     text-align: left;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: transform var(--transition-speed), border-color var(--transition-speed);
 }
 
 .topic-node:hover {
     transform: translateY(-5px);
-    border-color: var(--color-accent-orange);
+    border-color: var(--color-accent-gold);
 }
 
-/* Use margin-bottom to create space for arrows */
 .topic-node:not(:last-child) {
-    margin-bottom: 60px; 
+    margin-bottom: 60px;
 }
 
 .topic-node h3 {
     margin: 0 0 0.75rem 0;
-    font-family: var(--font-heading);
+    font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */
     font-size: 1rem;
-    color: var(--color-accent-orange);
+    color: var(--color-accent-gold);
 }
 
 .topic-node p {
     margin: 0;
     font-size: 0.95rem;
-    color: var(--color-text-light);
+    color: var(--color-bg-off-white);
     line-height: 1.5;
     white-space: normal;
 }
 
 /* --- CONNECTOR ARROWS (VERTICAL STYLE) --- */
-/* The line part of the arrow */
 .topic-node:not(:last-child)::after {
     content: '';
     position: absolute;
-    top: 100%; /* Start from the bottom of the node */
-    left: 50%; /* Center horizontally */
+    top: 100%;
+    left: 50%;
     transform: translateX(-50%);
     width: 3px;
-    height: 42px; /* Length of the line */
-    background: var(--color-accent-red);
+    height: 42px;
+    background: var(--color-accent-blue);
 }
-/* The arrowhead part */
 .topic-node:not(:last-child)::before {
     content: '';
     position: absolute;
-    top: calc(100% + 42px); /* Position at the end of the line */
-    left: 50%; /* Center horizontally */
+    top: calc(100% + 42px);
+    left: 50%;
     transform: translateX(-50%);
     border: 8px solid transparent;
-    border-top-color: var(--color-accent-red); /* Creates the downward-pointing triangle */
+    border-top-color: var(--color-accent-blue);
 }
-
 
 /* ====================================
 4. RESPONSIVENESS (MOBILE/TABLET)
 ==================================== */
 @media (max-width: 950px) {
     .knowledge-map-layout {
-        flex-direction: column; /* Stack sidebar on top of the map */
+        flex-direction: column;
         padding: 0 1rem;
     }
     .sidebar {
@@ -204,32 +216,26 @@ select:disabled {
 
 @media (max-width: 480px) {
     .knowledge-map-layout {
-        padding: 0 0.5rem; /* Reduce overall padding for very small screens */
+        padding: 0 0.5rem;
     }
-
     .sidebar {
-        padding: 1rem; /* Smaller padding for sidebar */
+        padding: 1rem;
     }
-
     .page-description {
-        font-size: 0.9rem; /* Slightly smaller font for description */
+        font-size: 0.9rem;
     }
-
     .topic-node {
-        width: 95%; /* Make topic nodes take up more width */
-        padding: 1rem; /* Smaller padding for topic nodes */
+        width: 95%;
+        padding: 1rem;
     }
-
     .topic-node h3 {
-        font-size: 0.9rem; /* Smaller heading font */
+        font-size: 0.9rem;
     }
-
     .topic-node p {
-        font-size: 0.85rem; /* Smaller body font */
+        font-size: 0.85rem;
     }
-
     .topic-view-content {
-        padding: 1.5rem; /* Adjust modal padding for smaller screens */
+        padding: 1.5rem;
     }
 }
 
@@ -237,10 +243,10 @@ select:disabled {
 5. MODAL STYLES (for topic content)
 ==================================== */
 .topic-view { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; padding: 1rem; box-sizing: border-box; }
-.topic-view-content { background-color: var(--color-bg-medium-blue); padding: 2rem 2.5rem; border-radius: var(--border-radius-lg); border: 3px solid var(--color-accent-orange); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 0 20px rgba(252, 163, 17, 0.3); }
-.close-btn { font-family: var(--font-heading); color: var(--color-text-medium); position: absolute; top: 15px; right: 20px; font-size: 28px; border: none; background: none; cursor: pointer; transition: color var(--transition-speed); }
-.close-btn:hover { color: var(--color-accent-red); }
+.topic-view-content { background-color: var(--color-bg-off-white); padding: 2rem 2.5rem; border-radius: var(--border-radius-lg); border: 3px solid var(--color-accent-gold); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 0 20px rgba(75, 46, 46, 0.3); }
+.close-btn { font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */ color: var(--color-text-charcoal); position: absolute; top: 15px; right: 20px; font-size: 28px; border: none; background: none; cursor: pointer; transition: color var(--transition-speed); }
+.close-btn:hover { color: var(--color-text-brown); }
 #topic-content { line-height: 1.7; }
-#topic-content h3 { font-family: var(--font-heading); color: var(--color-accent-red); border-bottom: 2px solid var(--color-bg-deep-blue); padding-bottom: 8px; margin-top: 1.5rem; }
-#topic-content code { background-color: var(--color-bg-deep-blue); color: var(--color-accent-orange); padding: 3px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; }
-#topic-content strong { color: var(--color-accent-orange); font-weight: bold; }
+#topic-content h3 { font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */ color: var(--color-accent-blue); border-bottom: 2px solid var(--color-bg-parchment); padding-bottom: 8px; margin-top: 1.5rem; }
+#topic-content code { background-color: var(--color-bg-parchment); color: var(--color-text-brown); padding: 3px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; }
+#topic-content strong { color: var(--color-accent-gold); font-weight: bold; }

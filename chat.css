@@ -1,4 +1,4 @@
-/* === RETRO GAMIFIED CHAT UI - CONSISTENT THEME === */
+/* === RETRO GAMIFIED CHAT UI - THEMED === */
 
 /* 1. Font Import & Root Variables */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap');
@@ -7,19 +7,18 @@
   --font-body: 'Roboto', sans-serif;
   --font-heading: 'Press Start 2P', cursive;
   
-  /* Consistent Color Palette */
-  --color-bg-dark-blue: #1a1a2e;
-  --color-bg-medium-blue: #16213e;
-  --color-bg-deep-blue: #0f3460;
-  --color-text-light: #e0e0e0;
-  --color-text-medium: #c0c0c0;
-  --color-accent-orange: #fca311;
+  /* 🎨 Applied Color Palette */
+  --color-bg-parchment: #E6D3A3;
+  --color-bg-off-white: #F9F4E3;
+  --color-text-brown: #4B2E2E;
+  --color-text-charcoal: #333333;
+  --color-accent-blue: #00AEEF;
+  --color-accent-gold: #F4C542;
+  --color-highlight-orange: #E5B87A;
+  
+  /* Retained vibrant accents from original file */
   --color-accent-red: #e94560;
   --color-green: #4ade80;
-  
-  /* Additional Gaming Colors */
-  --color-warning: #f59e0b;
-  --color-info: #3b82f6;
   
   /* UI Sizing & Effects */
   --border-radius-sm: 5px;
@@ -27,19 +26,18 @@
   --border-radius-lg: 10px;
   --transition-speed: 0.2s ease;
   
-  /* Retro Gaming Effects */
-  --shadow-glow-orange: 0 0 15px rgba(252, 163, 17, 0.4);
+  /* Themed Glow Effects */
+  --shadow-glow-gold: 0 0 15px rgba(244, 197, 66, 0.4);
   --shadow-glow-red: 0 0 15px rgba(233, 69, 96, 0.4);
   --shadow-glow-green: 0 0 15px rgba(74, 222, 128, 0.4);
-  --gradient-gaming: linear-gradient(135deg, var(--color-accent-orange), var(--color-accent-red));
   
-  /* Scanline Pattern */
+  /* Scanline Pattern using new theme color */
   --scanlines: repeating-linear-gradient(
     0deg,
     transparent,
     transparent 2px,
-    rgba(252, 163, 17, 0.03) 2px,
-    rgba(252, 163, 17, 0.03) 4px
+    rgba(75, 46, 46, 0.04) 2px,
+    rgba(75, 46, 46, 0.04) 4px
   );
 }
 
@@ -54,24 +52,21 @@ body, html {
   font-family: var(--font-body);
   background: 
     var(--scanlines),
-    radial-gradient(ellipse at center, var(--color-bg-medium-blue) 0%, var(--color-bg-dark-blue) 70%);
-  color: var(--color-text-light);
+    radial-gradient(ellipse at center, var(--color-bg-parchment) 0%, var(--color-text-brown) 120%);
+  color: var(--color-bg-off-white);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Add retro grid overlay */
+/* Themed grid overlay */
 body::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-image: 
-    linear-gradient(rgba(252, 163, 17, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(252, 163, 17, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(244, 197, 66, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 197, 66, 0.08) 1px, transparent 1px);
   background-size: 20px 20px;
   pointer-events: none;
   z-index: -1;
@@ -85,7 +80,7 @@ header {
 .center-title {
   text-align: center;
   font-family: var(--font-heading);
-  color: var(--color-accent-orange);
+  color: var(--color-accent-gold);
   font-size: 36px;
   margin: 0;
   text-shadow: 2px 2px #000;
@@ -93,15 +88,15 @@ header {
 }
 
 @keyframes neonPulse {
-  from { text-shadow: 2px 2px #000, 0 0 20px var(--color-accent-orange); }
-  to { text-shadow: 2px 2px #000, 0 0 10px var(--color-accent-orange); }
+  from { text-shadow: 2px 2px #000, 0 0 20px var(--color-accent-gold); }
+  to { text-shadow: 2px 2px #000, 0 0 10px var(--color-accent-gold); }
 }
 
 /* 4. Horizontal Navigation Bar */
 .navbar.horizontal-navbar {
   width: 100%;
-  background-color: var(--color-bg-deep-blue);
-  border-bottom: 2px solid var(--color-bg-medium-blue);
+  background-color: var(--color-text-brown);
+  border-bottom: 2px solid var(--color-highlight-orange);
   margin-bottom: 20px;
   position: relative;
 }
@@ -109,10 +104,7 @@ header {
 .navbar.horizontal-navbar::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: var(--scanlines);
   pointer-events: none;
 }
@@ -133,7 +125,7 @@ header {
   align-items: center;
   padding: 16px 30px;
   font-size: 19px;
-  color: var(--color-accent-orange);
+  color: var(--color-accent-gold);
   font-family: var(--font-heading);
   text-decoration: none;
   transition: all var(--transition-speed);
@@ -151,7 +143,7 @@ header {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(252, 163, 17, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(244, 197, 66, 0.2), transparent);
   transition: left 0.3s;
 }
 
@@ -160,7 +152,7 @@ header {
 }
 
 .nav-item .nav-link:focus {
-  box-shadow: 0 0 0 2px var(--color-accent-orange);
+  box-shadow: 0 0 0 2px var(--color-accent-gold);
 }
 
 .nav-item .nav-link i {
@@ -172,7 +164,7 @@ header {
 .nav-item .nav-link:hover,
 .nav-item .nav-link.active {
   color: var(--color-accent-red);
-  background: rgba(252, 163, 17, 0.08);
+  background: rgba(244, 197, 66, 0.08);
   transform: translateY(-2px);
   box-shadow: var(--shadow-glow-red);
 }
@@ -188,8 +180,8 @@ header {
 /* 6. Sidebar with Player Profile Style */
 .chat-sidebar {
   width: 270px;
-  background-color: var(--color-bg-medium-blue);
-  border-right: 2px solid var(--color-bg-deep-blue);
+  background-color: var(--color-bg-off-white);
+  border-right: 2px solid var(--color-text-brown);
   border-radius: var(--border-radius-lg);
   padding: 20px;
   overflow-y: auto;
@@ -199,10 +191,7 @@ header {
 .chat-sidebar::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: var(--scanlines);
   pointer-events: none;
   border-radius: var(--border-radius-lg);
@@ -210,17 +199,16 @@ header {
 
 .player-profile h2 {
   font-family: var(--font-heading);
-  color: var(--color-accent-orange);
+  color: var(--color-text-brown);
   font-size: 14px;
   margin-bottom: 15px;
-  text-shadow: 2px 2px #000;
   position: relative;
   z-index: 1;
 }
 
 /* XP Bar Component */
 .player-stats {
-  background-color: var(--color-bg-deep-blue);
+  background-color: var(--color-text-brown);
   padding: 15px;
   border-radius: var(--border-radius-md);
   margin-bottom: 20px;
@@ -231,7 +219,7 @@ header {
 .player-level {
   font-size: 18px;
   font-weight: bold;
-  color: var(--color-accent-orange);
+  color: var(--color-accent-gold);
   margin-bottom: 10px;
   font-family: var(--font-heading);
 }
@@ -239,7 +227,7 @@ header {
 .xp-bar-container {
   width: 100%;
   height: 20px;
-  background-color: var(--color-bg-dark-blue);
+  background-color: var(--color-bg-parchment);
   border-radius: var(--border-radius-sm);
   border: 2px solid var(--color-accent-red);
   padding: 2px;
@@ -248,22 +236,22 @@ header {
 
 .xp-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-accent-orange), var(--color-green));
+  background: linear-gradient(90deg, var(--color-accent-gold), var(--color-green));
   border-radius: 3px;
   transition: width 0.5s ease;
   width: 75%; /* Example progress */
-  box-shadow: 0 0 10px rgba(252, 163, 17, 0.5);
+  box-shadow: 0 0 10px rgba(244, 197, 66, 0.5);
 }
 
 .xp-text {
   font-size: 12px;
-  color: var(--color-text-medium);
+  color: var(--color-highlight-orange);
   text-align: center;
 }
 
 /* Chat History with Achievement Style */
 .chat-history-container {
-  background-color: var(--color-bg-deep-blue);
+  background-color: var(--color-text-brown);
   border-radius: var(--border-radius-md);
   padding: 15px;
   margin-bottom: 20px;
@@ -273,10 +261,9 @@ header {
 
 .history-header h3 {
   font-family: var(--font-heading);
-  color: var(--color-accent-orange);
+  color: var(--color-accent-gold);
   font-size: 12px;
   margin-bottom: 15px;
-  text-shadow: 2px 2px #000;
   text-transform: uppercase;
 }
 
@@ -290,7 +277,7 @@ header {
   align-items: center;
   padding: 8px;
   margin-bottom: 8px;
-  background-color: var(--color-bg-deep-blue);
+  background-color: rgba(0,0,0,0.2);
   border-radius: var(--border-radius-sm);
   border-left: 3px solid var(--color-accent-red);
   transition: all var(--transition-speed);
@@ -301,39 +288,36 @@ header {
 .history-item::before {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  border: 1px solid rgba(252, 163, 17, 0.2);
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
+  border: 1px solid rgba(244, 197, 66, 0.2);
   border-radius: var(--border-radius-sm);
   pointer-events: none;
 }
 
 .history-item:hover {
   transform: translateX(3px);
-  border-left-color: var(--color-accent-orange);
-  background-color: rgba(252, 163, 17, 0.1);
-  box-shadow: var(--shadow-glow-orange);
+  border-left-color: var(--color-accent-gold);
+  background-color: rgba(244, 197, 66, 0.1);
+  box-shadow: var(--shadow-glow-gold);
 }
 
 .history-item-title {
   font-size: 12px;
-  color: var(--color-text-light);
+  color: var(--color-bg-off-white);
   margin: 0;
   flex: 1;
 }
 
 .history-item-date {
   font-size: 10px;
-  color: var(--color-text-medium);
+  color: var(--color-highlight-orange);
   font-family: var(--font-heading);
 }
 
 /* 7. Main Chat Container */
 .chat-container {
   flex: 1;
-  background-color: var(--color-bg-medium-blue);
+  background-color: var(--color-bg-off-white);
   border-radius: var(--border-radius-lg);
   padding: 20px;
   display: flex;
@@ -345,10 +329,7 @@ header {
 .chat-container::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: var(--scanlines);
   pointer-events: none;
   border-radius: var(--border-radius-lg);
@@ -362,10 +343,9 @@ header {
 /* 8. Chat Header */
 .chat-header h2 {
   font-family: var(--font-heading);
-  color: var(--color-accent-orange);
+  color: var(--color-text-brown);
   font-size: 16px;
   margin-bottom: 20px;
-  text-shadow: 2px 2px #000;
   text-transform: uppercase;
 }
 
@@ -374,7 +354,7 @@ header {
   gap: 10px;
   margin-bottom: 20px;
   padding: 15px;
-  background-color: var(--color-bg-deep-blue);
+  background-color: var(--color-text-brown);
   border-radius: var(--border-radius-md);
   flex-wrap: wrap;
 }
@@ -398,8 +378,7 @@ header {
 .action-btn::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   width: 0;
   height: 0;
   background: rgba(255, 255, 255, 0.2);
@@ -414,9 +393,10 @@ header {
 }
 
 .action-btn:hover {
-  background-color: var(--color-accent-orange);
+  background-color: var(--color-accent-gold);
+  color: var(--color-text-brown);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-orange);
+  box-shadow: var(--shadow-glow-gold);
 }
 
 /* Subject Selector */
@@ -430,9 +410,9 @@ header {
   flex: 1;
   min-width: 110px;
   padding: 8px;
-  border: 1px solid var(--color-bg-dark-blue);
-  background-color: var(--color-bg-dark-blue);
-  color: var(--color-text-light);
+  border: 1px solid var(--color-bg-parchment);
+  background-color: var(--color-bg-parchment);
+  color: var(--color-text-brown);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-body);
 }
@@ -442,7 +422,7 @@ header {
   flex: 1;
   overflow-y: auto;
   padding: 15px;
-  background-color: var(--color-bg-deep-blue);
+  background-color: var(--color-text-brown);
   border-radius: var(--border-radius-md);
   margin-bottom: 15px;
   border-left: 4px solid var(--color-accent-red);
@@ -454,8 +434,8 @@ header {
   position: absolute;
   top: -12px;
   left: 10px;
-  background: var(--color-bg-medium-blue);
-  color: var(--color-accent-orange);
+  background: var(--color-bg-off-white);
+  color: var(--color-accent-gold);
   padding: 0 10px;
   font-family: var(--font-heading);
   font-size: 8px;
@@ -488,10 +468,7 @@ header {
 .message p::before {
   content: '';
   position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
   border: 1px solid;
   border-color: inherit;
   border-radius: var(--border-radius-md);
@@ -503,10 +480,10 @@ header {
 }
 
 .bot-message p {
-  background-color: var(--color-bg-deep-blue);
-  color: var(--color-text-light);
-  border-left-color: var(--color-info);
-  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+  background-color: rgba(0,0,0,0.25);
+  color: var(--color-bg-off-white);
+  border-left-color: var(--color-accent-blue);
+  box-shadow: 0 2px 10px rgba(0, 174, 239, 0.2);
 }
 
 .user-message {
@@ -515,10 +492,10 @@ header {
 }
 
 .user-message p {
-  background: linear-gradient(135deg, rgba(252, 163, 17, 0.2), rgba(233, 69, 96, 0.2));
-  color: var(--color-text-light);
-  border-left-color: var(--color-accent-orange);
-  box-shadow: 0 2px 10px rgba(252, 163, 17, 0.3);
+  background: linear-gradient(135deg, rgba(244, 197, 66, 0.2), rgba(233, 69, 96, 0.2));
+  color: var(--color-bg-off-white);
+  border-left-color: var(--color-accent-gold);
+  box-shadow: 0 2px 10px rgba(244, 197, 66, 0.3);
   font-weight: 600;
 }
 
@@ -550,17 +527,16 @@ header {
   left: 0;
   font-family: var(--font-heading);
   font-size: 8px;
-  color: var(--color-accent-orange);
-  text-shadow: 0 0 5px currentColor;
+  color: var(--color-text-brown);
 }
 
 .chat-input-area textarea {
   flex: 1;
   min-width: 110px;
   padding: 12px;
-  border: 2px solid var(--color-bg-dark-blue);
-  background-color: var(--color-bg-dark-blue);
-  color: var(--color-text-light);
+  border: 2px solid var(--color-bg-parchment);
+  background-color: var(--color-bg-parchment);
+  color: var(--color-text-brown);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-body);
   resize: none;
@@ -569,9 +545,9 @@ header {
 
 .chat-input-area textarea:focus {
   outline: none;
-  border-color: var(--color-accent-orange);
-  box-shadow: var(--shadow-glow-orange);
-  background-color: rgba(252, 163, 17, 0.05);
+  border-color: var(--color-accent-gold);
+  box-shadow: var(--shadow-glow-gold);
+  background-color: var(--color-bg-off-white);
 }
 
 .chat-input-area button {
@@ -592,8 +568,7 @@ header {
 .chat-input-area button::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
+  top: -50%; left: -50%;
   width: 200%;
   height: 200%;
   background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
@@ -622,8 +597,8 @@ header {
 .quick-prompt {
   padding: 8px 16px;
   background: transparent;
-  color: var(--color-text-medium);
-  border: 2px solid var(--color-bg-deep-blue);
+  color: var(--color-text-brown);
+  border: 2px solid var(--color-text-brown);
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: all var(--transition-speed);
@@ -641,7 +616,7 @@ header {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(252, 163, 17, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(244, 197, 66, 0.3), transparent);
   transition: left 0.3s;
 }
 
@@ -650,198 +625,60 @@ header {
 }
 
 .quick-prompt:hover {
-  background-color: var(--color-accent-orange);
-  color: white;
-  border-color: var(--color-accent-orange);
+  background-color: var(--color-accent-gold);
+  color: var(--color-text-brown);
+  border-color: var(--color-accent-gold);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-orange);
+  box-shadow: var(--shadow-glow-gold);
 }
 
 /* 12. Responsive Design */
 @media (max-width: 1024px) {
-  .chat-layout {
-    flex-direction: column;
-  }
-  
-  .chat-sidebar {
-    width: 100%;
-    height: auto;
-    max-height: 250px;
-  }
-  
-  .navbar-nav {
-    gap: 12px;
-  }
-  
-  .nav-item .nav-link {
-    padding: 12px 20px;
-    font-size: 16px;
-  }
+  .chat-layout { flex-direction: column; }
+  .chat-sidebar { width: 100%; height: auto; max-height: 250px; }
+  .navbar-nav { gap: 12px; }
+  .nav-item .nav-link { padding: 12px 20px; font-size: 16px; }
 }
 
 @media (max-width: 768px) {
-  .chat-layout {
-    flex-direction: column;
-    padding: 10px;
-  }
-  
-  .chat-sidebar {
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  
-  .navbar-nav {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  
-  .center-title {
-    font-size: 22px;
-  }
-  
-  .chat-controls {
-    flex-direction: column;
-  }
-  
-  .chat-controls input,
-  .chat-controls select {
-    min-width: 100%;
-  }
-  
-  .intro-row {
-    flex-direction: column;
-  }
+  .chat-layout { flex-direction: column; padding: 10px; }
+  .chat-sidebar { width: 100%; max-height: 200px; overflow-y: auto; }
+  .navbar-nav { flex-wrap: wrap; gap: 8px; }
+  .center-title { font-size: 22px; }
+  .chat-controls { flex-direction: column; }
+  .chat-controls input, .chat-controls select { min-width: 100%; }
+  .intro-row { flex-direction: column; }
 }
 
 @media (max-width: 480px) {
-  .chat-layout {
-    padding: 10px; /* Smaller overall padding for the layout */
-    gap: 15px;
-  }
-
-  .chat-sidebar {
-    padding: 15px; /* Smaller sidebar padding */
-    max-height: 180px; /* Slightly reduce max height */
-  }
-
-  .player-profile h2 {
-    font-size: 12px; /* Smaller player profile heading */
-  }
-
-  .player-level {
-    font-size: 14px; /* Already set, keeping it explicit */
-  }
-
-  .player-stats {
-    padding: 10px; /* Smaller player stats padding */
-  }
-
-  .chat-history-container {
-    padding: 10px; /* Smaller chat history padding */
-  }
-
-  .history-header h3 {
-    font-size: 10px; /* Smaller history header font */
-  }
-
-  .history-item {
-    padding: 6px; /* Smaller history item padding */
-  }
-
-  .history-item-title {
-    font-size: 11px; /* Smaller history item title font */
-  }
-
-  .history-item-date {
-    font-size: 9px; /* Smaller history item date font */
-  }
-  
-  .chat-container {
-    padding: 15px; /* Already set, keeping it explicit */
-  }
-  
-  .center-title {
-    font-size: 18px; /* Already set, keeping it explicit */
-  }
-
-  .chat-header h2 {
-    font-size: 14px; /* Smaller chat header title */
-    margin-bottom: 15px;
-  }
-
-  .chat-controls {
-    padding: 10px; /* Smaller chat controls padding */
-    gap: 8px;
-  }
-
-  .action-btn {
-    padding: 8px 15px; /* Smaller action button padding */
-    font-size: 11px; /* Smaller action button font */
-  }
-
-  .subject-selector select {
-    padding: 6px; /* Smaller select padding */
-    font-size: 0.8rem;
-  }
-  
-  .chat-window {
-    padding: 10px; /* Smaller chat window padding */
-  }
-
-  .chat-window::before {
-    font-size: 7px; /* Smaller terminal active text */
-    top: -10px;
-  }
-
-  .message {
-    margin-bottom: 10px;
-    max-width: 95%; /* Allow messages to take more width */
-  }
-
-  .message p {
-    padding: 10px; /* Smaller message bubble padding */
-    font-size: 0.85rem; /* Smaller message font */
-  }
-
-  .intro-row {
-    flex-direction: column; /* Stack intro messages vertically */
-    gap: 10px;
-  }
-
-  .intro-row .message {
-    max-width: 100%; /* Full width for intro messages */
-  }
-
-  .chat-input-area {
-    gap: 8px;
-  }
-
-  .chat-input-area::before {
-    font-size: 7px; /* Smaller user input text */
-    top: -12px;
-  }
-
-  .chat-input-area textarea {
-    padding: 8px; /* Smaller textarea padding */
-    font-size: 0.85rem;
-  }
-
-  .chat-input-area button {
-    padding: 8px 15px; /* Smaller send button padding */
-    font-size: 0.85rem;
-    min-width: 50px;
-  }
-
-  #quick-prompts {
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .quick-prompt {
-    padding: 6px 12px; /* Smaller quick prompt padding */
-    font-size: 10px; /* Smaller quick prompt font */
-  }
+  .chat-layout { padding: 10px; gap: 15px; }
+  .chat-sidebar { padding: 15px; max-height: 180px; }
+  .player-profile h2 { font-size: 12px; }
+  .player-level { font-size: 14px; }
+  .player-stats { padding: 10px; }
+  .chat-history-container { padding: 10px; }
+  .history-header h3 { font-size: 10px; }
+  .history-item { padding: 6px; }
+  .history-item-title { font-size: 11px; }
+  .history-item-date { font-size: 9px; }
+  .chat-container { padding: 15px; }
+  .center-title { font-size: 18px; }
+  .chat-header h2 { font-size: 14px; margin-bottom: 15px; }
+  .chat-controls { padding: 10px; gap: 8px; }
+  .action-btn { padding: 8px 15px; font-size: 11px; }
+  .subject-selector select { padding: 6px; font-size: 0.8rem; }
+  .chat-window { padding: 10px; }
+  .chat-window::before { font-size: 7px; top: -10px; }
+  .message { margin-bottom: 10px; max-width: 95%; }
+  .message p { padding: 10px; font-size: 0.85rem; }
+  .intro-row { flex-direction: column; gap: 10px; }
+  .intro-row .message { max-width: 100%; }
+  .chat-input-area { gap: 8px; }
+  .chat-input-area::before { font-size: 7px; top: -12px; }
+  .chat-input-area textarea { padding: 8px; font-size: 0.85rem; }
+  .chat-input-area button { padding: 8px 15px; font-size: 0.85rem; min-width: 50px; }
+  #quick-prompts { gap: 8px; margin-top: 10px; }
+  .quick-prompt { padding: 6px 12px; font-size: 10px; }
 }
 
 /* 13. Loading and Error States */
@@ -850,21 +687,13 @@ header {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  color: var(--color-text-medium);
+  color: var(--color-highlight-orange);
   font-family: var(--font-heading);
   font-size: 12px;
   text-transform: uppercase;
 }
-
-.loading::before {
-  content: '> LOADING';
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
+.loading::before { content: '> LOADING'; animation: blink 1s infinite; }
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
 
 .error {
   color: var(--color-accent-red);
@@ -886,26 +715,4 @@ header {
   display: block;
   margin-bottom: 8px;
   animation: neonPulse 1s ease-in-out infinite;
-}
-
-/* 14. Additional Gaming Elements */
-.power-up-effect {
-  animation: powerUp 0.4s ease-out;
-}
-
-@keyframes powerUp {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); filter: brightness(1.3); }
-  100% { transform: scale(1); }
-}
-
-/* Achievement unlock effect */
-.achievement-unlock {
-  animation: achievementPop 0.6s ease-out;
-}
-
-@keyframes achievementPop {
-  0% { transform: scale(0.5) rotate(-5deg); opacity: 0; }
-  50% { transform: scale(1.2) rotate(2deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }

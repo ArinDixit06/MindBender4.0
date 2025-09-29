@@ -1,52 +1,71 @@
 /* resources.css */
 
+:root {
+  /* 🎨 Applied Color Palette */
+  --color-bg-parchment: #E6D3A3;
+  --color-bg-off-white: #F9F4E3;
+  --color-text-brown: #4B2E2E;
+  --color-text-charcoal: #333333;
+  --color-accent-blue: #00AEEF;
+  --color-accent-gold: #F4C542;
+  --color-highlight-orange: #E5B87A;
+
+  /* Fonts & Sizing */
+  --font-body: 'Roboto', sans-serif; /* Assumed from previous files */
+  --font-heading: 'Press Start 2P', cursive; /* Assumed from previous files */
+  --border-radius-sm: 5px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+  --transition-speed: 0.3s ease;
+}
+
 /* General styling for the resources page */
 body {
-    background-color: var(--color-bg-dark-blue);
-    color: var(--color-text-light);
+    background-color: var(--color-bg-parchment);
+    color: var(--color-text-charcoal);
     font-family: var(--font-body);
 }
 
 /* Header styling */
 header {
-    text-align: center; /* Center the h1 inside */
+    text-align: center;
     padding: 20px 10px;
 }
 
 header h1 {
     font-family: var(--font-heading);
-    color: var(--color-accent-orange);
-    text-shadow: 2px 2px #000;
+    color: var(--color-accent-gold);
+    text-shadow: 2px 2px var(--color-text-brown);
     font-size: 2.2rem;
     margin: 0;
-    display: inline-flex; /* Helps align icon and text */
+    display: inline-flex;
     align-items: center;
     gap: 15px;
 }
 
-/* Horizontal Navbar Fixes */
+/* Horizontal Navbar */
 .navbar.horizontal-navbar {
     width: 100%;
-    background-color: var(--color-bg-deep-blue);
-    border-bottom: 2px solid var(--color-bg-medium-blue);
+    background-color: var(--color-text-brown);
+    border-bottom: 2px solid var(--color-highlight-orange);
 }
 
 .navbar-nav {
     display: flex;
     list-style: none;
     margin: 0;
-    padding: 0 1rem; /* Add some padding on the sides for smaller screens */
+    padding: 0 1rem;
     gap: 1rem;
     justify-content: center;
-    flex-wrap: wrap; /* Allows items to wrap on very small screens */
+    flex-wrap: wrap;
 }
 
 .nav-item .nav-link {
     display: flex;
     align-items: center;
     padding: 16px 20px;
-    font-size: 1rem; /* Slightly reduced font for better fit */
-    color: var(--color-accent-orange);
+    font-size: 1rem;
+    color: var(--color-accent-gold);
     font-family: var(--font-heading);
     text-decoration: none;
     transition: all var(--transition-speed);
@@ -55,9 +74,9 @@ header h1 {
 }
 
 .nav-item .nav-link:hover,
-.nav-item .nav-link.active { /* Style for the current page link */
-    color: var(--color-accent-red);
-    background: rgba(252, 163, 17, 0.08);
+.nav-item .nav-link.active {
+    color: var(--color-accent-blue);
+    background: rgba(244, 197, 66, 0.1); /* Themed gold highlight */
 }
 
 .nav-item .nav-link i {
@@ -84,22 +103,22 @@ header h1 {
 
 /* Resource section styling */
 .resource-section {
-    background-color: var(--color-bg-medium-blue);
+    background-color: var(--color-bg-off-white);
     padding: 25px;
     border-radius: var(--border-radius-lg);
-    border: 2px solid var(--color-bg-deep-blue);
+    border: 2px solid var(--color-highlight-orange);
     margin-bottom: 30px;
 }
 
 .resource-section h2 {
     font-family: var(--font-heading);
-    color: var(--color-accent-red);
+    color: var(--color-text-brown);
     font-size: 1.5rem;
     margin-bottom: 15px;
 }
 
 .section-description {
-    color: var(--color-text-medium);
+    color: var(--color-text-charcoal);
     margin-bottom: 20px;
     font-size: 1.1rem;
     line-height: 1.6;
@@ -113,30 +132,31 @@ header h1 {
 }
 
 .resource-card {
-    background-color: var(--color-bg-deep-blue);
+    background-color: var(--color-text-brown);
     padding: 20px;
     border-radius: var(--border-radius-md);
-    border: 1px solid var(--color-accent-red);
+    border: 1px solid var(--color-accent-blue);
     transition: all var(--transition-speed);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    text-align: center;
 }
 
 .resource-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 15px var(--color-accent-gold);
 }
 
 .resource-card h3 {
-    color: var(--color-accent-orange);
+    color: var(--color-accent-gold);
     margin-bottom: 15px;
     font-size: 1.2rem;
 }
 
 .resource-card p {
-    color: var(--color-text-light);
+    color: var(--color-bg-off-white);
     font-size: 0.95rem;
     line-height: 1.5;
     flex-grow: 1;
@@ -153,21 +173,21 @@ header h1 {
 }
 
 .resource-list a {
-    color: var(--color-text-light);
+    color: var(--color-text-charcoal);
     text-decoration: none;
     transition: color var(--transition-speed);
 }
 
 .resource-list a:hover {
-    color: var(--color-accent-orange);
+    color: var(--color-accent-gold);
 }
 
 .resource-btn {
     display: inline-block;
     margin-top: 20px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, var(--color-accent-red), #ff6b6b);
-    color: white;
+    background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-gold));
+    color: var(--color-text-brown);
     text-decoration: none;
     border-radius: var(--border-radius-sm);
     transition: all var(--transition-speed);
@@ -176,7 +196,7 @@ header h1 {
 
 .resource-btn:hover {
     transform: scale(1.03);
-    box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+    box-shadow: 0 4px 12px rgba(244, 197, 66, 0.4); /* Themed gold shadow */
 }
 
 /* Responsive adjustments */
@@ -194,46 +214,37 @@ header h1 {
 
 @media (max-width: 480px) {
     header h1 {
-        font-size: 1.2rem; /* Smaller header title */
+        font-size: 1.2rem;
         gap: 10px;
     }
-
     .container {
-        padding: 0 0.5rem; /* Reduce container padding */
+        padding: 0 0.5rem;
     }
-
     .resource-section {
-        padding: 15px; /* Smaller section padding */
+        padding: 15px;
         margin-bottom: 20px;
     }
-
     .resource-section h2 {
-        font-size: 1rem; /* Smaller section heading */
+        font-size: 1rem;
     }
-
     .section-description {
-        font-size: 0.9rem; /* Smaller description font */
+        font-size: 0.9rem;
     }
-
     .resource-grid {
-        grid-template-columns: 1fr; /* Stack resources vertically */
+        grid-template-columns: 1fr;
         gap: 15px;
     }
-
     .resource-card {
-        padding: 15px; /* Smaller card padding */
+        padding: 15px;
     }
-
     .resource-card h3 {
-        font-size: 1rem; /* Smaller card title */
+        font-size: 1rem;
     }
-
     .resource-card p {
-        font-size: 0.85rem; /* Smaller card text */
+        font-size: 0.85rem;
     }
-
     .resource-btn {
-        padding: 8px 15px; /* Smaller button padding */
+        padding: 8px 15px;
         font-size: 0.9rem;
     }
 }

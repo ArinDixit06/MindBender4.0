@@ -1,5 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
+:root {
+  /* 🎨 New Color Palette */
+  --color-bg-parchment: #E6D3A3;      /* Main backdrop */
+  --color-bg-off-white: #F9F4E3;      /* Lighter background for forms/inputs */
+  --color-text-brown: #4B2E2E;        /* Titles/Headers */
+  --color-text-charcoal: #333333;     /* Main body text */
+  --color-accent-blue: #00AEEF;       /* Buttons, links, icons */
+  --color-accent-gold: #F4C542;       /* Hover states, borders */
+  --color-highlight-orange: #E5B87A;  /* Softer accents, like input borders */
+
+  /* Border Radius */
+  --border-radius-lg: 12px;
+  --border-radius-md: 8px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -8,8 +23,8 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #f5f7fa;
-  color: #333;
+  background: var(--color-bg-parchment);
+  color: var(--color-text-charcoal);
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -31,9 +46,9 @@ body {
 
 .forms {
   width: 100%;
-  background: #fff;
+  background: var(--color-bg-off-white);
   padding: 40px 30px;
-  border-radius: 16px;
+  border-radius: var(--border-radius-lg);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   transition: all 0.5s ease;
   overflow: hidden;
@@ -55,7 +70,7 @@ body {
 .header {
   font-size: 2rem;
   font-weight: 600;
-  color: #4a4a4a;
+  color: var(--color-text-brown);
   text-align: center;
   margin-bottom: 25px;
 }
@@ -63,7 +78,7 @@ body {
 .title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #4a4a4a;
+  color: var(--color-text-brown);
   text-align: center;
   margin-bottom: 25px;
 }
@@ -75,104 +90,107 @@ body {
 
 .input-box i {
   position: absolute;
-  left: 12px;           /* distance from left */
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #6366f1;
+  color: var(--color-accent-blue);
   font-size: 0.9rem;
-  pointer-events: none;  /* icons won’t block typing */
+  pointer-events: none;
 }
 
 .input-box input {
   width: 100%;
-  padding: 14px 14px 14px 35px; /* add left padding to avoid icon overlap */
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  padding: 14px 14px 14px 35px;
+  border: 1px solid var(--color-highlight-orange);
+  border-radius: var(--border-radius-md);
   font-size: 0.9rem;
   transition: all 0.3s ease;
   outline: none;
+  background-color: #FFFFFF; /* White background for inputs for clarity */
+  color: var(--color-text-charcoal);
 }
 
 .input-box input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  border-color: var(--color-accent-blue);
+  box-shadow: 0 4px 12px rgba(0, 174, 239, 0.2);
 }
-
 
 .button input {
   width: 100%;
-  background: #6366f1;
+  background: var(--color-accent-blue);
   border: none;
   padding: 14px;
-  border-radius: 10px;
+  border-radius: var(--border-radius-md);
   font-size: 0.95rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--color-bg-off-white); /* Using off-white for text on button */
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .button input:hover {
-  background: #4f46e5;
-  box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+  background: var(--color-accent-gold);
+  color: var(--color-text-brown);
+  box-shadow: 0 6px 15px rgba(244, 197, 66, 0.3);
 }
 
 .text {
   font-size: 0.8rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--color-text-charcoal);
   margin-top: 12px;
 }
 
 .text a,
 .text label {
-  color: #6366f1;
+  color: var(--color-accent-blue);
   cursor: pointer;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .text a:hover,
 .text label:hover {
-  color: #4f46e5;
+  color: var(--color-accent-gold);
   text-decoration: underline;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
   .container {
-    padding: 15px; /* Reduce container padding for very small screens */
+    padding: 15px;
   }
 
   .forms {
-    padding: 25px 15px; /* Further reduce form padding */
+    padding: 25px 15px;
   }
 
   .header {
-    font-size: 1.5rem; /* Slightly smaller header font */
+    font-size: 1.5rem;
     margin-bottom: 20px;
   }
 
   .title {
-    font-size: 0.95rem; /* Slightly smaller title font */
+    font-size: 0.95rem;
     margin-bottom: 20px;
   }
 
   .input-box input {
-    font-size: 0.8rem; /* Smaller input font */
-    padding: 10px 10px 10px 30px; /* Adjust padding, especially left for icon */
+    font-size: 0.8rem;
+    padding: 10px 10px 10px 30px;
   }
 
   .input-box i {
-    left: 8px; /* Adjust icon position */
+    left: 8px;
     font-size: 0.8rem;
   }
 
   .button input {
-    font-size: 0.9rem; /* Smaller button font */
+    font-size: 0.9rem;
     padding: 12px;
   }
 
   .text {
-    font-size: 0.75rem; /* Smaller text font */
+    font-size: 0.75rem;
   }
 }
