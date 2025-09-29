@@ -230,37 +230,31 @@ app.get("/api/me", async (req, res) => {
 });
 
 // ---------- QUEST ROUTES ----------
-app.post("/api/quests", async (req, res) => {
-    if (!req.session.userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-    }
-    const { title, due_date, subject, importance } = req.body;
-    try {
-        const student_id = req.session.userId;
-        const { data: quest, error } = await supabase
-            .from("quests")
-            .insert([{ student_id, title, due_date, subject, importance, status: 'pending' }])
-            .select()
-            .single();
-        if (error) throw error;
-        res.status(201).json({ message: "Quest added successfully", quest });
-    } catch (err) {
-        console.error("Add quest error:", err);
-        res.status(500).json({ error: err.message || "Failed to add quest." });
-    }
-});
-
 app.get("/api/quests", async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
     try {
         const student_id = req.session.userId;
-        const { data: quests, error } = await supabase
+        const { search, status } = req.query; // Add search and status query parameters
+
+        let query = supabase
             .from("quests")
             .select("*")
-            .eq("student_id", student_id)
-            .eq("status", "pending");
+            .eq("student_id", student_id);
+
+        if (status) {
+            query = query.eq("status", status);
+        } else {
+            query = query.eq("status", "pending"); // Default to pending if no status is provided
+        }
+
+        if (search) {
+            query = query.ilike("title", `%${search}%`); // Case-insensitive search by title
+        }
+
+        const { data: quests, error } = await query;
+
         if (error) throw error;
         res.json({ quests });
     } catch (err) {
@@ -313,10 +307,15 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
 
         let newXp = student.xp + xpAmount;
         let newLevel = student.level;
-        let xpToNextLevel = 100;
+        // Base XP to next level, with a slight variation based on student_id
+        let base_xp_to_next_level = 100 + (student_id % 10); // Adds a unique factor per student
+        let xpToNextLevel = base_xp_to_next_level;
+
+        // Scale XP requirement for higher levels
         for (let i = 1; i < newLevel; i++) {
             xpToNextLevel = Math.floor(xpToNextLevel * 1.5);
         }
+
         if (newXp >= xpToNextLevel) {
             newLevel++;
             newXp -= xpToNextLevel;

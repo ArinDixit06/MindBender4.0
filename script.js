@@ -14,11 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const xpBar = document.getElementById('xp-bar');
   const firstQuestBadge = document.getElementById('quest-badge-1');
 
-  const questTitleInput = document.getElementById('quest-title');
-  const questDueDateInput = document.getElementById('quest-due-date');
-  const questSubjectSelect = document.getElementById('quest-subject');
-  const questImportanceSelect = document.getElementById('quest-importance');
-  const addQuestBtn = document.getElementById('add-quest-btn');
+  const questSearchInput = document.getElementById('quest-search-input');
+  const searchQuestsBtn = document.getElementById('search-quests-btn');
   const questListDiv = document.getElementById('quest-list');
 
   const profileButton = document.getElementById('profile-button');
@@ -43,8 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const xpPercentage = (player.xp / player.xpToNextLevel) * 100;
     xpBar.style.width = `${xpPercentage}%`;
     xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
-    populateSubjectsDropdown();
-    renderQuests();
+    fetchAndRenderQuests(); // Call new function to fetch and render quests
     renderSubjectsInModal();
     renderCalendar();
   }
@@ -98,61 +94,78 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCalendar();
   }
 
-  let quests = JSON.parse(localStorage.getItem('quests')) || [];
-  function saveQuests() { localStorage.setItem('quests', JSON.stringify(quests)); }
   function saveSubjects() { localStorage.setItem('subjects', JSON.stringify(subjects)); }
-  function populateSubjectsDropdown() {
-    questSubjectSelect.innerHTML = '<option value="">Select Subject</option>';
-    subjects.forEach(subject => {
-      const option = document.createElement('option');
-      option.value = subject;
-      option.textContent = subject;
-      questSubjectSelect.appendChild(option);
-    });
+
+  async function fetchAndRenderQuests(searchQuery = '') {
+    questListDiv.innerHTML = '<p>Loading quests...</p>';
+    try {
+      const url = searchQuery ? `${API_URL}/api/quests?search=${encodeURIComponent(searchQuery)}` : `${API_URL}/api/quests`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const { quests } = await res.json();
+      renderQuests(quests);
+    } catch (error) {
+      console.error("Error fetching quests:", error);
+      questListDiv.innerHTML = '<p>Failed to load quests. Please try again.</p>';
+    }
   }
-  function renderQuests() {
+
+  function renderQuests(quests) {
     questListDiv.innerHTML = '';
-    quests.forEach((quest, index) => {
+    if (quests.length === 0) {
+      questListDiv.innerHTML = '<p>No quests found.</p>';
+      return;
+    }
+    quests.forEach(quest => {
       const questCard = document.createElement('div');
       questCard.classList.add('quest-card');
       questCard.innerHTML = `
         <h3>Quest: ${quest.title}</h3>
-        <p>Due: ${quest.dueDate || 'N/A'}</p>
+        <p>Due: ${new Date(quest.due_date).toLocaleDateString() || 'N/A'}</p>
         <p>Subject: ${quest.subject || 'N/A'}</p>
         <p>Importance: ${quest.importance || 'N/A'}</p>
-        <button class="complete-quest-btn" data-index="${index}">Complete Quest</button>
+        <button class="complete-quest-btn" data-id="${quest.quest_id}">Complete Quest</button>
       `;
       questListDiv.appendChild(questCard);
     });
     document.querySelectorAll('.complete-quest-btn').forEach(button => {
       button.addEventListener('click', event => {
-        const index = event.target.dataset.index;
-        completeQuest(index);
+        const questId = event.target.dataset.id;
+        completeQuest(questId);
       });
     });
   }
-  function addQuest() {
-    const title = questTitleInput.value.trim();
-    const dueDate = questDueDateInput.value;
-    const subject = questSubjectSelect.value;
-    const importance = questImportanceSelect.value;
-    if (title) {
-      quests.push({ title, dueDate, subject, importance, completed: false });
-      saveQuests();
-      questTitleInput.value = '';
-      questDueDateInput.value = '';
-      questSubjectSelect.value = '';
-      questImportanceSelect.value = 'medium';
-      updateUI();
-    }
-  }
-  function completeQuest(index) {
-    if (quests[index]) {
-      addXp(25);
-      updateStreak(new Date(), 'completed');
-      quests.splice(index, 1);
-      saveQuests();
-      updateUI();
+
+  async function completeQuest(questId) {
+    try {
+      const res = await fetch(`${API_URL}/api/quests/${questId}/complete`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      alert(data.message);
+      // Re-fetch quests to update the list
+      fetchAndRenderQuests(questSearchInput.value.trim());
+      // Optionally update player stats if the server response includes new XP/level
+      // For now, we'll just re-fetch quests and assume server handles XP/level
+      updateUI(); // This will re-render player stats
+    } catch (error) {
+      console.error("Error completing quest:", error);
+      alert("Failed to complete quest: " + error.message);
     }
   }
 
@@ -202,7 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  addQuestBtn.addEventListener('click', addQuest);
+  searchQuestsBtn.addEventListener('click', () => {
+    const searchQuery = questSearchInput.value.trim();
+    fetchAndRenderQuests(searchQuery);
+  });
+
   // Profile modal logic with badge button only
   profileButton.addEventListener('click', openProfileModal);
   closeModalButton.addEventListener('click', closeProfileModal);
@@ -235,4 +252,5 @@ document.addEventListener('DOMContentLoaded', () => {
   }));
 
   updateUI();
+  fetchAndRenderQuests(); // Initial fetch of quests when the page loads
 });

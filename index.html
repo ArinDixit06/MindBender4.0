@@ -85,18 +85,9 @@
       <div class="main-content">
         <section class="quest-board">
           <h2>Available Quests</h2>
-          <div class="add-quest">
-            <input type="text" id="quest-title" placeholder="Quest Title">
-            <input type="date" id="quest-due-date">
-            <select id="quest-subject">
-              <option value="">Select Subject</option>
-            </select>
-            <select id="quest-importance">
-              <option value="low">Low</option>
-              <option value="medium" selected>Medium</option>
-              <option value="high">High</option>
-            </select>
-            <button id="add-quest-btn">Add Quest</button>
+          <div class="quest-search">
+            <input type="text" id="quest-search-input" placeholder="Search quests by title...">
+            <button id="search-quests-btn">Search</button>
           </div>
           <div class="quest-list" id="quest-list"></div>
         </section>
