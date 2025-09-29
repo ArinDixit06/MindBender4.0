@@ -231,54 +231,56 @@ app.get("/api/me", async (req, res) => {
 
 // ---------- QUEST ROUTES ----------
 app.get("/api/quests", async (req, res) => {
+    // Quests should be visible to all logged-in users, completion status is user-specific.
     if (!req.session.userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
     try {
         const student_id = req.session.userId;
-        const { search, status } = req.query; // Add search and status query parameters
+        const { search, status } = req.query;
 
         let query = supabase
-            .from("student_quests")
+            .from("quests") // Fetch directly from the 'quests' table
             .select(`
-                status,
-                due_date,
-                completed_at,
-                quests (
-                    quest_id,
-                    title,
-                    subject,
-                    importance,
-                    xp_reward,
-                    created_at
-                )
-            `)
-            .eq("student_id", student_id);
-
-        if (status) {
-            query = query.eq("status", status);
-        } else {
-            // query = query.eq("status", "pending"); // Default to pending if no status is provided
-        }
+                quest_id,
+                title,
+                subject,
+                importance,
+                xp_reward,
+                created_at,
+                student_quests!left(status, due_date, completed_at) // Left join with student_quests
+            `);
 
         if (search) {
-            query = query.ilike("quests.title", `%${search}%`); // Case-insensitive search by title in the joined quests table
+            query = query.ilike("title", `%${search}%`); // Search directly on the 'quests' title
         }
 
-        const { data: studentQuests, error } = await query;
+        // Filter by status if provided, but apply it to the joined student_quests
+        if (status) {
+            query = query.eq("student_quests.status", status);
+        }
+
+        const { data: allQuests, error } = await query;
 
         if (error) throw error;
 
-        // Flatten the structure for easier client-side consumption
-        const quests = studentQuests.map(sq => ({
-            ...sq.quests,
-            status: sq.status,
-            due_date: sq.due_date,
-            completed_at: sq.completed_at,
-            student_id: student_id // Add student_id for consistency if needed on client
-        }));
+        // Map the data to flatten the structure and ensure student_quests data is correctly associated
+        const quests = allQuests.map(quest => {
+            const studentQuestData = quest.student_quests.find(sq => sq.student_id === student_id); // Find relevant student_quest entry
+            return {
+                quest_id: quest.quest_id,
+                title: quest.title,
+                subject: quest.subject,
+                importance: quest.importance,
+                xp_reward: quest.xp_reward,
+                created_at: quest.created_at,
+                status: studentQuestData ? studentQuestData.status : 'not_assigned', // Default status if no student_quest entry
+                due_date: studentQuestData ? studentQuestData.due_date : null,
+                completed_at: studentQuestData ? studentQuestData.completed_at : null,
+                student_id: student_id
+            };
+        });
 
-        if (error) throw error;
         res.json({ quests });
     } catch (err) {
         console.error("Fetch quests error:", err);
