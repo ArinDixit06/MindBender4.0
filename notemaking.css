@@ -77,21 +77,33 @@ header { padding: 20px 0 0; }
 }
 
 main {
-  max-width: 1000px;
+  max-width: 1200px; /* Increased max-width for more space */
   margin: 0 auto;
-  display: flex;
-  gap: 44px;
+  display: grid; /* Use grid for layout */
+  grid-template-columns: 3fr 1fr; /* 3 parts for form, 1 part for list */
+  gap: 30px; /* Adjust gap between columns */
   align-items: flex-start;
-  padding-bottom: 60px;
+  padding: 20px; /* Add padding to main */
+  height: calc(100vh - 150px); /* Make main take up most of viewport height */
 }
 
-.note-form-container, .notes-list-container {
-  flex: 1;
+.note-form-container {
   background: var(--color-bg-medium-blue);
   border-radius: var(--border-radius-lg);
   padding: 32px 24px;
-  margin-bottom: 20px;
   box-shadow: 0 3px 18px rgba(30,30,60,0.08);
+  height: 100%; /* Make form container fill grid cell height */
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-list-container {
+  background: var(--color-bg-medium-blue);
+  border-radius: var(--border-radius-lg);
+  padding: 32px 24px;
+  box-shadow: 0 3px 18px rgba(30,30,60,0.08);
+  height: 100%; /* Make list container fill grid cell height */
+  overflow-y: auto; /* Enable scrolling for the notes list */
 }
 
 .note-form-container h2, .notes-list-container h2 {
@@ -121,10 +133,38 @@ main {
   padding: 12px;
 }
 
+#note-form {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allow form to grow */
+}
+
+#note-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: var(--color-accent-orange);
+}
+
+#note-form input[type="text"],
+#note-form textarea,
+#note-form select {
+  margin-top: 5px;
+  background: var(--color-bg-deep-blue);
+  color: var(--color-text-light);
+  font-size: 16px;
+  border: 1.5px solid var(--color-bg-dark-blue);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+}
+
 #note-form textarea {
   resize: vertical;
   font-family: var(--font-body);
-  min-height: 130px;
+  min-height: 130px; /* Keep min-height */
+  flex-grow: 1; /* Allow textarea to grow */
+  height: auto; /* Let flexbox manage height */
 }
 .form-actions {
   display: flex;
