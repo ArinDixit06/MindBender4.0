@@ -251,23 +251,43 @@ main {
 .priority-urgent { background: var(--color-accent-red);color: var(--color-text-light);} /* Changed to new theme variable */
 .priority-normal { background: var(--color-green);color: var(--color-text-light);} /* Changed to new theme variable */
 /* Responsive */
-@media (max-width:900px){
-  main{flex-direction:column;}
-  .note-form-container,.notes-list-container{margin:24px 0;}
-}
-@media (max-width: 500px) {
+@media (max-width: 900px) {
   main {
-    padding: 0 10px; /* Increase main padding slightly for better spacing */
-    gap: 20px; /* Reduce gap between containers */
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+    gap: 20px;
+    height: auto; /* Allow height to adjust */
   }
+  .note-form-container, .notes-list-container {
+    margin: 0; /* Remove extra margin, let gap handle spacing */
+    height: auto; /* Allow height to adjust */
+  }
+}
 
-  .center-title {
-    font-size: 20px; /* Slightly smaller title font */
+@media (max-width: 500px) {
+  header { padding: 15px 0 0; }
+  .center-title { font-size: 20px; }
+
+  .navbar.horizontal-navbar { margin-bottom: 10px; }
+  .navbar-nav {
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+  }
+  .nav-item .nav-link {
+    padding: 10px 15px;
+    font-size: 16px;
+    width: 100%;
+    justify-content: center;
+  }
+  .nav-item .nav-link i { margin-right: 5px; }
+
+  main {
+    padding: 10px; /* Adjust main padding for smaller screens */
+    gap: 15px; /* Reduce gap between containers */
   }
 
   .note-form-container, .notes-list-container {
-    padding: 15px 10px; /* Adjust container padding */
-    margin: 15px 0; /* Adjust margin */
+    padding: 20px 15px; /* Adjust container padding */
   }
 
   .note-form-container h2, .notes-list-container h2 {
