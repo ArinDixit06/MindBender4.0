@@ -258,7 +258,7 @@ app.get("/api/quests", async (req, res) => {
         if (status) {
             query = query.eq("status", status);
         } else {
-            query = query.eq("status", "pending"); // Default to pending if no status is provided
+            // query = query.eq("status", "pending"); // Default to pending if no status is provided
         }
 
         if (search) {
