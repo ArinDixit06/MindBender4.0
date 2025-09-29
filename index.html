@@ -58,11 +58,11 @@
       <div class="player-profile">
         <h2>Player Stats</h2>
         <div class="player-stats">
-          <div id="player-level" class="player-level">Level 1</div>
+          <div id="player-level" class="player-level"></div>
           <div class="xp-bar-container">
             <div id="xp-bar" class="xp-bar"></div>
           </div>
-          <div id="xp-text" class="xp-text">0 / 100 XP</div>
+          <div id="xp-text" class="xp-text"></div>
         </div>
         <h2>Achievements</h2>
         <ul class="achievements-list">
@@ -93,7 +93,7 @@
         </section>
         <section class="profile-section">
           <button class="level-profile-btn" id="profile-button">
-            <span class="badge-icon"><span id="level-number">9</span></span>
+            <span class="badge-icon"><span id="level-number"></span></span>
           </button>
           <div class="calendar-container">
             <div class="calendar-header">
@@ -212,6 +212,17 @@
     const xpPercentage = (player.xp / player.xpToNextLevel) * 100;
     xpBar.style.width = `${xpPercentage}%`;
     xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
+
+    console.log(`Player Level (from player object): ${player.level}`);
+    console.log(`Player XP (from player object): ${player.xp}`);
+    console.log(`XP to Next Level (from player object): ${player.xpToNextLevel}`);
+    console.log(`XP Percentage (calculated): ${xpPercentage}%`);
+
+    // Log actual DOM content after update
+    console.log(`DOM - player-level: ${levelDisplay.textContent}`);
+    console.log(`DOM - level-number: ${levelNumber.textContent}`);
+    console.log(`DOM - xp-text: ${xpText.textContent}`);
+    console.log(`DOM - xp-bar width: ${xpBar.style.width}`);
 
     // Call other UI update functions
     fetchAndRenderQuests();
