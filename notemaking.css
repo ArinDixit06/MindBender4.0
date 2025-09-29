@@ -231,57 +231,29 @@ main {
   .note-form-container,.notes-list-container{margin:24px 0;}
 }
 @media (max-width: 500px) {
-main {
-  max-width: 1200px; /* Increase max-width for more space */
-  margin: 0 auto;
-  display: grid; /* Use grid for layout */
-  grid-template-columns: 3fr 1fr; /* 3 parts for form, 1 part for list */
-  gap: 30px; /* Adjust gap between columns */
-  align-items: flex-start;
-  padding: 20px; /* Add padding to main */
-  height: calc(100vh - 150px); /* Make main take up most of viewport height */
-}
+  main {
+    padding: 0 10px; /* Increase main padding slightly for better spacing */
+    gap: 20px; /* Reduce gap between containers */
+  }
 
-.note-form-container {
-  background: var(--color-bg-medium-blue);
-  border-radius: var(--border-radius-lg);
-  padding: 32px 24px;
-  box-shadow: 0 3px 18px rgba(30,30,60,0.08);
-  height: 100%; /* Make form container fill grid cell height */
-  display: flex;
-  flex-direction: column;
-}
+  .center-title {
+    font-size: 20px; /* Slightly smaller title font */
+  }
 
-.notes-list-container {
-  background: var(--color-bg-medium-blue);
-  border-radius: var(--border-radius-lg);
-  padding: 32px 24px;
-  box-shadow: 0 3px 18px rgba(30,30,60,0.08);
-  height: 100%; /* Make list container fill grid cell height */
-  overflow-y: auto; /* Enable scrolling for the notes list */
-}
+  .note-form-container, .notes-list-container {
+    padding: 15px 10px; /* Adjust container padding */
+    margin: 15px 0; /* Adjust margin */
+  }
 
-#note-form {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Allow form to grow */
-}
+  .note-form-container h2, .notes-list-container h2 {
+    font-size: 18px; /* Smaller section headings */
+    margin-bottom: 15px;
+  }
 
-#note-form label {
-  display: flex;
-  flex-direction: column;
-  font-weight: 500;
-  margin-bottom: 16px;
-  color: var(--color-accent-orange);
-}
-
-#note-form textarea {
-  resize: vertical;
-  font-family: var(--font-body);
-  min-height: 130px; /* Keep min-height */
-  flex-grow: 1; /* Allow textarea to grow */
-  height: auto; /* Let flexbox manage height */
-}
+  #note-form label {
+    font-size: 0.9rem; /* Smaller label font */
+    margin-bottom: 12px;
+  }
 
   #note-form input[type="text"],
   #note-form textarea,
