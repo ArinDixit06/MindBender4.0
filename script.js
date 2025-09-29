@@ -41,18 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     xpBar.style.width = `${xpPercentage}%`;
     xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
 
-    console.log(`Player Level (from player object): ${player.level}`);
-    console.log(`Player XP (from player object): ${player.xp}`);
-    console.log(`XP to Next Level (from player object): ${player.xpToNextLevel}`);
-    console.log(`XP Percentage (calculated): ${xpPercentage}%`);
-
-    // Log actual DOM content after update
-    console.log(`DOM - player-level: ${levelDisplay.textContent}`);
-    console.log(`DOM - level-number: ${levelNumber.textContent}`);
-    console.log(`DOM - xp-text: ${xpText.textContent}`);
-    console.log(`DOM - xp-bar width: ${xpBar.style.width}`);
-
-
     fetchAndRenderQuests(); // Call new function to fetch and render quests
     renderSubjectsInModal();
     renderCalendar();
