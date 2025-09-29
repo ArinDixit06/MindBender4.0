@@ -247,8 +247,23 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       const { studentInfo } = await res.json();
-      player.level = studentInfo.level;
-      player.xp = studentInfo.xp;
+
+      // Check if the fetched level is the default '9' and reset if necessary
+      if (studentInfo.level === 9 && studentInfo.xp === 250) { // Assuming 9 and 250 are the initial default values
+        player.level = 1;
+        player.xp = 0;
+        // Update the backend with the reset values
+        await fetch(`${API_URL}/api/students/${studentInfo.student_id}/reset-stats`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          credentials: 'include',
+          body: JSON.stringify({ level: 1, xp: 0 })
+        });
+      } else {
+        player.level = studentInfo.level;
+        player.xp = studentInfo.xp;
+      }
+
       // Recalculate xpToNextLevel based on the fetched level
       let base_xp_to_next_level = 100 + (studentInfo.student_id % 10); // Match server-side logic
       player.xpToNextLevel = base_xp_to_next_level;

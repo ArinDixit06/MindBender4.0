@@ -132,12 +132,19 @@ app.post("/signup", async (req, res) => {
         return res.status(409).json({ error: "User with this email already exists" });
     }
 
-    const { data: student, error: studentError } = await supabase
+    const { data: student, error: studentInsertError } = await supabase
       .from("students")
-      .insert([{ name: email.split("@")[0], class: studentClass, xp: 0, level: 1 }]) // Initialize xp and level
+      .insert([{ name: email.split("@")[0], class: studentClass }]) // Insert without initial XP/level, let DB defaults apply if any
       .select()
       .single();
-    if (studentError) throw studentError;
+    if (studentInsertError) throw studentInsertError;
+
+    // Explicitly update XP and level to 0 and 1 after initial insert to override any DB defaults
+    const { error: studentUpdateError } = await supabase
+      .from("students")
+      .update({ xp: 0, level: 1 })
+      .eq("student_id", student.student_id);
+    if (studentUpdateError) throw studentUpdateError;
 
     const { data: user, error: userError } = await supabase
       .from("users")
@@ -352,6 +359,28 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
     } catch (err) {
         console.error("Complete quest error:", err);
         res.status(500).json({ error: err.message || "Failed to complete quest." });
+    }
+});
+
+// New endpoint to reset student stats
+app.patch("/api/students/:student_id/reset-stats", async (req, res) => {
+    if (!req.session.userId || req.session.userId != req.params.student_id) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    const student_id = req.params.student_id;
+    const { level, xp } = req.body;
+
+    try {
+        const { error } = await supabase
+            .from("students")
+            .update({ level, xp })
+            .eq("student_id", student_id);
+
+        if (error) throw error;
+        res.json({ message: "Student stats reset successfully." });
+    } catch (err) {
+        console.error("Error resetting student stats:", err);
+        res.status(500).json({ error: err.message || "Failed to reset student stats." });
     }
 });
 
