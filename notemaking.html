@@ -87,12 +87,13 @@
     </section>
   </main>
   <script>
-    const API_URL = "https://mindbender4-0.onrender.com"; // Ensure this matches your deployed backend URL
+    const API_URL_FRONTEND = "https://mindbender4-0.onrender.com"; // Ensure this matches your deployed backend URL
+    const API_URL = `${API_URL_FRONTEND}/api/notes`; // Define API_URL globally for notemaking.js
 
     // Function to check session and redirect if unauthorized
     async function checkSession() {
       try {
-        const res = await fetch(`${API_URL}/api/me`, {
+        const res = await fetch(`${API_URL_FRONTEND}/api/me`, {
           method: "GET",
           headers: { "Content-Type": "application/json" },
           credentials: 'include',
@@ -116,7 +117,7 @@
     document.getElementById("logout-btn").addEventListener("click", async (e) => {
       e.preventDefault();
       try {
-        const res = await fetch(`${API_URL}/logout`, {
+        const res = await fetch(`${API_URL_FRONTEND}/logout`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: 'include',

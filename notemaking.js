@@ -1,4 +1,3 @@
-const API_URL = "/api/notes"; // Placeholder; use your real endpoint
 
 function getSessionToken() {
   // Example: Replace with your own session logic if needed
@@ -36,13 +35,26 @@ function renderNotes(notes) {
   });
 }
 
+
 function loadNotes() {
   fetch(API_URL, { credentials: "include" })
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) {
+        if (r.status === 401) {
+          window.location.href = "login.html"; // Redirect to login if unauthorized
+          return Promise.reject("Unauthorized");
+        }
+        throw new Error(`HTTP error! status: ${r.status}`);
+      }
+      return r.json();
+    })
     .then(data => {
       renderNotes(data.notes || []);
     })
-    .catch(() => renderNotes([]));
+    .catch(error => {
+      console.error("Error loading notes:", error);
+      renderNotes([]);
+    });
 }
 
 function handleFormSubmit(event) {
@@ -61,14 +73,26 @@ function handleFormSubmit(event) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title, tags, priority, content })
   })
-    .then(r => r.json())
+    .then(r => {
+      if (!r.ok) {
+        if (r.status === 401) {
+          window.location.href = "login.html"; // Redirect to login if unauthorized
+          return Promise.reject("Unauthorized");
+        }
+        throw new Error(`HTTP error! status: ${r.status}`);
+      }
+      return r.json();
+    })
     .then(data => {
       showToast("Note saved!");
       document.getElementById("note-form").reset();
       document.getElementById("note-id").value = "";
       loadNotes();
     })
-    .catch(() => showToast("Error saving note.", false));
+    .catch(error => {
+      console.error("Error saving note:", error);
+      showToast("Error saving note.", false);
+    });
 }
 
 function handleEditDelete(e) {
@@ -76,19 +100,45 @@ function handleEditDelete(e) {
   if (!id) return;
   if (e.target.closest(".edit-note-btn")) {
     fetch(`${API_URL}/${id}`, { credentials: "include" })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) {
+          if (r.status === 401) {
+            window.location.href = "login.html"; // Redirect to login if unauthorized
+            return Promise.reject("Unauthorized");
+          }
+          throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        return r.json();
+      })
       .then(note => {
         document.getElementById("note-id").value = note.id;
         document.getElementById("note-title").value = note.title;
         document.getElementById("note-tags").value = note.tags ? note.tags.join(", ") : "";
         document.getElementById("note-priority").value = note.priority || "normal";
         document.getElementById("note-content").value = note.content;
+      })
+      .catch(error => {
+        console.error("Error fetching note for edit:", error);
+        showToast("Error fetching note for edit.", false);
       });
   } else if (e.target.closest(".delete-note-btn")) {
     if (!confirm("Delete this note?")) return;
     fetch(`${API_URL}/${id}`, { method: "DELETE", credentials: "include" })
-      .then(() => { showToast("Note deleted."); loadNotes(); })
-      .catch(() => showToast("Error deleting.", false));
+      .then(r => {
+        if (!r.ok) {
+          if (r.status === 401) {
+            window.location.href = "login.html"; // Redirect to login if unauthorized
+            return Promise.reject("Unauthorized");
+          }
+          throw new Error(`HTTP error! status: ${r.status}`);
+        }
+        showToast("Note deleted.");
+        loadNotes();
+      })
+      .catch(error => {
+        console.error("Error deleting note:", error);
+        showToast("Error deleting.", false);
+      });
   }
 }
 
