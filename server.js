@@ -239,8 +239,20 @@ app.get("/api/quests", async (req, res) => {
         const { search, status } = req.query; // Add search and status query parameters
 
         let query = supabase
-            .from("quests")
-            .select("*")
+            .from("student_quests")
+            .select(`
+                status,
+                due_date,
+                completed_at,
+                quests (
+                    quest_id,
+                    title,
+                    subject,
+                    importance,
+                    xp_reward,
+                    created_at
+                )
+            `)
             .eq("student_id", student_id);
 
         if (status) {
@@ -250,10 +262,21 @@ app.get("/api/quests", async (req, res) => {
         }
 
         if (search) {
-            query = query.ilike("title", `%${search}%`); // Case-insensitive search by title
+            query = query.ilike("quests.title", `%${search}%`); // Case-insensitive search by title in the joined quests table
         }
 
-        const { data: quests, error } = await query;
+        const { data: studentQuests, error } = await query;
+
+        if (error) throw error;
+
+        // Flatten the structure for easier client-side consumption
+        const quests = studentQuests.map(sq => ({
+            ...sq.quests,
+            status: sq.status,
+            due_date: sq.due_date,
+            completed_at: sq.completed_at,
+            student_id: student_id // Add student_id for consistency if needed on client
+        }));
 
         if (error) throw error;
         res.json({ quests });
@@ -270,31 +293,27 @@ app.patch("/api/quests/:id/complete", async (req, res) => {
     const questId = req.params.id;
     try {
         const student_id = req.session.userId;
-        const { data: quest, error: questError } = await supabase
+
+        // First, get the xp_reward from the quests table
+        const { data: questData, error: questDataError } = await supabase
             .from("quests")
-            .select("importance")
+            .select("xp_reward")
             .eq("quest_id", questId)
-            .eq("student_id", student_id)
             .single();
 
-        if (questError || !quest) {
-            throw new Error("Quest not found or not authorized.");
+        if (questDataError || !questData) {
+            throw new Error("Quest not found or XP reward not defined.");
         }
 
-        let xpAmount = 0;
-        switch (quest.importance) {
-            case 'low': xpAmount = 10; break;
-            case 'medium': xpAmount = 25; break;
-            case 'high': xpAmount = 50; break;
-            default: xpAmount = 25;
-        }
+        const xpAmount = questData.xp_reward;
 
-        const { error: updateQuestError } = await supabase
-            .from("quests")
-            .update({ status: 'completed' })
+        // Update the status and completed_at in the student_quests table
+        const { error: updateStudentQuestError } = await supabase
+            .from("student_quests")
+            .update({ status: 'completed', completed_at: new Date().toISOString() })
             .eq("quest_id", questId)
             .eq("student_id", student_id);
-        if (updateQuestError) throw updateQuestError;
+        if (updateStudentQuestError) throw updateStudentQuestError;
 
         const { data: student, error: studentError } = await supabase
             .from("students")

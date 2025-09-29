@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <p>Due: ${new Date(quest.due_date).toLocaleDateString() || 'N/A'}</p>
         <p>Subject: ${quest.subject || 'N/A'}</p>
         <p>Importance: ${quest.importance || 'N/A'}</p>
+        <p>XP Reward: ${quest.xp_reward || 0}</p>
         <button class="complete-quest-btn" data-id="${quest.quest_id}">Complete Quest</button>
       `;
       questListDiv.appendChild(questCard);
