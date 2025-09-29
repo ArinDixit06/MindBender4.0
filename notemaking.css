@@ -230,7 +230,8 @@ main {
   margin-bottom: 10px;
   line-height: 1.7;
   white-space: pre-wrap;
-  word-break: break-word;
+  word-break: break-word; /* Ensure long words break */
+  overflow-wrap: break-word; /* Modern property for word breaking */
 }
 .note-actions {
   display: flex;
