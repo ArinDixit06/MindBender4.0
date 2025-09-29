@@ -134,7 +134,7 @@ app.post("/signup", async (req, res) => {
 
     const { data: student, error: studentError } = await supabase
       .from("students")
-      .insert([{ name: email.split("@")[0], class: studentClass }])
+      .insert([{ name: email.split("@")[0], class: studentClass, xp: 0, level: 1 }]) // Initialize xp and level
       .select()
       .single();
     if (studentError) throw studentError;

@@ -1,12 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
   let player = {
-    level: 9,
-    xp: 250,
-    xpToNextLevel: 400,
+    level: 1,
+    xp: 0,
+    xpToNextLevel: 100, // This will be dynamically calculated based on level
   };
 
   let streakData = JSON.parse(localStorage.getItem('streakData')) || {};
   let subjects = JSON.parse(localStorage.getItem('subjects')) || [];
+
+  // No longer saving player stats to local storage directly from frontend
+  // Player stats are now managed by the backend (Supabase)
+  // function savePlayerStats() {
+  //   localStorage.setItem('playerStats', JSON.stringify(player));
+  // }
 
   const levelDisplay = document.getElementById('player-level');
   const levelNumber = document.getElementById('level-number');
@@ -40,6 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const xpPercentage = (player.xp / player.xpToNextLevel) * 100;
     xpBar.style.width = `${xpPercentage}%`;
     xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
+
+    console.log(`Player Level: ${player.level}`);
+    console.log(`Player XP: ${player.xp}`);
+    console.log(`XP to Next Level: ${player.xpToNextLevel}`);
+    console.log(`XP Percentage: ${xpPercentage}%`);
+
     fetchAndRenderQuests(); // Call new function to fetch and render quests
     renderSubjectsInModal();
     renderCalendar();
@@ -55,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!firstQuestBadge.classList.contains('unlocked')) {
       firstQuestBadge.classList.add('unlocked');
     }
+    // Player stats are now saved on the backend when a quest is completed
     updateUI();
   }
 
@@ -166,9 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
       alert(data.message);
       // Re-fetch quests to update the list
       fetchAndRenderQuests(questSearchInput.value.trim());
-      // Optionally update player stats if the server response includes new XP/level
-      // For now, we'll just re-fetch quests and assume server handles XP/level
-      updateUI(); // This will re-render player stats
+      // After completing a quest, fetch updated player stats from the backend
+      await fetchPlayerStats();
+      updateUI(); // This will re-render player stats with fresh data
     } catch (error) {
       console.error("Error completing quest:", error);
       alert("Failed to complete quest: " + error.message);
@@ -213,11 +226,38 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Subject already exists!');
     }
   }
+
   function deleteSubject(index) {
     if (confirm(`Are you sure you want to delete "${subjects[index]}"?`)) {
       subjects.splice(index, 1);
       saveSubjects();
       updateUI();
+    }
+  }
+
+  async function fetchPlayerStats() {
+    try {
+      const res = await fetch(`${API_URL}/api/me`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const { studentInfo } = await res.json();
+      player.level = studentInfo.level;
+      player.xp = studentInfo.xp;
+      // Recalculate xpToNextLevel based on the fetched level
+      let base_xp_to_next_level = 100 + (studentInfo.student_id % 10); // Match server-side logic
+      player.xpToNextLevel = base_xp_to_next_level;
+      for (let i = 1; i < player.level; i++) {
+        player.xpToNextLevel = Math.floor(player.xpToNextLevel * 1.5);
+      }
+    } catch (error) {
+      console.error("Error fetching player stats:", error);
+      // Optionally, redirect to login or show an error message
     }
   }
 
@@ -257,6 +297,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = "login.html";
   }));
 
-  updateUI();
-  fetchAndRenderQuests(); // Initial fetch of quests when the page loads
+  // Initial setup
+  fetchPlayerStats().then(() => {
+    updateUI();
+    fetchAndRenderQuests(); // Initial fetch of quests when the page loads
+  });
 });
