@@ -106,10 +106,15 @@ document.addEventListener('DOMContentLoaded', () => {
         credentials: 'include',
       });
 
+      console.log("Raw API response:", res); // Log the raw response
+
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      const { quests } = await res.json();
+      const responseData = await res.json(); // Get the full response data
+      console.log("Parsed API response data:", responseData); // Log the parsed data
+      const { quests } = responseData; // Destructure quests from the response data
+      console.log("Quests array:", quests); // Log the quests array
       renderQuests(quests);
     } catch (error) {
       console.error("Error fetching quests:", error);
