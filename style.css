@@ -199,6 +199,48 @@ main {
   font-size: 16px;
   margin-bottom: 20px;
 }
+
+/* --- NEW STYLES FOR SEARCH BAR --- */
+.quest-search {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#quest-search-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--color-highlight-orange);
+  background-color: var(--color-bg-parchment);
+  color: var(--color-text-brown);
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+#quest-search-input::placeholder {
+  color: var(--color-text-brown);
+  opacity: 0.7;
+}
+
+#search-quests-btn {
+  background-color: var(--color-accent-red);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: background-color var(--transition-speed);
+}
+
+#search-quests-btn:hover {
+  background-color: var(--color-accent-gold);
+  color: var(--color-text-brown);
+}
+/* --- END OF NEW STYLES --- */
+
+
 .add-quest {
   display: flex;
   flex-wrap: wrap;
@@ -377,6 +419,8 @@ main {
   .quest-board, .profile-section { flex: none; }
   .add-quest { flex-direction: column; }
   .add-quest input, .add-quest select { min-width: 100%; }
+  /* Make search bar stack vertically */
+  .quest-search { flex-direction: column; }
 }
 @media (max-width: 480px) {
   body { font-size: 14px; }
