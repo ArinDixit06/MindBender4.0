@@ -4,16 +4,16 @@
   --font-body: 'Roboto', sans-serif;
   --font-heading: 'Press Start 2P', cursive;
 
-  /* New Theme Colors (inspired by the provided image) */
-  --color-primary-bg: #e0d8b0; /* Light yellowish/beige background */
-  --color-secondary-bg: #c8b88a; /* Slightly darker beige for containers */
-  --color-tertiary-bg: #a08a60; /* Darker brown/gold for deeper elements */
-  --color-text-dark: #4a3a2a; /* Dark brown for main text */
-  --color-text-light: #f0f0e0; /* Light text on dark backgrounds */
-  --color-accent-gold: #fca311; /* Gold accent */
-  --color-accent-blue: #2a7a8a; /* Teal/blue accent */
-  --color-accent-red: #e94560; /* Red accent for warnings/delete */
-  --color-green: #4ade80; /* Green for success/positive */
+  /* New Theme Colors */
+  --color-primary-bg: #e0d8b0;
+  --color-secondary-bg: #c8b88a;
+  --color-tertiary-bg: #a08a60;
+  --color-text-dark: #4a3a2a;
+  --color-text-light: #f0f0e0;
+  --color-accent-gold: #fca311;
+  --color-accent-blue: #2a7a8a;
+  --color-accent-red: #e94560;
+  --color-green: #4ade80;
 
   --border-radius-sm: 5px;
   --border-radius-md: 9px;
@@ -26,8 +26,8 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: var(--font-body);
-  background-color: var(--color-primary-bg); /* Changed to new theme variable */
-  color: var(--color-text-dark); /* Changed to new theme variable */
+  background-color: var(--color-primary-bg);
+  color: var(--color-text-dark);
   overflow-x: hidden;
 }
 
@@ -35,16 +35,16 @@ header { padding: 20px 0 0; }
 .center-title {
   text-align: center;
   font-family: var(--font-heading);
-  color: var(--color-accent-gold); /* Changed to new theme variable */
+  color: var(--color-accent-gold);
   font-size: 36px;
   margin: 0;
-  text-shadow: 2px 2px var(--color-text-dark); /* Changed to new theme variable */
+  text-shadow: 2px 2px var(--color-text-dark);
 }
 
 .navbar.horizontal-navbar {
   width: 100%;
-  background-color: var(--color-tertiary-bg); /* Changed to new theme variable */
-  border-bottom: 2px solid var(--color-secondary-bg); /* Changed to new theme variable */
+  background-color: var(--color-tertiary-bg);
+  border-bottom: 2px solid var(--color-secondary-bg);
   margin-bottom: 24px;
 }
 .navbar-nav {
@@ -60,7 +60,7 @@ header { padding: 20px 0 0; }
   align-items: center;
   padding: 16px 30px;
   font-size: 19px;
-  color: var(--color-accent-gold); /* Changed to new theme variable */
+  color: var(--color-accent-gold);
   font-family: var(--font-heading);
   text-decoration: none;
   border-radius: var(--border-radius-md);
@@ -68,7 +68,7 @@ header { padding: 20px 0 0; }
   outline: none;
 }
 .nav-item .nav-link:focus {
-  box-shadow: 0 0 0 2px var(--color-accent-gold); /* Changed to new theme variable */
+  box-shadow: 0 0 0 2px var(--color-accent-gold);
 }
 .nav-item .nav-link i {
   margin-right: 10px;
@@ -76,52 +76,48 @@ header { padding: 20px 0 0; }
 }
 .nav-item .nav-link:hover,
 .nav-item .nav-link.active {
-  color: var(--color-accent-blue); /* Changed to new theme variable */
-  background: rgba(252,163,17,0.12); /* Adjusted from old accent-orange */
+  color: var(--color-accent-blue);
+  background: rgba(252,163,17,0.12);
 }
 
 main {
-  max-width: 1200px; /* Increased max-width for more space */
+  max-width: 1200px;
   margin: 0 auto;
-  display: grid; /* Use grid for layout */
-  grid-template-columns: 3fr 1fr; /* 3 parts for form, 1 part for list */
-  gap: 30px; /* Adjust gap between columns */
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 30px;
   align-items: flex-start;
-  padding: 20px; /* Add padding to main */
-  height: calc(100vh - 150px); /* Make main take up most of viewport height */
+  padding: 20px;
+  height: calc(100vh - 150px);
 }
 
-.note-form-container {
-  background: var(--color-secondary-bg); /* Changed to new theme variable */
+.note-form-container,
+.notes-list-container {
+  background: var(--color-secondary-bg);
   border-radius: var(--border-radius-lg);
   padding: 32px 24px;
-  box-shadow: 0 3px 18px rgba(30,30,60,0.08); /* Keep original shadow for now */
-  height: 100%; /* Make form container fill grid cell height */
+  box-shadow: 0 3px 18px rgba(30,30,60,0.08);
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
 
 .notes-list-container {
-  background: var(--color-secondary-bg); /* Changed to new theme variable */
-  border-radius: var(--border-radius-lg);
-  padding: 32px 24px;
-  box-shadow: 0 3px 18px rgba(30,30,60,0.08); /* Keep original shadow for now */
-  height: 100%; /* Make list container fill grid cell height */
-  overflow-y: auto; /* Enable scrolling for the notes list */
+  overflow-y: auto;
 }
 
 .note-form-container h2, .notes-list-container h2 {
   font-family: var(--font-heading);
-  color: var(--color-accent-gold); /* Changed to new theme variable */
+  color: var(--color-accent-gold);
   font-size: 22px;
   margin: 0 0 18px 0;
-  text-shadow: 2px 2px var(--color-text-dark); /* Changed to new theme variable */
+  text-shadow: 2px 2px var(--color-text-dark);
 }
 
 #note-form {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allow form to grow */
+  flex-grow: 1;
 }
 
 #note-form label {
@@ -129,16 +125,16 @@ main {
   flex-direction: column;
   font-weight: 500;
   margin-bottom: 16px;
-  color: var(--color-text-dark); /* Changed to new theme variable */
+  color: var(--color-text-dark);
 }
 #note-form input[type="text"],
 #note-form textarea,
 #note-form select {
   margin-top: 5px;
-  background: var(--color-tertiary-bg); /* Changed to new theme variable */
-  color: var(--color-text-light); /* Changed to new theme variable */
+  background: var(--color-tertiary-bg);
+  color: var(--color-text-light);
   font-size: 16px;
-  border: 1.5px solid var(--color-text-dark); /* Changed to new theme variable */
+  border: 1.5px solid var(--color-text-dark);
   border-radius: var(--border-radius-md);
   padding: 12px;
 }
@@ -146,9 +142,9 @@ main {
 #note-form textarea {
   resize: vertical;
   font-family: var(--font-body);
-  min-height: 130px; /* Keep min-height */
-  flex-grow: 1; /* Allow textarea to grow */
-  height: auto; /* Let flexbox manage height */
+  min-height: 130px;
+  flex-grow: 1;
+  height: auto;
 }
 .form-actions {
   display: flex;
@@ -156,8 +152,8 @@ main {
   margin-top: 12px;
 }
 .save-btn, .reset-btn {
-  background: var(--color-accent-gold); /* Changed to new theme variable */
-  color: var(--color-text-light); /* Changed to new theme variable */
+  background: var(--color-accent-gold);
+  color: var(--color-text-light);
   border: none;
   border-radius: var(--border-radius-sm);
   font-size: 17px;
@@ -171,7 +167,7 @@ main {
 }
 .save-btn:hover { background: var(--color-green);}
 .reset-btn { background: var(--color-accent-red);}
-.reset-btn:hover { background: #e95153;} /* Keep original hover for now */
+.reset-btn:hover { background: #e95153;}
 
 #notes-list {
   margin-top: 24px;
@@ -180,10 +176,10 @@ main {
   gap: 22px;
 }
 .note-card {
-  background: var(--color-tertiary-bg); /* Changed to new theme variable */
+  background: var(--color-tertiary-bg);
   padding: 18px 15px;
   border-radius: var(--border-radius-lg);
-  box-shadow: 0 2px 8px rgba(30,30,60,0.11); /* Keep original shadow for now */
+  box-shadow: 0 2px 8px rgba(30,30,60,0.11);
   position: relative;
 }
 .note-header {
@@ -195,8 +191,8 @@ main {
 .note-title {
   font-family: var(--font-heading);
   font-size: 18px;
-  color: var(--color-accent-gold); /* Changed to new theme variable */
-  text-shadow: 1px 1px var(--color-text-dark); /* Changed to new theme variable */
+  color: var(--color-accent-gold);
+  text-shadow: 1px 1px var(--color-text-dark);
 }
 .note-meta {
   font-size: 13px;
@@ -205,17 +201,17 @@ main {
 }
 .note-tags {
   font-size: 12px;
-  color: var(--color-text-dark); /* Changed to new theme variable */
+  color: var(--color-text-dark);
   margin-bottom: 9px;
 }
 .note-content {
-  color: var(--color-text-dark); /* Changed to new theme variable */
+  color: var(--color-text-dark);
   font-size: 15px;
   margin-bottom: 10px;
   line-height: 1.7;
   white-space: pre-wrap;
-  word-break: break-word; /* Ensure long words break */
-  overflow-wrap: break-word; /* Modern property for word breaking */
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 .note-actions {
   display: flex;
@@ -224,7 +220,7 @@ main {
 }
 .edit-note-btn, .delete-note-btn {
   background: none;
-  color: var(--color-accent-blue); /* Changed to new theme variable */
+  color: var(--color-accent-blue);
   border: none;
   font-size: 16px;
   font-family: var(--font-heading);
@@ -236,9 +232,9 @@ main {
   align-items: center;
   gap: 4px;
 }
-.edit-note-btn:hover { background: rgba(76, 224, 128, 0.28);} /* Keep original hover for now */
+.edit-note-btn:hover { background: rgba(76, 224, 128, 0.28);}
 .delete-note-btn { color: var(--color-accent-red);}
-.delete-note-btn:hover { background: rgba(233,69,96,0.22);} /* Keep original hover for now */
+.delete-note-btn:hover { background: rgba(233,69,96,0.22);}
 .note-priority {
   display: inline-block;
   padding: 0px 10px;
@@ -247,29 +243,61 @@ main {
   margin-left: 6px;
   text-transform: uppercase;
 }
-.priority-important { background: var(--color-accent-gold);color: var(--color-text-light);} /* Changed to new theme variable */
-.priority-urgent { background: var(--color-accent-red);color: var(--color-text-light);} /* Changed to new theme variable */
-.priority-normal { background: var(--color-green);color: var(--color-text-light);} /* Changed to new theme variable */
-/* Responsive */
-@media (max-width: 900px) {
+.priority-important { background: var(--color-accent-gold);color: var(--color-text-light);}
+.priority-urgent { background: var(--color-accent-red);color: var(--color-text-light);}
+.priority-normal { background: var(--color-green);color: var(--color-text-light);}
+
+/* === RESPONSIVE STYLES === */
+
+/* For tablets and small laptops */
+@media (max-width: 1024px) {
   main {
-    grid-template-columns: 1fr; /* Stack columns on smaller screens */
-    gap: 20px;
-    height: auto; /* Allow height to adjust */
+    grid-template-columns: 1fr; /* Stack form and list */
+    gap: 24px;
+    height: auto; /* Allow height to be determined by content */
   }
   .note-form-container, .notes-list-container {
-    margin: 0; /* Remove extra margin, let gap handle spacing */
-    height: auto; /* Allow height to adjust */
+    height: auto;
   }
 }
 
-@media (max-width: 500px) {
-  header { padding: 15px 0 0; }
-  .center-title { font-size: 20px; }
+/* For larger phones and mobile landscape */
+@media (max-width: 768px) {
+  main {
+    padding: 15px;
+    gap: 20px;
+  }
+  .note-form-container, .notes-list-container {
+    padding: 24px 20px;
+  }
+  .note-form-container h2, .notes-list-container h2 {
+    font-size: 20px;
+  }
+  .note-title {
+    font-size: 17px;
+  }
+  .center-title {
+    font-size: 28px;
+  }
+}
 
-  .navbar.horizontal-navbar { margin-bottom: 10px; }
+/* For standard mobile phones in portrait mode */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+  header {
+    padding: 15px 0 0;
+  }
+  .center-title {
+    font-size: 20px;
+  }
+
+  .navbar.horizontal-navbar {
+    margin-bottom: 15px;
+  }
   .navbar-nav {
-    flex-direction: column;
+    flex-direction: column; /* Stack nav links vertically */
     gap: 0;
     align-items: center;
   }
@@ -279,93 +307,84 @@ main {
     width: 100%;
     justify-content: center;
   }
-  .nav-item .nav-link i { margin-right: 5px; }
+  .nav-item .nav-link i {
+    margin-right: 8px;
+  }
 
   main {
-    padding: 10px; /* Adjust main padding for smaller screens */
-    gap: 15px; /* Reduce gap between containers */
+    padding: 10px;
+    gap: 15px;
   }
-
   .note-form-container, .notes-list-container {
-    padding: 20px 15px; /* Adjust container padding */
+    padding: 20px 15px;
+    border-radius: var(--border-radius-md);
   }
-
   .note-form-container h2, .notes-list-container h2 {
-    font-size: 18px; /* Smaller section headings */
+    font-size: 18px;
     margin-bottom: 15px;
   }
 
   #note-form label {
-    font-size: 0.9rem; /* Smaller label font */
+    font-size: 1rem;
     margin-bottom: 12px;
   }
-
   #note-form input[type="text"],
   #note-form textarea,
   #note-form select {
-    font-size: 14px; /* Smaller input font */
-    padding: 10px; /* Smaller input padding */
-    min-height: 100px; /* Adjust textarea min-height */
+    font-size: 14px;
+    padding: 10px;
   }
-
+  #note-form textarea {
+    min-height: 100px;
+  }
   .form-actions {
-    gap: 10px; /* Reduce gap between form buttons */
-    flex-wrap: wrap; /* Allow buttons to wrap */
+    gap: 10px;
+    flex-wrap: wrap; /* Allow buttons to wrap to the next line */
   }
-
   .save-btn, .reset-btn {
-    font-size: 14px; /* Smaller button font */
-    padding: 8px 18px; /* Smaller button padding */
-    flex-grow: 1; /* Allow buttons to grow */
+    font-size: 14px;
+    padding: 8px 18px;
+    flex-grow: 1; /* Allow buttons to fill the available space */
     justify-content: center;
   }
 
   #notes-list {
     margin-top: 15px;
-    gap: 15px; /* Reduce gap between note cards */
+    gap: 15px;
   }
-
   .note-card {
-    padding: 15px 10px; /* Smaller note card padding */
+    padding: 15px 12px;
   }
-
   .note-header {
-    flex-direction: column; /* Stack header elements */
+    flex-direction: column; /* Stack title and metadata */
     align-items: flex-start;
-    margin-bottom: 5px;
+    gap: 5px;
+    margin-bottom: 8px;
   }
-
   .note-title {
-    font-size: 16px; /* Smaller note title */
-    margin-bottom: 5px;
+    font-size: 16px;
   }
-
   .note-meta {
-    font-size: 11px; /* Smaller meta font */
+    font-size: 11px;
   }
-
   .note-tags {
-    font-size: 11px; /* Smaller tags font */
+    font-size: 11px;
     margin-bottom: 8px;
   }
-
   .note-content {
-    font-size: 14px; /* Smaller content font */
+    font-size: 14px;
     margin-bottom: 8px;
   }
-
   .note-actions {
-    gap: 10px; /* Reduce gap between note action buttons */
+    gap: 10px;
     flex-wrap: wrap;
   }
-
   .edit-note-btn, .delete-note-btn {
-    font-size: 14px; /* Smaller action button font */
-    padding: 4px 8px; /* Smaller action button padding */
+    font-size: 14px;
+    padding: 4px 8px;
   }
-
   .note-priority {
-    font-size: 10px; /* Smaller priority tag font */
-    padding: 0px 8px;
+    font-size: 10px;
+    padding: 1px 8px;
   }
 }
