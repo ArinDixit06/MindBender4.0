@@ -3,52 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up Form</title>
+    <title>Student Portal</title>
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
 
-    <h1 class="main-heading">LOGIN</h1>
-
-    <hr class="separator"> 
-
     <div class="contact-us">
-      
-      <form action="/signup" method="POST">
+      <div class="form-container">
         
-        <div>
-          <label for="name">Name:</label>
-          <input id="name" name="customerName" placeholder="Name" required type="text" />
+        <div class="form-content login-form">
+          <div class="title">LOGIN</div>
+          <form action="/login" method="POST">
+            <div>
+              <label for="login-email">Email:</label>
+              <input id="login-email" name="customerEmail" placeholder="you@example.com" required type="email" />
+            </div>
+            <div>
+              <label for="login-password">Password:</label>
+              <input id="login-password" name="customerPassword" placeholder="Password" required type="password" />
+            </div>
+            <div>
+              <button type="submit">LOGIN</button>
+            </div>
+          </form>
         </div>
 
-        <div>
-          <label for="rollno">Roll No:</label>
-          <input id="rollno" name="customerRollNo" placeholder="Roll No" required type="text" />
-        </div>
-
-        <div>
-          <label for="grade">Grade:</label>
-          <select id="grade" name="customerGrade" required>
-            <option value="" disabled selected>Select your grade</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="email">Email:</label>
-          <input id="email" name="customerEmail" placeholder="you@example.com" required type="email" />
-        </div>
+        <div class="vertical-separator"></div>
         
-        <div>
-          <button type="submit">SIGN UP</button>
+        <div class="form-content signup-form">
+          <div class="title">SIGN UP</div>
+          <form action="/signup" method="POST">
+            <div>
+              <label for="name">Name:</label>
+              <input id="name" name="customerName" placeholder="Name" required type="text" />
+            </div>
+            <div>
+              <label for="rollno">Roll No:</label>
+              <input id="rollno" name="customerRollNo" placeholder="Roll No" required type="text" />
+            </div>
+            <div>
+              <label for="grade">Grade:</label>
+              <select id="grade" name="customerGrade" required>
+                <option value="" disabled selected>Select your grade</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div>
+              <label for="signup-email">Email:</label>
+              <input id="signup-email" name="customerEmail" placeholder="you@example.com" required type="email" />
+            </div>
+            <div>
+              <label for="signup-password">Password:</label>
+              <input id="signup-password" name="customerPassword" placeholder="Create Password" required type="password" />
+            </div>
+            <div>
+              <button type="submit">SIGN UP</button>
+            </div>
+          </form>
         </div>
-        
-      </form>
+      </div>
     </div>
 
 </body>
