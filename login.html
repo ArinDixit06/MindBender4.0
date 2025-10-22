@@ -1,132 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>StudyQuest | Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="login.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Form</title>
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
-  <div class="container">
-    <input type="checkbox" id="flip">
-    <div class="forms">
+
+    <h1 class="main-heading">LOGIN</h1>
+
+    <hr class="separator"> 
+
+    <div class="contact-us">
       
-      <div class="form login-form">
-        <div class="title">LOGIN</div>
-        <form id="loginForm">
-          <div class="input-box">
-            <i class="fas fa-envelope"></i>
-            <input type="text" placeholder="Email" required id="login-email">
-          </div>
-          <div class="input-box">
-            <i class="fas fa-lock"></i>
-            <input type="password" placeholder="Password" required id="login-password">
-          </div>
-          <div class="button input-box">
-            <input type="submit" value="Login">
-          </div>
-          <div class="text">Don't have an account? <label for="flip">Signup now</label></div>
-        </form>
-      </div>
+      <form action="/signup" method="POST">
+        
+        <div>
+          <label for="name">Name:</label>
+          <input id="name" name="customerName" placeholder="Name" required type="text" />
+        </div>
 
-      <div class="form signup-form">
-        <div class="title">SIGNUP</div>
-        <form id="signupForm">
-          <div class="input-box">
-            <i class="fas fa-envelope"></i>
-            <input type="email" placeholder="Email" id="signup-email" required>
-          </div>
+        <div>
+          <label for="rollno">Roll No:</label>
+          <input id="rollno" name="customerRollNo" placeholder="Roll No" required type="text" />
+        </div>
 
-          <div class="input-box">
-            <i class="fas fa-lock"></i>
-            <input type="password" placeholder="Password" id="signup-password" required>
-          </div>
+        <div>
+          <label for="grade">Grade:</label>
+          <select id="grade" name="customerGrade" required>
+            <option value="" disabled selected>Select your grade</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
 
-          <div class="input-box">
-            <i class="fas fa-envelope"></i>
-            <input type="email" placeholder="Parent Email" id="signup-parent-email" required>
-          </div>
-
-          <div class="input-box">
-            <i class="fas fa-school"></i>
-            <input type="number" placeholder="Class (integer)" id="signup-class" required>
-          </div>
-
-          <div class="button input-box">
-            <input type="submit" value="Signup">
-          </div>
-          <div class="text">Already have an account? <label for="flip">Login now</label></div>
-        </form>
-      </div>
+        <div>
+          <label for="email">Email:</label>
+          <input id="email" name="customerEmail" placeholder="you@example.com" required type="email" />
+        </div>
+        
+        <div>
+          <button type="submit">SIGN UP</button>
+        </div>
+        
+      </form>
     </div>
-  </div>
 
-  <script>
-    const API_URL = "https://mindbender4-0.onrender.com";
-
-    // ----------------- SIGNUP -----------------
-    const signupForm = document.getElementById("signupForm");
-    signupForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("signup-email").value;
-      const password = document.getElementById("signup-password").value;
-      const parent_email = document.getElementById("signup-parent-email").value;
-      const studentClass = parseInt(document.getElementById("signup-class").value);
-
-      try {
-        const res = await fetch(`${API_URL}/signup`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, parent_email, password, class: studentClass }),
-          // THIS LINE IS CRUCIAL to handle cookies correctly
-          credentials: 'include', 
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert("Signup successful! You can now login.");
-          document.getElementById("flip").checked = false; // switch to login form
-          signupForm.reset();
-        } else {
-          alert("Signup failed: " + data.error);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Signup error: " + err.message);
-      }
-    });
-
-    // ----------------- LOGIN -----------------
-    const loginForm = document.getElementById("loginForm");
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const email = document.getElementById("login-email").value;
-      const password = document.getElementById("login-password").value;
-
-      try {
-        const res = await fetch(`${API_URL}/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-          // THIS LINE IS CRUCIAL to send and receive cookies
-          credentials: 'include', 
-        });
-        const data = await res.json();
-        if (res.ok) {
-          // You no longer need to save the user in localStorage for session management
-          // localStorage.setItem("loggedInUser", JSON.stringify(data.data));
-          window.location.href = "index.html"; // redirect to dashboard
-        } else {
-          alert("Login failed: " + data.error);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Login error: " + err.message);
-      }
-    });
-  </script>
-</body>
 </body>
 </html>
