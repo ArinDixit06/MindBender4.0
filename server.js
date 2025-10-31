@@ -116,48 +116,72 @@ const cbseClass10MathsSyllabus = {
 
 // ---------- AUTH ROUTES ----------
 app.post("/signup", async (req, res) => {
-  const { email, parent_email, password, class: studentClass } = req.body;
-  if (!password) {
+  // Destructure the new form fields from req.body
+  const {
+    customerName,
+    customerRollNo,
+    customerGrade,
+    customerEmail,
+    customerPassword,
+  } = req.body;
+
+  // Use the new password variable
+  if (!customerPassword) {
     return res.status(400).json({ error: "Password is required" });
   }
 
   try {
+    // Check if user with this email already exists
     const { data: existingUser } = await supabase
-        .from("users")
-        .select("email")
-        .eq("email", email)
-        .single();
+      .from("users")
+      .select("email")
+      .eq("email", customerEmail) // Use customerEmail
+      .single();
 
     if (existingUser) {
-        return res.status(409).json({ error: "User with this email already exists" });
+      return res
+        .status(409)
+        .json({ error: "User with this email already exists" });
     }
 
+    // Insert into students table with all the new student info
     const { data: student, error: studentInsertError } = await supabase
       .from("students")
-      .insert([{ name: email.split("@")[0], class: studentClass }]) // Insert without initial XP/level, let DB defaults apply if any
+      .insert([
+        {
+          name: customerName,
+          class: customerGrade,
+          roll_no: customerRollNo, // Add the new roll number
+        },
+      ])
       .select()
       .single();
+
     if (studentInsertError) throw studentInsertError;
 
-    // Explicitly update XP and level to 0 and 1 after initial insert to override any DB defaults
+    // Explicitly update XP and level to 0 and 1
     const { error: studentUpdateError } = await supabase
       .from("students")
       .update({ xp: 0, level: 1 })
       .eq("student_id", student.student_id);
+
     if (studentUpdateError) throw studentUpdateError;
 
+    // Insert into users table
     const { data: user, error: userError } = await supabase
       .from("users")
       .insert([
         {
           student_id: student.student_id,
-          email,
-          parent_email,
-          password: password, // Storing plaintext password as requested
+          email: customerEmail,
+          password: customerPassword, // Storing plaintext password
+          // parent_email is no longer provided, so we omit it.
+          // This works because we made the column optional (NULLable) in the SQL update.
         },
       ])
       .select()
       .single();
+
     if (userError) throw userError;
 
     res.status(201).json({ message: "Signup successful" });
@@ -743,3 +767,4 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
