@@ -1,7 +1,7 @@
 import express from "express";
 import session from "express-session";
 import cors from "cors";
-import bodyParser from "body-parser";
+// import bodyParser from "body-parser"; // We will use express.json() instead
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai"; // Import the SDK
@@ -39,7 +39,10 @@ app.use(
   })
 );
 
-app.use(bodyParser.json());
+// REPLACED bodyParser.json() with express.json()
+app.use(express.json()); 
+// ADDED express.urlencoded() to parse form data from your HTML form
+app.use(express.urlencoded({ extended: true })); 
 
 // Serve static files from the current directory
 app.use(express.static('.'));
@@ -115,16 +118,10 @@ const cbseClass10MathsSyllabus = {
 
 
 // ---------- AUTH ROUTES ----------
-// Assuming you're using Express and have 'app' defined.
-// You will also need to have your 'supabase' client imported and initialized.
 
-// *** THIS IS THE FIX ***
-// Add these lines BEFORE your routes to parse form data and JSON
-// This allows your server to read req.body
-app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+// Note: The middleware app.use(express.json()) and app.use(express.urlencoded())
+// were moved to the main middleware section near the top.
 
-// Your existing signup route
 app.post("/signup", async (req, res) => {
   // Destructure the new form fields from req.body
   const {
@@ -195,7 +192,12 @@ app.post("/signup", async (req, res) => {
 
     if (userError) throw userError;
 
-    res.status(201).json({ message: "Signup successful" });
+    // *** THIS IS THE FIX for the "website not visible" issue ***
+    // Instead of sending JSON, redirect the user to another page.
+    res.redirect("/login"); 
+    
+    // This line was replaced:
+    // res.status(201).json({ message: "Signup successful" });
   } catch (err) {
     console.error("Signup error:", err);
     res.status(400).json({ error: err.message });
@@ -779,6 +781,3 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-
-
-
