@@ -194,7 +194,7 @@ app.post("/signup", async (req, res) => {
 
     // *** THIS IS THE FIX for the "website not visible" issue ***
     // Instead of sending JSON, redirect the user to another page.
-    res.redirect("/login"); 
+    res.redirect("/index.html"); 
     
     // This line was replaced:
     // res.status(201).json({ message: "Signup successful" });
@@ -223,8 +223,8 @@ app.post("/login", async (req, res) => {
     }
 
     req.session.userId = user.student_id;
-    const { password: _, ...userData } = user;
-    res.json({ message: "Login successful", data: userData });
+    // Redirect to index.html after successful login
+    res.redirect("/index.html");
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ error: "Internal server error" });
