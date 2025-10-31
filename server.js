@@ -115,6 +115,16 @@ const cbseClass10MathsSyllabus = {
 
 
 // ---------- AUTH ROUTES ----------
+// Assuming you're using Express and have 'app' defined.
+// You will also need to have your 'supabase' client imported and initialized.
+
+// *** THIS IS THE FIX ***
+// Add these lines BEFORE your routes to parse form data and JSON
+// This allows your server to read req.body
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+// Your existing signup route
 app.post("/signup", async (req, res) => {
   // Destructure the new form fields from req.body
   const {
@@ -126,6 +136,7 @@ app.post("/signup", async (req, res) => {
   } = req.body;
 
   // Use the new password variable
+  // This check will now work correctly
   if (!customerPassword) {
     return res.status(400).json({ error: "Password is required" });
   }
@@ -190,6 +201,7 @@ app.post("/signup", async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -767,5 +779,6 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
 
 
