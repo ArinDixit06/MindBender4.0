@@ -45,7 +45,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 
 // Serve static files from the current directory
-app.use(express.static('.'));
+app.use(express.static(".", {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, path, stat) => {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+  }
+}));
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
@@ -771,7 +779,7 @@ app.post("/api/knowledge-map/teach-topic", async (req, res) => {
 
         res.json({ content });
     } catch (err) {
-        console.error("Teach Topic API error:", err); // Log the full error object
+        console.error("Teach Topic API error:", err);
         res.status(500).json({ error: "Failed to get explanation from AI.", details: err.message || "Unknown error" });
     }
 });
