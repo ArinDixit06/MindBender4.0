@@ -174,8 +174,9 @@ option {
 .website-title {
   text-align: center;
   color: rgba(107, 37, 37, 0.986);
-  font-family: 'Fjalla One', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 36pt; /* You can adjust this size */
   margin-bottom: 20px; /* Space between title and box */
   width: 100%;
+
 }
