@@ -360,61 +360,6 @@ app.post("/login", async (req, res) => {
 });
 
 
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("user_id, name, email, hashed_password, role, school_id, xp, level")
-      .eq("email", email)
-      .single();
-
-    if (error || !user) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-
-    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
-    if (!passwordMatch) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-
-    const { data: school, error: schoolError } = await supabase
-      .from("schools")
-      .select("school_id, school_name, domain_name, logo_url")
-      .eq("school_id", user.school_id)
-      .single();
-
-    if (schoolError || !school) {
-      console.error("School not found for user:", user.school_id);
-      return res.status(500).json({ error: "Associated school not found." });
-    }
-
-    req.session.user_id = user.user_id;
-    req.session.school_id = user.school_id;
-    req.session.role = user.role;
-
-    res.json({
-      message: "Login successful",
-      user: {
-        user_id: user.user_id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        xp: user.xp,
-        level: user.level,
-      },
-      school: {
-        school_id: school.school_id,
-        school_name: school.school_name,
-        domain_name: school.domain_name,
-        logo_url: school.logo_url,
-      },
-    });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 app.post("/logout", (req, res) => {
     req.session.destroy((err) => {
