@@ -323,11 +323,7 @@ app.post("/login", async (req, res) => {
     // Determine redirection based on role and school registration status
     let redirectUrl = '/index.html'; // Default for students and teachers with school
     if (user.role === 'admin') {
-      if (!user.school_id) {
-        redirectUrl = '/admin_register_school.html'; // Admin needs to register school
-      } else {
-        redirectUrl = '/admin_dashboard.html'; // Admin has a school
-      }
+      redirectUrl = '/admin_dashboard.html'; // Admin always goes to admin dashboard on login
     } else if (user.role === 'teacher') {
       redirectUrl = '/teacher_dashboard.html'; // Teacher dashboard
     } else { // Student
