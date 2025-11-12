@@ -158,12 +158,10 @@
     </div>
   </div>
 <script>
-  const API_URL = "https://mindbender4-0.onrender.com"; // Ensure this matches your deployed backend URL
-
   // Function to check session and redirect if unauthorized
   async function checkSession() {
     try {
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch('/api/me', { // Use relative path
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -187,7 +185,7 @@
   document.getElementById("logout-btn").addEventListener("click", async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/logout`, {
+      const res = await fetch('/logout', { // Use relative path
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -233,7 +231,7 @@
 
   async function fetchPlayerStats() {
     try {
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch('/api/me', { // Use relative path
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -338,7 +336,7 @@
   async function fetchAndRenderQuests(searchQuery = '') {
     questListDiv.innerHTML = '<p>Loading quests...</p>';
     try {
-      const url = searchQuery ? `${API_URL}/api/quests?search=${encodeURIComponent(searchQuery)}` : `${API_URL}/api/quests`;
+      const url = searchQuery ? `/api/quests?search=${encodeURIComponent(searchQuery)}` : `/api/quests`; // Use relative path
       const res = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -390,7 +388,7 @@
 
   async function completeQuest(questId) {
     try {
-      const res = await fetch(`${API_URL}/api/quests/${questId}/complete`, {
+      const res = await fetch(`/api/quests/${questId}/complete`, { // Use relative path
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',

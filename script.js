@@ -1,10 +1,8 @@
-const API_URL = "http://localhost:3000"; // Use localhost for development, update for production
-
 document.addEventListener('DOMContentLoaded', async () => {
   // Function to check session and redirect if unauthorized
   async function checkSession() {
     try {
-      const res = await fetch(`${API_URL}/api/me`, {
+      const res = await fetch('/api/me', { // Use relative path
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -156,7 +154,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function fetchAndRenderQuests(searchQuery = '') {
     questListDiv.innerHTML = '<p>Loading quests...</p>';
     try {
-      const url = searchQuery ? `${API_URL}/api/quests?search=${encodeURIComponent(searchQuery)}` : `${API_URL}/api/quests`;
+      const url = searchQuery ? `/api/quests?search=${encodeURIComponent(searchQuery)}` : `/api/quests`; // Use relative path
       const res = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -208,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function completeQuest(questId) {
     try {
-      const res = await fetch(`${API_URL}/api/quests/${questId}/complete`, {
+      const res = await fetch(`/api/quests/${questId}/complete`, { // Use relative path
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -309,7 +307,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.logout-link').forEach(el => el.addEventListener('click', async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/logout`, {
+      const res = await fetch('/logout', { // Use relative path
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
