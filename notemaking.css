@@ -1,23 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap');
 
 :root {
-  --font-body: 'Open Sans', sans-serif;
-  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+  --font-heading: 'Press Start 2P', cursive;
 
-  /* New Formal Color Palette */
-  --color-primary-dark: #2C3E50; /* Dark blue/charcoal for main text, backgrounds */
-  --color-primary-light: #ECF0F1; /* Light gray for backgrounds, text on dark */
-  --color-accent-blue: #3498DB; /* A professional blue for accents, links */
-  --color-accent-green: #2ECC71; /* A subtle green for success/positive actions */
-  --color-accent-red: #E74C3C; /* A subtle red for warnings/negative actions */
-  --color-neutral-gray: #BDC3C7; /* Medium gray for borders, secondary text */
-  --color-white: #FFFFFF;
-  --color-black: #000000;
+  /* New Theme Colors */
+  --color-primary-bg: #e0d8b0;
+  --color-secondary-bg: #c8b88a;
+  --color-tertiary-bg: #a08a60;
+  --color-text-dark: #4a3a2a;
+  --color-text-light: #f0f0e0;
+  --color-accent-gold: #fca311;
+  --color-accent-blue: #2a7a8a;
+  --color-accent-red: #e94560;
+  --color-green: #4ade80;
 
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --transition-speed: 0.3s ease;
+  --border-radius-sm: 5px;
+  --border-radius-md: 9px;
+  --border-radius-lg: 16px;
+  --transition-speed: 0.2s ease;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -25,8 +26,8 @@ body, html {
   margin: 0;
   padding: 0;
   font-family: var(--font-body);
-  background-color: var(--color-primary-light);
-  color: var(--color-primary-dark);
+  background-color: var(--color-primary-bg);
+  color: var(--color-text-dark);
   overflow-x: hidden;
 }
 
@@ -34,17 +35,16 @@ header { padding: 20px 0 0; }
 .center-title {
   text-align: center;
   font-family: var(--font-heading);
-  color: var(--color-primary-dark);
-  font-size: 32px;
+  color: var(--color-accent-gold);
+  font-size: 36px;
   margin: 0;
-  text-shadow: none;
-  font-weight: 700;
+  text-shadow: 2px 2px var(--color-text-dark);
 }
 
 .navbar.horizontal-navbar {
   width: 100%;
-  background-color: var(--color-primary-dark);
-  border-bottom: 1px solid var(--color-neutral-gray);
+  background-color: var(--color-tertiary-bg);
+  border-bottom: 2px solid var(--color-secondary-bg);
   margin-bottom: 24px;
 }
 .navbar-nav {
@@ -58,18 +58,17 @@ header { padding: 20px 0 0; }
 .nav-item .nav-link {
   display: flex;
   align-items: center;
-  padding: 14px 25px;
-  font-size: 16px;
-  color: var(--color-primary-light);
+  padding: 16px 30px;
+  font-size: 19px;
+  color: var(--color-accent-gold);
   font-family: var(--font-heading);
   text-decoration: none;
   border-radius: var(--border-radius-md);
-  transition: color var(--transition-speed);
+  transition: color 0.2s;
   outline: none;
-  font-weight: 600;
 }
 .nav-item .nav-link:focus {
-  box-shadow: 0 0 0 2px var(--color-accent-blue);
+  box-shadow: 0 0 0 2px var(--color-accent-gold);
 }
 .nav-item .nav-link i {
   margin-right: 10px;
@@ -78,7 +77,7 @@ header { padding: 20px 0 0; }
 .nav-item .nav-link:hover,
 .nav-item .nav-link.active {
   color: var(--color-accent-blue);
-  background: rgba(52, 152, 219, 0.1);
+  background: rgba(252,163,17,0.12);
 }
 
 main {
@@ -94,10 +93,10 @@ main {
 
 .note-form-container,
 .notes-list-container {
-  background: var(--color-white);
+  background: var(--color-secondary-bg);
   border-radius: var(--border-radius-lg);
   padding: 32px 24px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 3px 18px rgba(30,30,60,0.08);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -109,11 +108,10 @@ main {
 
 .note-form-container h2, .notes-list-container h2 {
   font-family: var(--font-heading);
-  color: var(--color-primary-dark);
+  color: var(--color-accent-gold);
   font-size: 22px;
   margin: 0 0 18px 0;
-  text-shadow: none;
-  font-weight: 700;
+  text-shadow: 2px 2px var(--color-text-dark);
 }
 
 #note-form {
@@ -125,18 +123,18 @@ main {
 #note-form label {
   display: flex;
   flex-direction: column;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 16px;
-  color: var(--color-primary-dark);
+  color: var(--color-text-dark);
 }
 #note-form input[type="text"],
 #note-form textarea,
 #note-form select {
   margin-top: 5px;
-  background: var(--color-primary-light);
-  color: var(--color-primary-dark);
+  background: var(--color-tertiary-bg);
+  color: var(--color-text-light);
   font-size: 16px;
-  border: 1px solid var(--color-neutral-gray);
+  border: 1.5px solid var(--color-text-dark);
   border-radius: var(--border-radius-md);
   padding: 12px;
 }
@@ -154,23 +152,22 @@ main {
   margin-top: 12px;
 }
 .save-btn, .reset-btn {
-  background: var(--color-accent-blue);
-  color: var(--color-white);
+  background: var(--color-accent-gold);
+  color: var(--color-text-light);
   border: none;
   border-radius: var(--border-radius-sm);
-  font-size: 16px;
-  font-family: var(--font-body);
-  padding: 10px 25px;
+  font-size: 17px;
+  font-family: var(--font-heading);
+  padding: 9px 28px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 7px;
   transition: background var(--transition-speed);
-  font-weight: 600;
 }
-.save-btn:hover { background: #2980B9;} /* Darker blue */
+.save-btn:hover { background: var(--color-green);}
 .reset-btn { background: var(--color-accent-red);}
-.reset-btn:hover { background: #C0392B;} /* Darker red */
+.reset-btn:hover { background: #e95153;}
 
 #notes-list {
   margin-top: 24px;
@@ -179,12 +176,11 @@ main {
   gap: 22px;
 }
 .note-card {
-  background: var(--color-primary-light);
+  background: var(--color-tertiary-bg);
   padding: 18px 15px;
   border-radius: var(--border-radius-lg);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(30,30,60,0.11);
   position: relative;
-  border-left: 4px solid var(--color-accent-blue);
 }
 .note-header {
   display: flex;
@@ -195,22 +191,21 @@ main {
 .note-title {
   font-family: var(--font-heading);
   font-size: 18px;
-  color: var(--color-primary-dark);
-  text-shadow: none;
-  font-weight: 600;
+  color: var(--color-accent-gold);
+  text-shadow: 1px 1px var(--color-text-dark);
 }
 .note-meta {
   font-size: 13px;
-  color: var(--color-neutral-gray);
+  color: var(--color-green);
   font-weight: 500;
 }
 .note-tags {
   font-size: 12px;
-  color: var(--color-primary-dark);
+  color: var(--color-text-dark);
   margin-bottom: 9px;
 }
 .note-content {
-  color: var(--color-primary-dark);
+  color: var(--color-text-dark);
   font-size: 15px;
   margin-bottom: 10px;
   line-height: 1.7;
@@ -220,39 +215,37 @@ main {
 }
 .note-actions {
   display: flex;
-  gap: 10px;
+  gap: 18px;
   margin-top: 4px;
 }
 .edit-note-btn, .delete-note-btn {
   background: none;
   color: var(--color-accent-blue);
   border: none;
-  font-size: 15px;
-  font-family: var(--font-body);
+  font-size: 16px;
+  font-family: var(--font-heading);
   cursor: pointer;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: var(--border-radius-sm);
-  transition: background var(--transition-speed);
+  transition: background 0.18s;
   display: flex;
   align-items: center;
   gap: 4px;
-  font-weight: 600;
 }
-.edit-note-btn:hover { background: rgba(52, 152, 219, 0.1);}
+.edit-note-btn:hover { background: rgba(76, 224, 128, 0.28);}
 .delete-note-btn { color: var(--color-accent-red);}
-.delete-note-btn:hover { background: rgba(231, 76, 60, 0.1);}
+.delete-note-btn:hover { background: rgba(233,69,96,0.22);}
 .note-priority {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 0px 10px;
   border-radius: var(--border-radius-sm);
-  font-size: 11px;
+  font-size: 12px;
   margin-left: 6px;
   text-transform: uppercase;
-  font-weight: 600;
 }
-.priority-important { background: var(--color-accent-blue);color: var(--color-white);}
-.priority-urgent { background: var(--color-accent-red);color: var(--color-white);}
-.priority-normal { background: var(--color-accent-green);color: var(--color-white);}
+.priority-important { background: var(--color-accent-gold);color: var(--color-text-light);}
+.priority-urgent { background: var(--color-accent-red);color: var(--color-text-light);}
+.priority-normal { background: var(--color-green);color: var(--color-text-light);}
 
 /* === RESPONSIVE STYLES === */
 

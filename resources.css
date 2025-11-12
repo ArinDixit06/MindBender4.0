@@ -1,29 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+/* resources.css */
 
 :root {
-  --font-body: 'Open Sans', sans-serif;
-  --font-heading: 'Montserrat', sans-serif;
+  /* 🎨 Applied Color Palette */
+  --color-bg-parchment: #E6D3A3;
+  --color-bg-off-white: #F9F4E3;
+  --color-text-brown: #4B2E2E;
+  --color-text-charcoal: #333333;
+  --color-accent-blue: #00AEEF;
+  --color-accent-gold: #F4C542;
+  --color-highlight-orange: #E5B87A;
 
-  /* New Formal Color Palette */
-  --color-primary-dark: #2C3E50; /* Dark blue/charcoal for main text, backgrounds */
-  --color-primary-light: #ECF0F1; /* Light gray for backgrounds, text on dark */
-  --color-accent-blue: #3498DB; /* A professional blue for accents, links */
-  --color-accent-green: #2ECC71; /* A subtle green for success/positive actions */
-  --color-accent-red: #E74C3C; /* A subtle red for warnings/negative actions */
-  --color-neutral-gray: #BDC3C7; /* Medium gray for borders, secondary text */
-  --color-white: #FFFFFF;
-  --color-black: #000000;
-
-  --border-radius-sm: 4px;
+  /* Fonts & Sizing */
+  --font-body: 'Roboto', sans-serif; /* Assumed from previous files */
+  --font-heading: 'Press Start 2P', cursive; /* Assumed from previous files */
+  --border-radius-sm: 5px;
   --border-radius-md: 8px;
-  --border-radius-lg: 12px;
+  --border-radius-lg: 10px;
   --transition-speed: 0.3s ease;
 }
 
 /* General styling for the resources page */
 body {
-    background-color: var(--color-primary-light);
-    color: var(--color-primary-dark);
+    background-color: var(--color-bg-parchment);
+    color: var(--color-text-charcoal);
     font-family: var(--font-body);
 }
 
@@ -35,21 +34,20 @@ header {
 
 header h1 {
     font-family: var(--font-heading);
-    color: var(--color-primary-dark);
-    text-shadow: none;
+    color: var(--color-accent-gold);
+    text-shadow: 2px 2px var(--color-text-brown);
     font-size: 2.2rem;
     margin: 0;
     display: inline-flex;
     align-items: center;
     gap: 15px;
-    font-weight: 700;
 }
 
 /* Horizontal Navbar */
 .navbar.horizontal-navbar {
     width: 100%;
-    background-color: var(--color-primary-dark);
-    border-bottom: 1px solid var(--color-neutral-gray);
+    background-color: var(--color-text-brown);
+    border-bottom: 2px solid var(--color-highlight-orange);
 }
 
 .navbar-nav {
@@ -65,20 +63,20 @@ header h1 {
 .nav-item .nav-link {
     display: flex;
     align-items: center;
-    padding: 14px 25px;
-    font-size: 16px;
-    color: var(--color-primary-light);
+    padding: 16px 20px;
+    font-size: 1rem;
+    color: var(--color-accent-gold);
     font-family: var(--font-heading);
     text-decoration: none;
     transition: all var(--transition-speed);
     border-radius: var(--border-radius-md);
-    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .nav-item .nav-link:hover,
 .nav-item .nav-link.active {
     color: var(--color-accent-blue);
-    background: rgba(52, 152, 219, 0.1);
+    background: rgba(244, 197, 66, 0.1); /* Themed gold highlight */
 }
 
 .nav-item .nav-link i {
@@ -105,24 +103,22 @@ header h1 {
 
 /* Resource section styling */
 .resource-section {
-    background-color: var(--color-white);
+    background-color: var(--color-bg-off-white);
     padding: 25px;
     border-radius: var(--border-radius-lg);
-    border: 1px solid var(--color-neutral-gray);
+    border: 2px solid var(--color-highlight-orange);
     margin-bottom: 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .resource-section h2 {
     font-family: var(--font-heading);
-    color: var(--color-primary-dark);
+    color: var(--color-text-brown);
     font-size: 1.5rem;
     margin-bottom: 15px;
-    font-weight: 600;
 }
 
 .section-description {
-    color: var(--color-primary-dark);
+    color: var(--color-text-charcoal);
     margin-bottom: 20px;
     font-size: 1.1rem;
     line-height: 1.6;
@@ -136,34 +132,31 @@ header h1 {
 }
 
 .resource-card {
-    background-color: var(--color-white);
+    background-color: var(--color-text-brown);
     padding: 20px;
     border-radius: var(--border-radius-md);
-    border: 1px solid var(--color-neutral-gray);
+    border: 1px solid var(--color-accent-blue);
     transition: all var(--transition-speed);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     text-align: center;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
 }
 
 .resource-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    border-color: var(--color-accent-blue);
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px var(--color-accent-gold);
 }
 
 .resource-card h3 {
-    color: var(--color-primary-dark);
+    color: var(--color-accent-gold);
     margin-bottom: 15px;
     font-size: 1.2rem;
-    font-weight: 600;
 }
 
 .resource-card p {
-    color: var(--color-primary-dark);
+    color: var(--color-bg-off-white);
     font-size: 0.95rem;
     line-height: 1.5;
     flex-grow: 1;
@@ -180,31 +173,30 @@ header h1 {
 }
 
 .resource-list a {
-    color: var(--color-accent-blue);
+    color: var(--color-text-charcoal);
     text-decoration: none;
     transition: color var(--transition-speed);
 }
 
 .resource-list a:hover {
-    color: var(--color-primary-dark);
+    color: var(--color-accent-gold);
 }
 
 .resource-btn {
     display: inline-block;
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: var(--color-accent-blue);
-    color: var(--color-white);
+    background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-gold));
+    color: var(--color-text-brown);
     text-decoration: none;
     border-radius: var(--border-radius-sm);
     transition: all var(--transition-speed);
-    font-weight: 600;
+    font-weight: bold;
 }
 
 .resource-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-    background-color: #2980B9;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(244, 197, 66, 0.4); /* Themed gold shadow */
 }
 
 /* Responsive adjustments */

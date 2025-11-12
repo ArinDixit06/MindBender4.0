@@ -1,35 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
-
-:root {
-  --font-body: 'Open Sans', sans-serif;
-  --font-heading: 'Montserrat', sans-serif;
-
-  /* New Formal Color Palette */
-  --color-primary-dark: #2C3E50;
-  --color-primary-light: #ECF0F1;
-  --color-accent-blue: #3498DB;
-  --color-accent-green: #2ECC71;
-  --color-accent-red: #E74C3C;
-  --color-neutral-gray: #BDC3C7;
-  --color-white: #FFFFFF;
-  --color-black: #000000;
-
-  --border-radius-sm: 4px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 12px;
-  --transition-speed: 0.3s ease;
-}
+@import url('https://fonts.googleapis.com/css?family=Fjalla+One&display=swap');
 
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
 body {
-  background-color: var(--color-primary-light);
-  font-family: var(--font-body);
-  color: var(--color-primary-dark);
+  /* Main background for the entire page */
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/38816/image-from-rawpixel-id-2210775-jpeg.jpg"), /* Base background */
+                    url('https://cdn-icons-png.flaticon.com/512/616/616408.png'), /* Example: Balloon */
+                  url('https://cdn-icons-png.flaticon.com/512/3671/3671043.png'), /* Example: Open Book */
+                  url('https://cdn-icons-png.flaticon.com/512/3061/3061298.png'), /* Example: Beaker */
+                  url('https://cdn-icons-png.flaticon.com/512/285/285324.png'), /* Example: Pencil */
+                  url('https://cdn-icons-png.flaticon.com/512/2555/2555436.png'), /* Example: Globe */
+                  url('https://cdn-icons-png.flaticon.com/512/5707/5707262.png'), /* Example: Microscope */
+                  url('https://cdn-icons-png.flaticon.com/512/3004/3004603.png'); /* Example: Calculator */
+  background-position: center center, /* Position for base background */
+                       10% 20%,      /* Balloon */
+                       85% 15%,      /* Open Book */
+                       5% 80%,       /* Beaker */
+                       90% 60%,      /* Pencil */
+                       20% 50%,      /* Globe */
+                       75% 85%,      /* Microscope */
+                       15% 5%;       /* Calculator */
+  background-size: cover,            /* Size for base background */
+                   80px,             /* Balloon size */
+                   100px,            /* Open Book size */
+                   70px,             /* Beaker size */
+                   90px,             /* Pencil size */
+                   110px,            /* Globe size */
+                   80px,             /* Microscope size */
+                   60px;             /* Calculator size */
+  background-repeat: no-repeat;
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -37,21 +39,22 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  box-sizing: border-box;
 }
 
 /* This rule is for the main container box.
   It's wide to fit both forms side-by-side.
 */
 .contact-us {
-  background: var(--color-white);
-  padding: 40px;
-  border: 1px solid var(--color-neutral-gray);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  background: #f8f4e5;
+  padding: 50px; /* Simplified padding */
+  border: 2px solid rgba(0, 0, 0, 1);
+  box-shadow: 15px 15px 1px #ffa580, 15px 15px 1px 2px rgba(0, 0, 0, 1);
   z-index: 10;
   position: relative;
-  width: 80vw;
-  max-width: 900px;
-  border-radius: var(--border-radius-lg);
+  width: 80vw; /* Make the box much wider */
+  max-width: 900px; /* Set a max width */
+  min-height: auto; 
 }
 
 /* These rules create the side-by-side layout 
@@ -80,18 +83,17 @@ body {
 }
 
 .vertical-separator {
-  width: 1px;
-  background-color: var(--color-neutral-gray);
-  align-self: stretch;
+  width: 2px;
+  background-color: #2A293E; /* Dark color */
+  align-self: stretch; /* Makes it full height */
 }
 
 .title {
   text-align: center;
-  font-family: var(--font-heading);
-  font-size: 24px;
-  color: var(--color-primary-dark);
+  font-family: 'Fjalla One', sans-serif;
+  font-size: 24pt;
+  color: #2A293E;
   margin-bottom: 30px;
-  font-weight: 700;
 }
 
 /* These are your original styles for 
@@ -102,84 +104,78 @@ body {
 input, select {
   display: block;
   width: 100%;
-  font-size: 16px;
-  line-height: 24px;
-  font-family: var(--font-body);
-  margin-bottom: 20px;
-  border: 1px solid var(--color-neutral-gray);
-  border-radius: var(--border-radius-sm);
-  background: var(--color-primary-light);
-  min-width: 200px;
-  padding: 10px;
+  font-size: 14pt;
+  line-height: 28pt;
+  font-family: 'Fjalla One';
+  margin-bottom: 28pt;
+  border: none;
+  border-bottom: 5px solid black;
+  background: #f8f4e5;
+  min-width: 200px; /* Reduced min-width to fit side-by-side */
+  padding-left: 5px;
   outline: none;
-  color: var(--color-primary-dark);
+  color: black;
+  box-sizing: border-box;
 }
 
 input:focus, select:focus {
-  border-color: var(--color-accent-blue);
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  border-bottom: 5px solid #ffa580;
 }
 
 button {
   display: block;
   margin: 0 auto;
-  line-height: 24px;
-  padding: 10px 25px;
-  background: var(--color-accent-blue);
-  color: var(--color-white);
-  letter-spacing: 1px;
-  transition: var(--transition-speed);
+  line-height: 28pt;
+  padding: 0 20px;
+  background: #ffa580;
+  letter-spacing: 2px;
+  transition: .2s all ease-in-out;
   outline: none;
-  border: none;
-  border-radius: var(--border-radius-sm);
-  font-family: var(--font-body);
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,1);
+  box-shadow: 3px 3px 1px 1px #95a4ff, 3px 3px 1px 2px rgba(0,0,0,1);
 }
 
 button:hover {
-  background: #2980B9; /* Darker blue */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  background: black;
+  color: white;
+  border: 1px solid rgba(0,0,0,1);
 }
 
 ::selection {
-  background: var(--color-accent-blue);
-  color: var(--color-white);
+  background: #ffc8ff;
 }
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  border-color: var(--color-accent-blue);
-  -webkit-text-fill-color: var(--color-primary-dark);
-  -webkit-box-shadow: 0 0 0px 1000px var(--color-primary-light) inset;
+  border-bottom: 5px solid #95a4ff;
+  -webkit-text-fill-color: #2A293E;
+  -webkit-box-shadow: 0 0 0px 1000px #f8f4e5 inset;
   transition: background-color 5000s ease-in-out 0s;
 }
 
 /* Fixes height and padding for the dropdown */
 select {
-  height: 44px; /* Adjusted to match input padding */
-  padding: 10px;
+  height: 28pt;
+  padding: 0 5px;
 }
 
 /* Styles the "Select your grade" placeholder option */
 select:required:invalid {
-  color: var(--color-neutral-gray);
+  color: #555;
 }
 
 /* Ensures dropdown options are the correct color */
 option {
-  color: var(--color-primary-dark);
-  background: var(--color-white);
+  color: black;
+  background: #f8f4e5;
 }
 /* This is the title at the top of the page */
 .website-title {
   text-align: center;
-  color: var(--color-primary-dark);
-  font-family: var(--font-heading);
-  font-size: 36px;
-  margin-bottom: 20px;
+  color: rgba(107, 37, 37, 0.986);
+  font-family: 'Fjalla One', sans-serif;
+  font-size: 36pt; /* You can adjust this size */
+  margin-bottom: 20px; /* Space between title and box */
   width: 100%;
-  font-weight: 700;
 }
