@@ -214,14 +214,21 @@ app.post("/register", async (req, res) => {
       return res.status(400).json({ error: "Invalid email format." });
     }
 
-    const { data: schoolData, error: schoolError } = await supabase
-      .from("schools")
-      .select("school_id")
-      .eq("domain_name", domain)
-      .single();
+    let schoolId = null;
+    let schoolRegistered = false;
 
-    if (schoolError || !schoolData) {
-      return res.status(400).json({ error: "School not registered for this email domain." });
+    if (role !== 'admin') { // Only check for school registration if not an admin
+      const { data: schoolData, error: schoolError } = await supabase
+        .from("schools")
+        .select("school_id")
+        .eq("domain_name", domain)
+        .single();
+
+      if (schoolError || !schoolData) {
+        return res.status(400).json({ error: "School not registered for this email domain." });
+      }
+      schoolId = schoolData.school_id;
+      schoolRegistered = true;
     }
 
     const { data: existingUser } = await supabase
@@ -244,7 +251,7 @@ app.post("/register", async (req, res) => {
           email,
           hashed_password: hashedPassword,
           role,
-          school_id: schoolData.school_id,
+          school_id: schoolId, // Use the determined schoolId
         },
       ])
       .select("user_id, name, email, role, school_id, xp, level")
@@ -256,10 +263,99 @@ app.post("/register", async (req, res) => {
     req.session.school_id = user.school_id;
     req.session.role = user.role;
 
+    // Special redirection for admins who just registered and need to create a school
+    if (role === 'admin' && !schoolRegistered) {
+      return res.status(201).json({ message: "Admin registration successful. Please register your school.", user, redirect: '/admin_register_school.html' });
+    }
+
     res.status(201).json({ message: "Registration successful", user });
   } catch (err) {
     console.error("Registration error:", err);
     res.status(500).json({ error: err.message || "Failed to register user." });
+  }
+});
+
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const { data: user, error } = await supabase
+      .from("users")
+      .select("user_id, name, email, hashed_password, role, school_id, xp, level")
+      .eq("email", email)
+      .single();
+
+    if (error || !user) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
+    if (!passwordMatch) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
+
+    let school = null;
+    if (user.school_id) {
+      const { data: schoolData, error: schoolError } = await supabase
+        .from("schools")
+        .select("school_id, school_name, domain_name, logo_url")
+        .eq("school_id", user.school_id)
+        .single();
+
+      if (schoolError || !schoolData) {
+        console.error("School not found for user:", user.school_id);
+        // For admins, this might be expected if they haven't registered a school yet
+        if (user.role !== 'admin') {
+          return res.status(500).json({ error: "Associated school not found." });
+        }
+      }
+      school = schoolData;
+    } else if (user.role !== 'admin') {
+        // Non-admin users must have an associated school
+        return res.status(500).json({ error: "Associated school not found." });
+    }
+
+
+    req.session.user_id = user.user_id;
+    req.session.school_id = user.school_id;
+    req.session.role = user.role;
+
+    // Determine redirection based on role and school registration status
+    let redirectUrl = '/index.html'; // Default for students and teachers with school
+    if (user.role === 'admin') {
+      if (!user.school_id) {
+        redirectUrl = '/admin_register_school.html'; // Admin needs to register school
+      } else {
+        redirectUrl = '/admin_dashboard.html'; // Admin has a school
+      }
+    } else if (user.role === 'teacher') {
+      redirectUrl = '/teacher_dashboard.html'; // Teacher dashboard
+    } else { // Student
+      redirectUrl = '/student_dashboard.html'; // Student dashboard
+    }
+
+
+    res.json({
+      message: "Login successful",
+      user: {
+        user_id: user.user_id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        xp: user.xp,
+        level: user.level,
+      },
+      school: school ? {
+        school_id: school.school_id,
+        school_name: school.school_name,
+        domain_name: school.domain_name,
+        logo_url: school.logo_url,
+      } : null,
+      redirect: redirectUrl,
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 

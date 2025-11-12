@@ -47,8 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('Login successful:', data);
                     // Store user and school info in localStorage or session storage
                     localStorage.setItem('currentUser', JSON.stringify(data.user));
-                    localStorage.setItem('currentSchool', JSON.stringify(data.school));
-                    window.location.href = '/index.html'; // Redirect to main page
+                    if (data.school) {
+                        localStorage.setItem('currentSchool', JSON.stringify(data.school));
+                    } else {
+                        localStorage.removeItem('currentSchool'); // Clear school info if not available (e.g., for new admin)
+                    }
+                    window.location.href = data.redirect || '/index.html'; // Redirect based on server response
                 } else {
                     alert(data.error || 'Login failed');
                 }
@@ -90,8 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     console.log('Signup successful:', data);
-                    alert('Registration successful! Please log in.');
-                    window.location.href = '/login.html'; // Redirect to login page
+                    alert(data.message || 'Registration successful! Please log in.');
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        window.location.href = '/login.html'; // Default redirect
+                    }
                 } else {
                     alert(data.error || 'Registration failed');
                 }
