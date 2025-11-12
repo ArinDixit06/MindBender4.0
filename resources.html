@@ -11,7 +11,15 @@
 <body>
 
     <header>
-        <h1><i class="fas fa-book-open"></i> Study Resources Hub</h1>
+        <div class="header-left">
+            <img id="school-logo" src="" alt="School Logo" class="school-logo" style="display:none;">
+            <span id="school-name" class="school-name"></span>
+        </div>
+        <h1 class="center-title">Study Resources Hub</h1>
+        <div class="header-right">
+            <span id="user-name" class="user-name"></span>
+            <span id="user-role" class="user-role"></span>
+        </div>
     </header>
 
     <nav id="navbar" class="navbar horizontal-navbar">
@@ -57,142 +65,43 @@
     <div class="content-wrapper">
         <div class="container">
             <main>
-                <section class="resource-section">
-                    <h2>Brainy Quizzes & Games</h2>
-                    <p class="section-description">Test your knowledge with fun, interactive quizzes and educational games!</p>
-                    <div class="resource-grid">
-                        <div class="resource-card">
-                            <h3>Math Challenge</h3>
-                            <p>Solve quick math problems to earn points!</p>
-                            <a href="https://www.mathplayground.com/" target="_blank" class="resource-btn">Play Now!</a>
+                <section id="resource-upload-section" class="resource-section" style="display: none;">
+                    <h2><i class="fas fa-upload"></i> Upload New Resource</h2>
+                    <form id="resource-upload-form">
+                        <div>
+                            <label for="resource-title">Title:</label>
+                            <input type="text" id="resource-title" name="title" required>
                         </div>
-                        <div class="resource-card">
-                            <h3>Science Explorer</h3>
-                            <p>Discover amazing facts about the world around us.</p>
-                            <a href="https://www.nationalgeographic.org/education/" target="_blank" class="resource-btn">Explore</a>
+                        <div>
+                            <label for="resource-url">URL:</label>
+                            <input type="url" id="resource-url" name="url" required>
                         </div>
-                        <div class="resource-card">
-                            <h3>History Trivia</h3>
-                            <p>Journey through time and test your history knowledge.</p>
-                            <a href="https://www.history.com/topics/history-trivia" target="_blank" class="resource-btn">Start Trivia</a>
+                        <div>
+                            <label for="resource-type">Type:</label>
+                            <select id="resource-type" name="type" required>
+                                <option value="link">Link</option>
+                                <option value="pdf">PDF</option>
+                                <option value="video">Video</option>
+                            </option>
                         </div>
-                    </div>
+                        <button type="submit">Upload Resource</button>
+                    </form>
                 </section>
 
                 <section class="resource-section">
-                    <h2>Visual Learning Aids</h2>
-                    <p class="section-description">Watch engaging videos and view colorful infographics to understand complex topics easily.</p>
-                    <div class="resource-grid">
-                        <div class="resource-card">
-                            <h3>Animated Science Videos</h3>
-                            <p>Fun animations explaining science concepts.</p>
-                            <a href="https://www.youtube.com/results?search_query=animated+science+for+kids" target="_blank" class="resource-btn">Watch Videos</a>
-                        </div>
-                        <div class="resource-card">
-                            <h3>Interactive Infographics</h3>
-                            <p>Visually appealing summaries of key subjects.</p>
-                            <a href="https://www.pinterest.com/search/pins/?q=educational%20infographics" target="_blank" class="resource-btn">View Infographics</a>
-                        </div>
+                    <h2><i class="fas fa-book"></i> School Resources</h2>
+                    <div class="resource-search">
+                        <input type="text" id="resource-search-input" placeholder="Search resources by title...">
+                        <button id="search-resources-btn">Search</button>
                     </div>
-                </section>
-
-                <section class="resource-section">
-                    <h2>NCERT Textbooks (CBSE)</h2>
-                    <p class="section-description">Official NCERT textbooks for CBSE curriculum - Free PDFs available</p>
-                    <div class="resource-grid">
-                        <div class="resource-card">
-                            <h3>Class 6-8</h3>
-                            <ul class="resource-list">
-                                <li><a href="https://ncert.nic.in/textbook.php" target="_blank">All Subjects</a></li>
-                            </ul>
-                        </div>
-                        <div class="resource-card">
-                            <h3>Class 9-10</h3>
-                            <ul class="resource-list">
-                                <li><a href="https://ncert.nic.in/textbook.php" target="_blank">All Subjects</a></li>
-                            </ul>
-                        </div>
-                        <div class="resource-card">
-                            <h3>Class 11-12 Science</h3>
-                            <ul class="resource-list">
-                                <li><a href="https://ncert.nic.in/textbook.php" target="_blank">All Subjects</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="resource-section">
-                    <h2>Free Learning Platforms</h2>
-                    <p class="section-description">Quality educational content aligned with Indian curriculum</p>
-                    <div class="resource-grid">
-                        <div class="resource-card">
-                            <h3>DIKSHA</h3>
-                            <p>National platform for school education by Government of India</p>
-                            <a href="https://diksha.gov.in/" target="_blank" class="resource-btn">Visit DIKSHA</a>
-                        </div>
-                        <div class="resource-card">
-                            <h3>SWAYAM</h3>
-                            <p>Free online courses from Class 9 to post-graduation</p>
-                            <a href="https://swayam.gov.in/" target="_blank" class="resource-btn">Visit SWAYAM</a>
-                        </div>
-                        <div class="resource-card">
-                            <h3>Khan Academy</h3>
-                            <p>Free courses aligned with NCERT curriculum</p>
-                            <a href="https://www.khanacademy.org/india" target="_blank" class="resource-btn">Visit Khan Academy</a>
-                        </div>
+                    <div id="resource-list" class="resource-grid">
+                        <p>Loading resources...</p>
                     </div>
                 </section>
             </main>
         </div>
     </div>
 
-    <script>
-        const API_URL = "https://mindbender4-0.onrender.com"; // Ensure this matches your deployed backend URL
-
-        // Function to check session and redirect if unauthorized
-        async function checkSession() {
-            try {
-                const res = await fetch(`${API_URL}/api/me`, {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: 'include',
-                });
-
-                if (!res.ok) {
-                    // If session is not valid, redirect to login page
-                    window.location.href = "login.html";
-                }
-                // If res.ok, session is valid, no action needed (user stays on page)
-            } catch (error) {
-                console.error("Session check failed:", error);
-                window.location.href = "login.html"; // Redirect on network error
-            }
-        }
-
-        // Call checkSession when the page loads
-        document.addEventListener("DOMContentLoaded", checkSession);
-
-        // Logout functionality
-        document.getElementById("logout-btn").addEventListener("click", async (e) => {
-            e.preventDefault();
-            try {
-                const res = await fetch(`${API_URL}/logout`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    credentials: 'include',
-                });
-
-                if (res.ok) {
-                    window.location.href = "login.html";
-                } else {
-                    const data = await res.json();
-                    alert("Logout failed: " + (data.message || "Unknown error"));
-                }
-            } catch (error) {
-                console.error("Logout error:", error);
-                alert("Logout error: " + error.message);
-            }
-        });
-    </script>
+    <script src="resources.js"></script>
 </body>
 </html>
