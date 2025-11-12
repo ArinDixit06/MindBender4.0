@@ -379,15 +379,19 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const { data: school, error: schoolError } = await supabase
-      .from("schools")
-      .select("school_id, school_name, domain_name, logo_url")
-      .eq("school_id", user.school_id)
-      .single();
+    let school = null;
+    if (user.school_id) {
+      const { data: schoolData, error: schoolError } = await supabase
+        .from("schools")
+        .select("school_id, school_name, domain_name, logo_url")
+        .eq("school_id", user.school_id)
+        .single();
 
-    if (schoolError || !school) {
-      console.error("Error fetching school info for user:", user.school_id);
-      return res.status(500).json({ message: "Error fetching school info" });
+      if (schoolError && schoolError.code !== 'PGRST116') { // PGRST116 means no rows found
+        console.error("Error fetching school info for user:", user.school_id, schoolError);
+        return res.status(500).json({ message: "Error fetching school info" });
+      }
+      school = schoolData;
     }
 
     res.json({
@@ -399,12 +403,12 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
         xp: user.xp,
         level: user.level,
       },
-      school: {
+      school: school ? {
         school_id: school.school_id,
         school_name: school.school_name,
         domain_name: school.domain_name,
         logo_url: school.logo_url,
-      },
+      } : null,
     });
   } catch (err) {
     console.error("Error in /api/me:", err);
