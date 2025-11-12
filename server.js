@@ -71,10 +71,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: isProduction,
+      secure: false, // Explicitly set to false for local development
       httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, // 1 day
-      sameSite: isProduction ? 'None' : 'Lax',
+      sameSite: 'Lax', // Explicitly set to Lax for local development
     },
   })
 );
