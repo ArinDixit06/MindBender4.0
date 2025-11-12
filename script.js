@@ -1,8 +1,60 @@
-document.addEventListener('DOMContentLoaded', () => {
+const API_URL = "http://localhost:3000"; // Use localhost for development, update for production
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Function to check session and redirect if unauthorized
+  async function checkSession() {
+    try {
+      const res = await fetch(`${API_URL}/api/me`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        window.location.href = "login.html";
+        return null;
+      }
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error("Session check failed:", error);
+      window.location.href = "login.html";
+      return null;
+    }
+  }
+
+  const sessionData = await checkSession();
+  if (!sessionData) return;
+
+  const { user, school } = sessionData;
+
+  // Update header with user and school info
+  const schoolNameElement = document.getElementById('school-name');
+  const schoolLogoElement = document.getElementById('school-logo');
+  const userNameElement = document.getElementById('user-name');
+  const userRoleElement = document.getElementById('user-role');
+  const profileUserNameElement = document.getElementById('profile-user-name');
+  const profileUserRoleElement = document.getElementById('profile-user-role');
+
+  if (school) {
+    schoolNameElement.textContent = school.school_name;
+    if (school.logo_url) {
+      schoolLogoElement.src = school.logo_url;
+      schoolLogoElement.style.display = 'inline-block';
+    }
+  } else {
+    schoolNameElement.textContent = 'Individual Learner'; // Or some default for non-school users
+  }
+
+  userNameElement.textContent = user.name;
+  userRoleElement.textContent = user.role;
+  profileUserNameElement.textContent = user.name;
+  profileUserRoleElement.textContent = user.role;
+
   let player = {
-    level: 0, // Initialize with 0, will be updated by fetchPlayerStats
-    xp: 0,    // Initialize with 0, will be updated by fetchPlayerStats
-    xpToNextLevel: 100, // Default, will be dynamically calculated based on fetched level
+    level: user.level,
+    xp: user.xp,
+    xpToNextLevel: calculateXpForLevel(user.level + 1),
   };
 
   let streakData = JSON.parse(localStorage.getItem('streakData')) || {};
@@ -34,6 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentMonth = currentDate.getMonth();
   let currentYear = currentDate.getFullYear();
 
+  function calculateXpForLevel(level) {
+    return 100 * level; // Match server-side logic
+  }
+
   function updateUI() {
     levelDisplay.textContent = `Level ${player.level}`;
     levelNumber.textContent = player.level;
@@ -41,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     xpBar.style.width = `${xpPercentage}%`;
     xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
 
-    fetchAndRenderQuests(); // Call new function to fetch and render quests
+    fetchAndRenderQuests();
     renderSubjectsInModal();
     renderCalendar();
   }
@@ -51,12 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (player.xp >= player.xpToNextLevel) {
       player.level++;
       player.xp -= player.xpToNextLevel;
-      player.xpToNextLevel = Math.floor(player.xpToNextLevel * 1.5);
+      player.xpToNextLevel = calculateXpForLevel(player.level + 1);
     }
     if (!firstQuestBadge.classList.contains('unlocked')) {
       firstQuestBadge.classList.add('unlocked');
     }
-    // Player stats are now saved on the backend when a quest is completed
     updateUI();
   }
 
@@ -108,15 +163,15 @@ document.addEventListener('DOMContentLoaded', () => {
         credentials: 'include',
       });
 
-      console.log("Raw API response:", res); // Log the raw response
+      console.log("Raw API response:", res);
 
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      const responseData = await res.json(); // Get the full response data
-      console.log("Parsed API response data:", responseData); // Log the parsed data
-      const { quests } = responseData; // Destructure quests from the response data
-      console.log("Quests array:", quests); // Log the quests array
+      const responseData = await res.json();
+      console.log("Parsed API response data:", responseData);
+      const { quests } = responseData;
+      console.log("Quests array:", quests);
       renderQuests(quests);
     } catch (error) {
       console.error("Error fetching quests:", error);
@@ -166,11 +221,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const data = await res.json();
       alert(data.message);
-      // Re-fetch quests to update the list
       fetchAndRenderQuests(questSearchInput.value.trim());
-      // After completing a quest, fetch updated player stats from the backend
       await fetchPlayerStats();
-      updateUI(); // This will re-render player stats with fresh data
+      updateUI();
     } catch (error) {
       console.error("Error completing quest:", error);
       alert("Failed to complete quest: " + error.message);
@@ -224,40 +277,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  async function fetchPlayerStats() {
-    try {
-      const res = await fetch(`${API_URL}/api/me`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-      });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-      const { studentInfo } = await res.json();
-
-      player.level = studentInfo.level;
-      player.xp = studentInfo.xp;
-
-      // Recalculate xpToNextLevel based on the fetched level
-      let base_xp_to_next_level = 100 + (studentInfo.student_id % 10); // Match server-side logic
-      player.xpToNextLevel = base_xp_to_next_level;
-      for (let i = 1; i < player.level; i++) {
-        player.xpToNextLevel = Math.floor(player.xpToNextLevel * 1.5);
-      }
-    } catch (error) {
-      console.error("Error fetching player stats:", error);
-      // Optionally, redirect to login or show an error message
-    }
-  }
-
   searchQuestsBtn.addEventListener('click', () => {
     const searchQuery = questSearchInput.value.trim();
     fetchAndRenderQuests(searchQuery);
   });
 
-  // Profile modal logic with badge button only
   profileButton.addEventListener('click', openProfileModal);
   closeModalButton.addEventListener('click', closeProfileModal);
   addSubjectModalBtn.addEventListener('click', addSubjectFromModal);
@@ -282,15 +306,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.target === profileModal) closeProfileModal();
   });
 
-  // Logout via navbar
-  document.querySelectorAll('.logout-link').forEach(el => el.addEventListener('click', () => {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "login.html";
+  document.querySelectorAll('.logout-link').forEach(el => el.addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+      });
+
+      if (res.ok) {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentSchool');
+        window.location.href = "login.html";
+      } else {
+        const data = await res.json();
+        alert("Logout failed: " + (data.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Logout error: " + error.message);
+    }
   }));
 
-  // Initial setup
-  fetchPlayerStats().then(() => {
-    updateUI();
-    fetchAndRenderQuests(); // Initial fetch of quests when the page loads
-  });
+  updateUI();
 });

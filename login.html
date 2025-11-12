@@ -7,13 +7,13 @@
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    <h1 class="website-title">StudyQuest</h1>
+    <h1 class="website-title">studyquest</h1>
     <div class="contact-us">
       <div class="form-container">
         
         <div class="form-content login-form">
           <div class="title">LOGIN</div>
-          <form action="/login" method="POST">
+          <form id="login-form">
             <div>
               <label for="login-email">Email:</label>
               <input id="login-email" name="email" placeholder="you@example.com" required type="email" />
@@ -32,34 +32,44 @@
         
         <div class="form-content signup-form">
           <div class="title">SIGN UP</div>
-          <form action="/signup" method="POST">
+          <form id="signup-form">
             <div>
-              <label for="name">Name:</label>
-              <input id="name" name="customerName" placeholder="Name" required type="text" />
-            </div>
-            <div>
-              <label for="rollno">Roll No:</label>
-              <input id="rollno" name="customerRollNo" placeholder="Roll No" required type="text" />
-            </div>
-            <div>
-              <label for="grade">Grade:</label>
-              <select id="grade" name="customerGrade" required>
-                <option value="" disabled selected>Select your grade</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-              </select>
+              <label for="signup-name">Name:</label>
+              <input id="signup-name" name="name" placeholder="Name" required type="text" />
             </div>
             <div>
               <label for="signup-email">Email:</label>
-              <input id="signup-email" name="customerEmail" placeholder="you@example.com" required type="email" />
+              <input id="signup-email" name="email" placeholder="you@example.com" required type="email" />
             </div>
             <div>
               <label for="signup-password">Password:</label>
-              <input id="signup-password" name="customerPassword" placeholder="Create Password" required type="password" />
+              <input id="signup-password" name="password" placeholder="Create Password" required type="password" />
+            </div>
+            <div>
+              <label for="signup-role">Role:</label>
+              <select id="signup-role" name="role" required>
+                <option value="student" selected>Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div id="student-specific-fields" style="display: block;">
+              <div>
+                <label for="rollno">Roll No:</label>
+                <input id="rollno" name="rollno" placeholder="Roll No" type="text" />
+              </div>
+              <div>
+                <label for="grade">Grade:</label>
+                <select id="grade" name="grade">
+                  <option value="" disabled selected>Select your grade</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
             </div>
             <div>
               <button type="submit">SIGN UP</button>
@@ -68,7 +78,6 @@
         </div>
       </div>
     </div>
-
+    <script src="auth.js"></script>
 </body>
 </html>
-
