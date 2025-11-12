@@ -1,7 +1,7 @@
 {
   "name": "mindbenders",
   "version": "1.0.0",
-  "description": "Backend server for Supabase PostgreSQL (users, students, tests)",
+  "description": "Backend server for Supabase PostgreSQL (users, quests, knowledge-maps)",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.46.1",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
