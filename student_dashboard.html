@@ -4,126 +4,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
-    
-    <link rel="stylesheet" href="style.css"> 
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
     <header>
-        <h1 class="center-title">StudyQuest</h1>
-        
+        <h1 class="center-title">Student Dashboard</h1>
         <nav class="navbar horizontal-navbar">
             <ul class="navbar-nav">
-                <li class="nav-item"><a href="#" class="nav-link active"><i class="fa fa-home"></i> Dashboard</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-map"></i> Knowledge Map</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-trophy"></i> Quests</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-book"></i> Resources</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-robot"></i> Chat AI</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
+                <li class="nav-item"><a href="student_dashboard.html" class="nav-link">Dashboard</a></li>
+                <li class="nav-item"><a href="knowledge_map_page.html" class="nav-link">Knowledge Map</a></li>
+                <li class="nav-item"><a href="student_dashboard.html" class="nav-link">Quests</a></li>
+                <li class="nav-item"><a href="resources.html" class="nav-link">Resources</a></li>
+                <li class="nav-item"><a href="notemaking.html" class="nav-link"><i class="fas fa-sticky-note"></i> Notes</a></li>
+                <li class="nav-item"><a href="chat.html" class="nav-link">Chat AI</a></li>
+                <li class="nav-item"><a href="#" id="logout-button" class="nav-link">Logout</a></li>
             </ul>
         </nav>
     </header>
 
-    <div class="container">
+    <main class="container">
+        <div class="welcome-card dashboard-card">
+            <h2>Welcome, Student!</h2>
+            <p>Explore your learning journey and track your progress.</p>
+        </div>
 
-        <aside>
-            <div class="player-profile">
-                <h2>PLAYER PROFILE</h2>
-                
-                <button class="level-profile-btn">
-                    <div class="badge-icon"><span>1</span></div>
-                </button>
-
-                <div class="player-stats">
-                    <div class="player-level">Level 1: Code Novice</div>
-                    <div class="xp-bar-container">
-                        <div class="xp-bar" style="width: 30%;"></div> 
-                    </div>
-                    <div class="xp-text">150 / 500 XP</div>
-                </div>
+        <div class="features-grid">
+            <div class="dashboard-card">
+                <h3>Knowledge Map</h3>
+                <p>Visualize your learning path, explore topics, and understand prerequisites.</p>
+                <a href="knowledge_map_page.html" class="dashboard-btn">Explore Map</a>
             </div>
-
-            <div class="player-profile">
-                <h2>ACHIEVEMENTS</h2>
-                <ul class="achievements-list">
-                    <li class="achievement unlocked">
-                        <i class="fas fa-check-circle achievement-icon"></i>
-                        <span class="achievement-name">First Quest</span>
-                    </li>
-                    <li class="achievement">
-                        <i class="fas fa-lock achievement-icon"></i>
-                        <span class="achievement-name">Week Streak</span>
-                    </li>
-                     <li class="achievement">
-                        <i class="fas fa-lock achievement-icon"></i>
-                        <span class="achievement-name">Code Starter</span>
-                    </li>
-                </ul>
+            <div class="dashboard-card">
+                <h3>Quests</h3>
+                <p>Complete assigned quests to earn XP and level up your profile.</p>
+                <a href="student_dashboard.html" class="dashboard-btn">View Quests</a>
             </div>
-        </aside>
+            <div class="dashboard-card">
+                <h3>Resources</h3>
+                <p>Access study materials, videos, and other helpful resources.</p>
+                <a href="resources.html" class="dashboard-btn">Browse Resources</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>Chat with AI</h3>
+                <p>Get instant help and explanations from your AI tutor.</p>
+                <a href="chat.html" class="dashboard-btn">Start Chat</a>
+            </div>
+            <div class="dashboard-card">
+                <h3>My Progress</h3>
+                <p>Track your XP, level, and completed achievements.</p>
+                <a href="student_dashboard.html" class="dashboard-btn">View Progress</a>
+            </div>
+        </div>
+    </main>
 
-        <main>
-            
-            <div class="dashboard-cards">
+    <footer>
+        &copy; 2023 StudyQuest. All rights reserved.
+    </footer>
 
-                <div class="dashboard-card welcome-card">
-                    <h2>Welcome, Student!</h2>
-                    <p>Explore your learning journey and track your progress.</p>
-                </div>
-
-                <div class="features-grid">
-                    
-                    <div class="dashboard-card">
-                        <div class="card-image-header">
-                            <h3>Knowledge Map</h3>
-                        </div>
-                        <div class="card-description"> 
-                            <p>Visualize your learning path, explore topics, and understand prerequisites.</p>
-                        </div>
-                        <div class="card-button-footer">
-                            <button class="dashboard-btn">Explore Map</button>
-                        </div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <div class="card-image-header">
-                            <h3>Quests</h3>
-                        </div>
-                        <div class="card-description"> 
-                            <p>Complete assigned quests to earn XP and level up your profile.</p>
-                        </div>
-                         <div class="card-button-footer">
-                            <button class="dashboard-btn">View Quests</button>
-                        </div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <div class="card-image-header">
-                            <h3>Resources</h3>
-                        </div>
-                        <div class="card-description"> 
-                            <p>Access study materials, videos, and other helpful resources.</p>
-                        </div>
-                         <div class="card-button-footer">
-                            <button class="dashboard-btn">Browse Resources</button>
-                        </div>
-                    </div>
-                    
-                    <div class="dashboard-card">
-                        <div class="card-image-header">
-                            <h3>Chat with AI</h3>
-                        </div>
-                        <div class="card-description"> 
-                            <p>Get instant help and explanations from your AI tutor.</p>
-                        </div>
-                         <div class="card-button-footer">
-                            <button class="dashboard-btn">Start Chat</button>
-                        </div>
-                    </div>
-                    
-                </div> </div> </main>
-
-    </div> </body>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    try {
+                        const response = await fetch('/logout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            console.log(data.message);
+                            localStorage.removeItem('currentUser');
+                            localStorage.removeItem('currentSchool');
+                            window.location.href = '/login.html';
+                        } else {
+                            alert(data.message || 'Logout failed.');
+                        }
+                    } catch (error) {
+                        console.error('Error during logout:', error);
+                        alert('An error occurred during logout.');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
 </html>
