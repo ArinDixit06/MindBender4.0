@@ -241,19 +241,22 @@ main {
   padding: 20px;
   overflow-y: auto;
 }
+/*
+  This section for quest-board, search, etc. is not
+  currently in the HTML, but is safe to leave here 
+  in case you add it back.
+*/
 .main-content {
   display: flex;
   gap: 20px;
   height: calc(100vh - 180px);
 }
-
 .quest-board {
   flex: 0 0 65%;
   background-color: var(--color-bg-off-white);
   border-radius: var(--border-radius-lg);
   padding: 20px;
   overflow-y: auto;
-  /* Dynamic Enhancement: Add shadow */
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .quest-board h2 {
@@ -262,14 +265,11 @@ main {
   font-size: 16px;
   margin-bottom: 20px;
 }
-
-/* --- SEARCH BAR --- */
 .quest-search {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
-
 #quest-search-input {
   flex: 1;
   padding: 10px;
@@ -280,19 +280,16 @@ main {
   font-family: var(--font-body);
   font-size: 14px;
   outline: none;
-  /* Dynamic Enhancement: Transition border and shadow */
   transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 #quest-search-input::placeholder {
   color: var(--color-text-brown);
   opacity: 0.7;
 }
-/* Dynamic Enhancement: Focus state for input */
 #quest-search-input:focus {
   border-color: var(--color-accent-gold);
   box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.3);
 }
-
 #search-quests-btn {
   background-color: var(--color-accent-red);
   color: white;
@@ -302,24 +299,16 @@ main {
   cursor: pointer;
   font-family: var(--font-body);
   font-weight: 500;
-  /* Dynamic Enhancement: Transition more properties */
   transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
 }
-
 #search-quests-btn:hover {
   background-color: var(--color-accent-gold);
   color: var(--color-text-brown);
-  /* Dynamic Enhancement: Subtle lift */
   transform: translateY(-2px);
 }
-
-/* Dynamic Enhancement: 'Pressed' state */
 #search-quests-btn:active {
   transform: translateY(0) scale(0.98);
 }
-/* --- END OF SEARCH STYLES --- */
-
-
 .add-quest {
   display: flex;
   flex-wrap: wrap;
@@ -339,16 +328,12 @@ main {
   border-radius: var(--border-radius-sm);
   font-family: var(--font-body);
   outline: none;
-  /* Dynamic Enhancement: Transition border and shadow */
   transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
-
-/* Dynamic Enhancement: Focus state for inputs/selects */
 .add-quest input:focus, .add-quest select:focus {
   border-color: var(--color-accent-gold);
   box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.3);
 }
-
 #add-quest-btn {
   background-color: var(--color-accent-red);
   color: white;
@@ -358,20 +343,16 @@ main {
   cursor: pointer;
   font-family: var(--font-body);
   font-weight: 500;
-  /* Dynamic Enhancement: Transition more properties */
   transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
 }
 #add-quest-btn:hover { 
   background-color: var(--color-accent-gold); 
   color: var(--color-text-brown);
-  transform: translateY(-2px); /* Dynamic Enhancement: Subtle lift */
+  transform: translateY(-2px);
 }
-
-/* Dynamic Enhancement: 'Pressed' state */
 #add-quest-btn:active {
   transform: translateY(0) scale(0.98);
 }
-
 .quest-list {
   display: flex;
   flex-direction: column;
@@ -382,13 +363,12 @@ main {
   padding: 15px;
   border-radius: var(--border-radius-md);
   border-left: 4px solid var(--color-accent-red);
-  /* Dynamic Enhancement: Transition transform and shadow */
   transition: transform var(--transition-speed), box-shadow var(--transition-speed);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .quest-card:hover { 
-  transform: translateY(-4px); /* Dynamic Enhancement: Lift more */
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Dynamic Enhancement: Stronger shadow on hover */
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 .quest-card h3 { color: var(--color-accent-gold); margin: 0 0 10px 0; font-size: 16px;}
 .quest-card p { color: var(--color-bg-off-white); margin: 5px 0; font-size: 14px;}
@@ -402,18 +382,15 @@ main {
   font-family: var(--font-body);
   font-weight: 500;
   margin-top: 10px;
-  /* Dynamic Enhancement: Transition more properties */
   transition: background-color var(--transition-speed), transform var(--transition-speed);
 }
 .complete-quest-btn:hover { 
   background-color: #22c55e;
-  transform: scale(1.03); /* Dynamic Enhancement: Subtle zoom */
+  transform: scale(1.03);
 }
-/* Dynamic Enhancement: 'Pressed' state */
 .complete-quest-btn:active {
   transform: scale(0.98);
 }
-
 .profile-section {
   flex: 0 0 30%;
   display: flex;
@@ -427,11 +404,10 @@ main {
   margin: 0 auto 16px auto;
   display: flex;
   justify-content: center;
-  padding: 0; /* Dynamic Enhancement: Reset padding */
-  border-radius: 16px; /* Dynamic Enhancement: Match badge */
-  outline: none; /* Dynamic Enhancement: Remove default */
+  padding: 0;
+  border-radius: 16px;
+  outline: none;
 }
-
 .badge-icon {
   width: 80px;
   height: 80px;
@@ -445,7 +421,6 @@ main {
   font-size: 32px;
   color: var(--color-text-brown);
   box-shadow: 0 2px 14px rgba(75, 46, 46, 0.15);
-  /* Dynamic Enhancement: Transition properties */
   transition: transform var(--transition-speed), box-shadow var(--transition-speed);
 }
 .badge-icon span {
@@ -454,228 +429,121 @@ main {
   color: var(--color-text-brown);
   text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
-
-/* Dynamic Enhancement: Hover/focus for badge */
 .level-profile-btn:hover .badge-icon,
 .level-profile-btn:focus-visible .badge-icon {
   transform: scale(1.1);
   box-shadow: 0 6px 20px rgba(75, 46, 46, 0.25);
 }
 .level-profile-btn:active .badge-icon {
-  transform: scale(1.05); /* 'Pressed' state */
-}
-
-.calendar-container {
-  background-color: var(--color-bg-off-white);
-  border-radius: var(--border-radius-lg);
-  padding: 20px;
-  flex: 1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Dynamic Enhancement: Add shadow */
-}
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.nav-btn {
-  background-color: var(--color-text-brown);
-  color: var(--color-bg-off-white);
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* Dynamic Enhancement: Transition more properties */
-  transition: background-color var(--transition-speed), transform var(--transition-speed);
-}
-.nav-btn:hover { 
-  background-color: var(--color-accent-red);
-  transform: scale(1.1); /* Dynamic Enhancement: Zoom */
-}
-/* Dynamic Enhancement: 'Pressed' state */
-.nav-btn:active {
-  transform: scale(0.95);
-}
-
-#current-month { color: var(--color-text-charcoal); font-weight: 500; font-size: 16px;}
-.calendar { margin-bottom: 20px;}
-.weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px;}
-.weekday { text-align: center; padding: 8px 4px; color: var(--color-text-charcoal); font-size: 12px; font-weight: 500;}
-.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;}
-.day {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-text-brown);
-  color: var(--color-bg-off-white);
-  border-radius: var(--border-radius-sm);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  /* Dynamic Enhancement: Be specific with transitions */
-  transition: transform var(--transition-speed), background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
-}
-.day.empty { background: transparent; cursor: default;}
-.day.today { background-color: var(--color-accent-gold); color: var(--color-text-brown);}
-.day.completed { background-color: var(--color-green); color: white;}
-.day.missed { background-color: var(--color-accent-red); color: white;}
-.day:hover:not(.empty) { 
-  transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Dynamic Enhancement: Add shadow */
-}
-
-.premium-section { background-color: var(--color-text-brown); padding: 15px; border-radius: var(--border-radius-md); margin-bottom: 15px;}
-.premium-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: var(--color-accent-gold); font-weight: 500;}
-.premium-time { color: var(--color-highlight-orange); font-size: 12px;}
-.premium-weeks { display: flex; gap: 8px; justify-content: center;}
-.week { width: 40px; height: 30px; background-color: var(--color-bg-parchment); border-radius: var(--border-radius-sm); display: flex; align-items: center; justify-content: center; color: var(--color-text-brown); font-size: 12px; font-weight: 500; 
-  /* Dynamic Enhancement: Be specific with transitions */
-  transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
-}
-.week.active { background-color: var(--color-accent-gold); color: var(--color-text-brown);}
-/* Dynamic Enhancement: Hover for non-active weeks */
-.week:not(.active):hover {
-  transform: scale(1.1);
-  background-color: var(--color-highlight-orange);
-}
-
-.redeem-section { display: flex; justify-content: space-between; align-items: center; padding-top: 15px;}
-.redeem-count { color: var(--color-green); font-size: 18px; font-weight: bold;}
-.redeem-text { color: var(--color-text-charcoal); font-size: 14px;}
-.rules-text { color: var(--color-text-charcoal); font-size: 12px; text-decoration: underline; cursor: pointer;
-  /* Dynamic Enhancement: Add transition */
-  transition: color var(--transition-speed);
-}
-.rules-text:hover { color: var(--color-accent-gold);}
-
-.modal { 
-  display: none; 
-  position: fixed; 
-  z-index: 1000; 
-  left: 0; 
-  top: 0; 
-  width: 100%; 
-  height: 100%; 
-  background-color: rgba(0,0,0,0.5);
-  /* Dynamic Enhancement: Animate the modal background */
-  animation: fadeIn var(--transition-speed-slow);
-}
-.modal-content { 
-  background-color: var(--color-bg-off-white); 
-  margin: 15% auto; 
-  padding: 20px; 
-  border-radius: var(--border-radius-lg); 
-  width: 80%; 
-  max-width: 500px; 
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* Dynamic Enhancement: Add shadow */
-  /* Dynamic Enhancement: Animate the modal content */
-  animation: slideUp var(--transition-speed-slow);
-}
-.close-button { 
-  color: var(--color-text-charcoal); 
-  float: right; 
-  font-size: 28px; 
-  font-weight: bold; 
-  cursor: pointer; 
-  line-height: 1;
-  /* Dynamic Enhancement: Add transition */
-  transition: color var(--transition-speed), transform var(--transition-speed);
-}
-.close-button:hover { 
-  color: var(--color-accent-red);
-  transform: rotate(90deg); /* Dynamic Enhancement: Spin */
-}
-
-.subject-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 10px; background-color: var(--color-bg-parchment); border-radius: var(--border-radius-sm);}
-.delete-subject-btn { 
-  background-color: var(--color-accent-red); 
-  color: white; 
-  border: none; 
-  padding: 5px 10px; 
-  border-radius: var(--border-radius-sm); 
-  cursor: pointer; 
-  font-size: 12px;
-  /* Dynamic Enhancement: Add transition */
-  transition: background-color var(--transition-speed), transform var(--transition-speed);
-}
-.delete-subject-btn:hover { 
-  background-color: #dc2626;
-  transform: scale(1.05); /* Dynamic Enhancement: Scale */
-}
-/* Dynamic Enhancement: 'Pressed' state */
-.delete-subject-btn:active {
-  transform: scale(0.98);
+  transform: scale(1.05);
 }
 
 /* --- Styles for Your Dashboard Cards --- */
 
-/* MODIFIED: This main container now just stacks its children 
-  (the welcome card and the features-grid) vertically.
-*/
+/* This is the wrapper for ALL cards */
 .dashboard-cards {
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
 }
 
-/* NEW: This class is for the "Welcome" card to center its text
-*/
-.welcome-card {
+/* This styles the Welcome Card ONLY */
+.dashboard-card.welcome-card {
+  background-color: var(--color-bg-off-white);
+  padding: 20px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--color-highlight-orange);
   text-align: center;
 }
 
-/* NEW: This class holds the 4 feature cards
-*/
+/* This is the grid for the 4 feature cards */
 .features-grid {
   display: grid;
   grid-template-columns: 1fr; /* 1 column on mobile by default */
   gap: 20px;
 }
 
+/* NEW STYLES START HERE
+  These target the 4 feature cards
+*/
 
-.dashboard-card {
-  background-color: var(--color-bg-off-white);
-  padding: 20px;
+/* This styles the BLUE card base */
+.features-grid .dashboard-card {
+  background-color: var(--color-accent-blue);
   border-radius: var(--border-radius-lg);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  border: 1px solid var(--color-highlight-orange);
+  /* Heavier shadow inspired by your image */
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2), 0 8px 10px -6px rgba(0,0,0,0.2);
   transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+  /* Use flexbox to space the header, description, and footer */
+  display: flex;
+  flex-direction: column;
+  min-height: 250px; /* Give cards a consistent height */
 }
 
-.dashboard-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+.features-grid .dashboard-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 30px -5px rgba(0,0,0,0.25), 0 10px 15px -6px rgba(0,0,0,0.25);
 }
 
-/* This rule styles BOTH the <h2> in the welcome card and <h3> in others */
-.dashboard-card h2,
-.dashboard-card h3 {
-  font-family: var(--font-body); /* Use Roboto */
+/* This styles the "lifted" white header */
+.card-image-header {
+  background-color: var(--color-bg-off-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  padding: 20px;
+  /* Inset spacing */
+  margin: 15px 15px 0 15px; 
+  text-align: center;
+}
+
+/* This styles the h3 inside the new header */
+.features-grid .dashboard-card h3 {
+  font-family: var(--font-heading); /* Pixel font */
+  font-size: 16px;
+  color: var(--color-text-brown);
+  margin: 0;
+}
+
+/* This styles the text container with the vertical bar */
+.card-description {
+  padding: 10px 15px 10px 15px;
+  margin: 15px 15px 0 15px;
+  border-left: 4px solid var(--color-text-brown);
+}
+
+/* This styles the <p> text */
+.features-grid .dashboard-card p {
+  color: var(--color-text-brown);
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* This container pushes the button to the bottom */
+.card-button-footer {
+  padding: 15px;
+  margin-top: auto; /* Magic flexbox property */
+}
+
+/* This styles the "Welcome" card's text */
+.dashboard-card.welcome-card h2 {
+  font-family: var(--font-body);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 24px;
   color: var(--color-text-brown);
   margin-top: 0;
   margin-bottom: 10px;
 }
-/* This rule makes the h2 (Welcome) slightly larger */
-.dashboard-card h2 {
-    font-size: 24px;
-}
-
-.dashboard-card p {
+.dashboard-card.welcome-card p {
   font-size: 14px;
-  margin-bottom: 15px;
+  margin-bottom: 0;
   line-height: 1.5;
-  color: var(--color-text-charcoal); /* Ensure text color */
+  color: var(--color-text-charcoal);
 }
 
+/* This is the original button style for the WELCOME card */
 .dashboard-btn {
   background-color: var(--color-accent-blue);
   color: white;
@@ -690,21 +558,40 @@ main {
   display: inline-block;
   transition: background-color var(--transition-speed), transform var(--transition-speed);
 }
-
 .dashboard-btn:hover {
   background-color: #008fbf; /* Darker blue */
   transform: translateY(-2px);
 }
-
 .dashboard-btn:active {
   transform: translateY(0);
 }
 
+
+/* NEW BUTTON STYLE for the 4 feature cards */
+.features-grid .dashboard-btn {
+  background-color: transparent;
+  border: 2px solid var(--color-text-brown);
+  color: var(--color-text-brown);
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all var(--transition-speed);
+}
+
+.features-grid .dashboard-btn:hover {
+  background-color: var(--color-text-brown);
+  color: var(--color-accent-blue); /* Text changes to blue on hover */
+  transform: none; /* Override previous hover */
+}
+.features-grid .dashboard-btn:active {
+  transform: scale(0.98);
+}
+
+
 /* --- Media Queries for Responsiveness --- */
 
-/* MODIFIED: This media query now targets the .features-grid 
-  to create the 2x2 "square" layout on wide screens.
-*/
+/* This creates the 2x2 grid on wide screens */
 @media (min-width: 1024px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -712,9 +599,7 @@ main {
 }
 
 @media (max-width: 1024px) {
-  .main-content { flex-direction: column; }
-  .quest-board { flex: none; max-height: 60vh; }
-  .profile-section { flex: none; }
+  /* No changes needed here for layout */
 }
 
 @media (max-width: 768px) {
@@ -730,12 +615,6 @@ main {
     border-right: none; /* Remove side border */
     border-bottom: 2px solid var(--color-highlight-orange); /* Add bottom border */
   }
-  .main-content { flex-direction: column; height: auto; }
-  .quest-board, .profile-section { flex: none; }
-  .add-quest { flex-direction: column; }
-  .add-quest input, .add-quest select { min-width: 100%; }
-  /* Make search bar stack vertically */
-  .quest-search { flex-direction: column; }
 }
 
 @media (max-width: 480px) {
@@ -754,7 +633,6 @@ main {
     width: 100%; 
     justify-content: center; 
   }
-  /* Dynamic Enhancement: Remove hover transform on mobile nav */
   .nav-item .nav-link:hover,
   .nav-item .nav-link.active {
     transform: none;
@@ -762,20 +640,10 @@ main {
   
   .nav-item .nav-link i { margin-right: 5px; }
   main { padding: 10px; }
-  .calendar-container { padding: 15px; }
   .badge-icon { width: 60px; height: 60px; }
   .badge-icon span { font-size: 18px; }
-  .modal-content { 
-    width: 95%; 
-    margin: 10% auto; 
-    padding: 15px; 
-  }
-  /* Dynamic Enhancement: Adjust calendar for small screens */
-  .weekday, .day { font-size: 11px; padding: 4px 2px; }
 
-  /* On mobile, .features-grid is already 1fr, 
-    so all cards (Welcome, and the 4 features) 
-    will stack vertically, which is correct.
-  */
-  .dashboard-card h2 { font-size: 20px; }
+  /* All cards will stack vertically 1-column, which is correct */
+  
+  .dashboard-card.welcome-card h2 { font-size: 20px; }
 }
