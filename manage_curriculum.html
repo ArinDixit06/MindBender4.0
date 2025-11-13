@@ -358,8 +358,8 @@
         }
 
         function manageTopics(curriculumId, subjectName) {
-            // TODO: Implement topic management modal or redirect to topic management page
-            alert(`Topic management for "${subjectName}" will be implemented here.\nCurriculum ID: ${curriculumId}`);
+            // Redirect to knowledge_map_page.html with curriculumId and subjectName as URL parameters
+            window.location.href = `knowledge_map_page.html?curriculumId=${curriculumId}&subjectName=${encodeURIComponent(subjectName)}`;
         }
 
         document.addEventListener('DOMContentLoaded', async () => {

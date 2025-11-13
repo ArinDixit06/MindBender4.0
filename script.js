@@ -26,6 +26,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const { user, school } = sessionData;
 
+  // Role-based redirection if user lands on index.html
+  if (window.location.pathname === '/index.html' || window.location.pathname === '/') {
+    if (user.role === 'teacher') {
+      window.location.href = 'teacher_dashboard.html';
+      return;
+    } else if (user.role === 'admin') {
+      window.location.href = 'admin_dashboard.html';
+      return;
+    }
+  }
+
   // Update header with user and school info
   const schoolNameElement = document.getElementById('school-name');
   const schoolLogoElement = document.getElementById('school-logo');
