@@ -614,22 +614,7 @@ main {
   transform: scale(0.98);
 }
 
-/* --- Styles for Your Dashboard Cards (from screenshot) --- */
-
-.welcome-header {
-  margin-bottom: 20px;
-}
-.welcome-header h2 {
-  font-family: var(--font-body); /* Use Roboto for this one */
-  font-weight: 700;
-  font-size: 24px;
-  color: var(--color-text-brown);
-}
-.welcome-header p {
-  font-size: 16px;
-  color: var(--color-text-charcoal);
-  margin-top: 5px; /* Add a little space */
-}
+/* --- Styles for Your Dashboard Cards --- */
 
 .dashboard-cards {
   display: grid;
@@ -651,6 +636,8 @@ main {
   box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
 
+/* This rule styles BOTH the <h2> in the welcome card and <h3> in others */
+.dashboard-card h2,
 .dashboard-card h3 {
   font-family: var(--font-body); /* Use Roboto */
   font-weight: 700;
@@ -658,6 +645,10 @@ main {
   color: var(--color-text-brown);
   margin-top: 0;
   margin-bottom: 10px;
+}
+/* This rule makes the h2 (Welcome) slightly larger */
+.dashboard-card h2 {
+    font-size: 24px;
 }
 
 .dashboard-card p {
@@ -766,6 +757,5 @@ main {
   .dashboard-cards {
     grid-template-columns: 1fr;
   }
-  .welcome-header h2 { font-size: 20px; }
-  .welcome-header p { font-size: 14px; }
+  .dashboard-card h2 { font-size: 20px; }
 }
