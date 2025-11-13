@@ -43,6 +43,20 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get("/favicon.ico", (req, res) => res.status(204).send());
 
+// Explicit routes for admin dashboard pages
+app.get("/manage_users.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_users.html", { root: "." });
+});
+app.get("/manage_schools.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_schools.html", { root: "." });
+});
+app.get("/manage_curriculum.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_curriculum.html", { root: "." });
+});
+app.get("/system_settings.html", requireAdmin, (req, res) => {
+  res.sendFile("system_settings.html", { root: "." });
+});
+
 app.use(express.static(".", {
   etag: false,
   lastModified: false,
@@ -413,6 +427,62 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
   } catch (err) {
     console.error("Error in /api/me:", err);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// ---------- ADMIN DATA ROUTES ----------
+app.get("/api/admin/users", requireAdmin, async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from("users")
+      .select("user_id, name, email, role, xp, level, school_id, created_at");
+
+    if (error) throw error;
+    res.json({ users });
+  } catch (err) {
+    console.error("Fetch all users error:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch users." });
+  }
+});
+
+app.get("/api/admin/schools", requireAdmin, async (req, res) => {
+  try {
+    const { data: schools, error } = await supabase
+      .from("schools")
+      .select("school_id, school_name, domain_name, admin_email, description, logo_url, subscription_tier, created_at");
+
+    if (error) throw error;
+    res.json({ schools });
+  } catch (err) {
+    console.error("Fetch all schools error:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch schools." });
+  }
+});
+
+app.get("/api/admin/curriculum", requireAdmin, async (req, res) => {
+  try {
+    const { data: curriculums, error } = await supabase
+      .from("curriculums")
+      .select(`
+        curriculum_id,
+        subject_name,
+        description,
+        created_at,
+        schools(school_name)
+      `);
+
+    if (error) throw error;
+
+    const formattedCurriculums = curriculums.map(curriculum => ({
+      ...curriculum,
+      school_name: curriculum.schools ? curriculum.schools.school_name : null,
+      schools: undefined,
+    }));
+
+    res.json({ curriculums: formattedCurriculums });
+  } catch (err) {
+    console.error("Fetch all curriculums error:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch curriculums." });
   }
 });
 

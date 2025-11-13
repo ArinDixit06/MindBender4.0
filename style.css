@@ -19,22 +19,7 @@
   --border-radius-md: 8px;
   --border-radius-lg: 10px;
   --transition-speed: 0.2s ease;
-  
-  /* Dynamic Enhancement: Added a slightly longer transition for animations */
-  --transition-speed-slow: 0.3s ease;
 }
-
-/* Dynamic Enhancement: Added keyframes for modal animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
 
 *, *::before, *::after { box-sizing: border-box; }
 body, html {
@@ -63,8 +48,6 @@ header {
   background-color: var(--color-text-brown);
   border-bottom: 2px solid var(--color-highlight-orange);
   margin-bottom: 20px;
-  /* Dynamic Enhancement: Add a shadow for depth */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .navbar-nav {
@@ -74,7 +57,6 @@ header {
   padding: 0;
   gap: 24px;
   justify-content: center;
-  flex-wrap: wrap; /* Allow nav items to wrap on small screens */
 }
 
 .nav-item .nav-link {
@@ -85,42 +67,24 @@ header {
   color: var(--color-accent-gold);
   font-family: var(--font-heading);
   text-decoration: none;
-  /* Dynamic Enhancement: Be specific with transitions, not 'all' */
-  transition: color var(--transition-speed), background-color var(--transition-speed), transform var(--transition-speed);
+  transition: all var(--transition-speed);
   border-radius: var(--border-radius-md);
   outline: none;
-  position: relative; /* For pseudo-elements if needed */
 }
 
-/* Dynamic Enhancement: Use :focus-visible for accessibility */
-.nav-item .nav-link:focus-visible {
-  outline: 2px solid var(--color-accent-gold);
-  outline-offset: 2px;
+.nav-item .nav-link:focus {
+  box-shadow: 0 0 0 2px var(--color-accent-gold);
 }
 
 .nav-item .nav-link i {
   margin-right: 10px;
   font-size: 20px;
-  /* Dynamic Enhancement: Transition the icon color too */
-  transition: color var(--transition-speed);
 }
 
 .nav-item .nav-link:hover,
 .nav-item .nav-link.active {
   color: var(--color-accent-blue);
   background: rgba(244, 197, 66, 0.1);
-  /* Dynamic Enhancement: Subtle lift on hover */
-  transform: translateY(-2px);
-}
-
-/* Dynamic Enhancement: 'Pressed' state for nav links */
-.nav-item .nav-link:active {
-  transform: translateY(0);
-}
-
-.nav-item .nav-link:hover i,
-.nav-item .nav-link.active i {
-  color: var(--color-accent-blue);
 }
 
 /* Dashboard Layout */
@@ -136,9 +100,6 @@ aside {
   padding: 20px;
   overflow-y: auto;
   min-height: calc(100vh - 60px);
-  /* Dynamic Enhancement: Transition for potential sidebar toggling */
-  transition: width var(--transition-speed-slow), transform var(--transition-speed-slow);
-  flex-shrink: 0; /* Prevent sidebar from shrinking */
 }
 
 .player-profile h2 {
@@ -153,8 +114,6 @@ aside {
   padding: 15px;
   border-radius: var(--border-radius-md);
   margin-bottom: 20px;
-  /* Dynamic Enhancement: Add shadow */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .player-level {
@@ -177,14 +136,13 @@ aside {
   height: 100%;
   background-color: var(--color-accent-gold);
   border-radius: 3px;
-  /* Dynamic Enhancement: A slightly slower, smoother XP bar fill */
-  transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: width 0.5s ease;
   width: 0%;
 }
 
 .xp-text {
   font-size: 12px;
-  color: var(--color-bg-off-white); /* Changed for contrast on brown bg */
+  color: var(--color-text-charcoal);
   text-align: center;
 }
 
@@ -199,42 +157,23 @@ aside {
   align-items: center;
   padding: 8px;
   margin-bottom: 8px;
-  background-color: rgba(75, 46, 46, 0.1); /* Lighter brown */
+  background-color: rgba(0,0,0,0.2);
   border-radius: var(--border-radius-sm);
-  opacity: 0.6;
-  /* Dynamic Enhancement: Transition more properties */
-  transition: opacity var(--transition-speed), background-color var(--transition-speed), transform var(--transition-speed);
+  opacity: 0.5;
+  transition: opacity var(--transition-speed);
 }
 .achievement.unlocked {
   opacity: 1;
-  background-color: var(--color-text-brown); /* Make unlocked stand out */
 }
-/* Unlocked achievements should have white text */
-.achievement.unlocked .achievement-name {
-    color: var(--color-bg-off-white);
-}
-/* Locked achievements have brown text */
-.achievement .achievement-name {
-    color: var(--color-text-brown);
-}
-
-
-/* Dynamic Enhancement: Add hover effect to achievements */
-.achievement:hover {
-  transform: translateX(5px);
-  background-color: rgba(75, 46, 46, 0.2);
-}
-.achievement.unlocked:hover {
-    background-color: #3a2222; /* Slightly lighter brown */
-}
-
-
 .achievement-icon {
   margin-right: 10px;
   font-size: 16px;
   color: var(--color-accent-gold);
 }
-
+.achievement-name {
+  font-size: 12px;
+  color: var(--color-bg-off-white);
+}
 
 main {
   flex: 1;
@@ -253,8 +192,6 @@ main {
   border-radius: var(--border-radius-lg);
   padding: 20px;
   overflow-y: auto;
-  /* Dynamic Enhancement: Add shadow */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .quest-board h2 {
   font-family: var(--font-heading);
@@ -263,7 +200,7 @@ main {
   margin-bottom: 20px;
 }
 
-/* --- SEARCH BAR --- */
+/* --- NEW STYLES FOR SEARCH BAR --- */
 .quest-search {
   display: flex;
   gap: 10px;
@@ -279,18 +216,10 @@ main {
   border-radius: var(--border-radius-sm);
   font-family: var(--font-body);
   font-size: 14px;
-  outline: none;
-  /* Dynamic Enhancement: Transition border and shadow */
-  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 #quest-search-input::placeholder {
   color: var(--color-text-brown);
   opacity: 0.7;
-}
-/* Dynamic Enhancement: Focus state for input */
-#quest-search-input:focus {
-  border-color: var(--color-accent-gold);
-  box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.3);
 }
 
 #search-quests-btn {
@@ -302,22 +231,14 @@ main {
   cursor: pointer;
   font-family: var(--font-body);
   font-weight: 500;
-  /* Dynamic Enhancement: Transition more properties */
-  transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
+  transition: background-color var(--transition-speed);
 }
 
 #search-quests-btn:hover {
   background-color: var(--color-accent-gold);
   color: var(--color-text-brown);
-  /* Dynamic Enhancement: Subtle lift */
-  transform: translateY(-2px);
 }
-
-/* Dynamic Enhancement: 'Pressed' state */
-#search-quests-btn:active {
-  transform: translateY(0) scale(0.98);
-}
-/* --- END OF SEARCH STYLES --- */
+/* --- END OF NEW STYLES --- */
 
 
 .add-quest {
@@ -338,17 +259,7 @@ main {
   color: var(--color-text-brown);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-body);
-  outline: none;
-  /* Dynamic Enhancement: Transition border and shadow */
-  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
-
-/* Dynamic Enhancement: Focus state for inputs/selects */
-.add-quest input:focus, .add-quest select:focus {
-  border-color: var(--color-accent-gold);
-  box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.3);
-}
-
 #add-quest-btn {
   background-color: var(--color-accent-red);
   color: white;
@@ -358,20 +269,9 @@ main {
   cursor: pointer;
   font-family: var(--font-body);
   font-weight: 500;
-  /* Dynamic Enhancement: Transition more properties */
-  transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
+  transition: background-color var(--transition-speed);
 }
-#add-quest-btn:hover { 
-  background-color: var(--color-accent-gold); 
-  color: var(--color-text-brown);
-  transform: translateY(-2px); /* Dynamic Enhancement: Subtle lift */
-}
-
-/* Dynamic Enhancement: 'Pressed' state */
-#add-quest-btn:active {
-  transform: translateY(0) scale(0.98);
-}
-
+#add-quest-btn:hover { background-color: var(--color-accent-gold); color: var(--color-text-brown); }
 .quest-list {
   display: flex;
   flex-direction: column;
@@ -382,14 +282,9 @@ main {
   padding: 15px;
   border-radius: var(--border-radius-md);
   border-left: 4px solid var(--color-accent-red);
-  /* Dynamic Enhancement: Transition transform and shadow */
-  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform var(--transition-speed);
 }
-.quest-card:hover { 
-  transform: translateY(-4px); /* Dynamic Enhancement: Lift more */
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Dynamic Enhancement: Stronger shadow on hover */
-}
+.quest-card:hover { transform: translateY(-2px);}
 .quest-card h3 { color: var(--color-accent-gold); margin: 0 0 10px 0; font-size: 16px;}
 .quest-card p { color: var(--color-bg-off-white); margin: 5px 0; font-size: 14px;}
 .complete-quest-btn {
@@ -402,17 +297,9 @@ main {
   font-family: var(--font-body);
   font-weight: 500;
   margin-top: 10px;
-  /* Dynamic Enhancement: Transition more properties */
-  transition: background-color var(--transition-speed), transform var(--transition-speed);
+  transition: background-color var(--transition-speed);
 }
-.complete-quest-btn:hover { 
-  background-color: #22c55e;
-  transform: scale(1.03); /* Dynamic Enhancement: Subtle zoom */
-}
-/* Dynamic Enhancement: 'Pressed' state */
-.complete-quest-btn:active {
-  transform: scale(0.98);
-}
+.complete-quest-btn:hover { background-color: #22c55e;}
 
 .profile-section {
   flex: 0 0 30%;
@@ -427,11 +314,7 @@ main {
   margin: 0 auto 16px auto;
   display: flex;
   justify-content: center;
-  padding: 0; /* Dynamic Enhancement: Reset padding */
-  border-radius: 16px; /* Dynamic Enhancement: Match badge */
-  outline: none; /* Dynamic Enhancement: Remove default */
 }
-
 .badge-icon {
   width: 80px;
   height: 80px;
@@ -445,8 +328,6 @@ main {
   font-size: 32px;
   color: var(--color-text-brown);
   box-shadow: 0 2px 14px rgba(75, 46, 46, 0.15);
-  /* Dynamic Enhancement: Transition properties */
-  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
 }
 .badge-icon span {
   font-family: var(--font-heading);
@@ -455,22 +336,11 @@ main {
   text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Dynamic Enhancement: Hover/focus for badge */
-.level-profile-btn:hover .badge-icon,
-.level-profile-btn:focus-visible .badge-icon {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(75, 46, 46, 0.25);
-}
-.level-profile-btn:active .badge-icon {
-  transform: scale(1.05); /* 'Pressed' state */
-}
-
 .calendar-container {
   background-color: var(--color-bg-off-white);
   border-radius: var(--border-radius-lg);
   padding: 20px;
   flex: 1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Dynamic Enhancement: Add shadow */
 }
 .calendar-header {
   display: flex;
@@ -490,18 +360,9 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Dynamic Enhancement: Transition more properties */
-  transition: background-color var(--transition-speed), transform var(--transition-speed);
+  transition: background-color var(--transition-speed);
 }
-.nav-btn:hover { 
-  background-color: var(--color-accent-red);
-  transform: scale(1.1); /* Dynamic Enhancement: Zoom */
-}
-/* Dynamic Enhancement: 'Pressed' state */
-.nav-btn:active {
-  transform: scale(0.95);
-}
-
+.nav-btn:hover { background-color: var(--color-accent-red); }
 #current-month { color: var(--color-text-charcoal); font-weight: 500; font-size: 16px;}
 .calendar { margin-bottom: 20px;}
 .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px;}
@@ -518,198 +379,42 @@ main {
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  /* Dynamic Enhancement: Be specific with transitions */
-  transition: transform var(--transition-speed), background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+  transition: all var(--transition-speed);
 }
 .day.empty { background: transparent; cursor: default;}
 .day.today { background-color: var(--color-accent-gold); color: var(--color-text-brown);}
 .day.completed { background-color: var(--color-green); color: white;}
 .day.missed { background-color: var(--color-accent-red); color: white;}
-.day:hover:not(.empty) { 
-  transform: scale(1.1);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Dynamic Enhancement: Add shadow */
-}
+.day:hover:not(.empty) { transform: scale(1.1);}
 
 .premium-section { background-color: var(--color-text-brown); padding: 15px; border-radius: var(--border-radius-md); margin-bottom: 15px;}
 .premium-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: var(--color-accent-gold); font-weight: 500;}
 .premium-time { color: var(--color-highlight-orange); font-size: 12px;}
 .premium-weeks { display: flex; gap: 8px; justify-content: center;}
-.week { width: 40px; height: 30px; background-color: var(--color-bg-parchment); border-radius: var(--border-radius-sm); display: flex; align-items: center; justify-content: center; color: var(--color-text-brown); font-size: 12px; font-weight: 500; 
-  /* Dynamic Enhancement: Be specific with transitions */
-  transition: background-color var(--transition-speed), color var(--transition-speed), transform var(--transition-speed);
-}
+.week { width: 40px; height: 30px; background-color: var(--color-bg-parchment); border-radius: var(--border-radius-sm); display: flex; align-items: center; justify-content: center; color: var(--color-text-brown); font-size: 12px; font-weight: 500; transition: all var(--transition-speed);}
 .week.active { background-color: var(--color-accent-gold); color: var(--color-text-brown);}
-/* Dynamic Enhancement: Hover for non-active weeks */
-.week:not(.active):hover {
-  transform: scale(1.1);
-  background-color: var(--color-highlight-orange);
-}
-
 .redeem-section { display: flex; justify-content: space-between; align-items: center; padding-top: 15px;}
 .redeem-count { color: var(--color-green); font-size: 18px; font-weight: bold;}
 .redeem-text { color: var(--color-text-charcoal); font-size: 14px;}
-.rules-text { color: var(--color-text-charcoal); font-size: 12px; text-decoration: underline; cursor: pointer;
-  /* Dynamic Enhancement: Add transition */
-  transition: color var(--transition-speed);
-}
+.rules-text { color: var(--color-text-charcoal); font-size: 12px; text-decoration: underline; cursor: pointer;}
 .rules-text:hover { color: var(--color-accent-gold);}
 
-.modal { 
-  display: none; 
-  position: fixed; 
-  z-index: 1000; 
-  left: 0; 
-  top: 0; 
-  width: 100%; 
-  height: 100%; 
-  background-color: rgba(0,0,0,0.5);
-  /* Dynamic Enhancement: Animate the modal background */
-  animation: fadeIn var(--transition-speed-slow);
-}
-.modal-content { 
-  background-color: var(--color-bg-off-white); 
-  margin: 15% auto; 
-  padding: 20px; 
-  border-radius: var(--border-radius-lg); 
-  width: 80%; 
-  max-width: 500px; 
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* Dynamic Enhancement: Add shadow */
-  /* Dynamic Enhancement: Animate the modal content */
-  animation: slideUp var(--transition-speed-slow);
-}
-.close-button { 
-  color: var(--color-text-charcoal); 
-  float: right; 
-  font-size: 28px; 
-  font-weight: bold; 
-  cursor: pointer; 
-  line-height: 1;
-  /* Dynamic Enhancement: Add transition */
-  transition: color var(--transition-speed), transform var(--transition-speed);
-}
-.close-button:hover { 
-  color: var(--color-accent-red);
-  transform: rotate(90deg); /* Dynamic Enhancement: Spin */
-}
-
+.modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);}
+.modal-content { background-color: var(--color-bg-off-white); margin: 15% auto; padding: 20px; border-radius: var(--border-radius-lg); width: 80%; max-width: 500px; position: relative;}
+.close-button { color: var(--color-text-charcoal); float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1;}
+.close-button:hover { color: var(--color-accent-red);}
 .subject-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 10px; background-color: var(--color-bg-parchment); border-radius: var(--border-radius-sm);}
-.delete-subject-btn { 
-  background-color: var(--color-accent-red); 
-  color: white; 
-  border: none; 
-  padding: 5px 10px; 
-  border-radius: var(--border-radius-sm); 
-  cursor: pointer; 
-  font-size: 12px;
-  /* Dynamic Enhancement: Add transition */
-  transition: background-color var(--transition-speed), transform var(--transition-speed);
-}
-.delete-subject-btn:hover { 
-  background-color: #dc2626;
-  transform: scale(1.05); /* Dynamic Enhancement: Scale */
-}
-/* Dynamic Enhancement: 'Pressed' state */
-.delete-subject-btn:active {
-  transform: scale(0.98);
-}
-
-/* --- Styles for Your Dashboard Cards --- */
-
-.dashboard-cards {
-  display: grid;
-  grid-template-columns: 1fr; /* 1 column by default */
-  gap: 20px;
-}
-
-.dashboard-card {
-  background-color: var(--color-bg-off-white);
-  padding: 20px;
-  border-radius: var(--border-radius-lg);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  border: 1px solid var(--color-highlight-orange);
-  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-}
-
-.dashboard-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-}
-
-/* This rule styles BOTH the <h2> in the welcome card and <h3> in others */
-.dashboard-card h2,
-.dashboard-card h3 {
-  font-family: var(--font-body); /* Use Roboto */
-  font-weight: 700;
-  font-size: 18px;
-  color: var(--color-text-brown);
-  margin-top: 0;
-  margin-bottom: 10px;
-}
-/* This rule makes the h2 (Welcome) slightly larger */
-.dashboard-card h2 {
-    font-size: 24px;
-}
-
-.dashboard-card p {
-  font-size: 14px;
-  margin-bottom: 15px;
-  line-height: 1.5;
-  color: var(--color-text-charcoal); /* Ensure text color */
-}
-
-.dashboard-btn {
-  background-color: var(--color-accent-blue);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 14px;
-  text-decoration: none;
-  display: inline-block;
-  transition: background-color var(--transition-speed), transform var(--transition-speed);
-}
-
-.dashboard-btn:hover {
-  background-color: #008fbf; /* Darker blue */
-  transform: translateY(-2px);
-}
-
-.dashboard-btn:active {
-  transform: translateY(0);
-}
-
-/* --- Media Queries for Responsiveness --- */
-
-/* On wider screens, make dashboard cards 2-column */
-@media (min-width: 1024px) {
-  .dashboard-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+.delete-subject-btn { background-color: var(--color-accent-red); color: white; border: none; padding: 5px 10px; border-radius: var(--border-radius-sm); cursor: pointer; font-size: 12px;}
+.delete-subject-btn:hover { background-color: #dc2626;}
 
 @media (max-width: 1024px) {
   .main-content { flex-direction: column; }
   .quest-board { flex: none; max-height: 60vh; }
   .profile-section { flex: none; }
 }
-
 @media (max-width: 768px) {
-  .container { 
-    flex-direction: column; /* Stack sidebar on top of main */
-  }
-  aside { 
-    width: 100%; 
-    height: auto; 
-    max-height: 250px; 
-    overflow-y: auto; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-    border-right: none; /* Remove side border */
-    border-bottom: 2px solid var(--color-highlight-orange); /* Add bottom border */
-  }
+  .container { flex-direction: column; }
+  aside { width: 100%; height: auto; max-height: 200px; overflow-y: auto; }
   .main-content { flex-direction: column; height: auto; }
   .quest-board, .profile-section { flex: none; }
   .add-quest { flex-direction: column; }
@@ -717,45 +422,17 @@ main {
   /* Make search bar stack vertically */
   .quest-search { flex-direction: column; }
 }
-
 @media (max-width: 480px) {
   body { font-size: 14px; }
   header { padding: 15px 0 0 0; }
   .center-title { font-size: 20px; }
   .navbar.horizontal-navbar { margin-bottom: 10px; }
-  .navbar-nav { 
-    flex-direction: column; 
-    gap: 0; 
-    align-items: center; 
-  }
-  .nav-item .nav-link { 
-    padding: 10px 15px; 
-    font-size: 14px; /* Slightly smaller */
-    width: 100%; 
-    justify-content: center; 
-  }
-  /* Dynamic Enhancement: Remove hover transform on mobile nav */
-  .nav-item .nav-link:hover,
-  .nav-item .nav-link.active {
-    transform: none;
-  }
-  
+  .navbar-nav { flex-direction: column; gap: 0; align-items: center; }
+  .nav-item .nav-link { padding: 10px 15px; font-size: 16px; width: 100%; justify-content: center; }
   .nav-item .nav-link i { margin-right: 5px; }
   main { padding: 10px; }
   .calendar-container { padding: 15px; }
   .badge-icon { width: 60px; height: 60px; }
   .badge-icon span { font-size: 18px; }
-  .modal-content { 
-    width: 95%; 
-    margin: 10% auto; 
-    padding: 15px; 
-  }
-  /* Dynamic Enhancement: Adjust calendar for small screens */
-  .weekday, .day { font-size: 11px; padding: 4px 2px; }
-
-  /* Stack dashboard cards on small screens (already default) */
-  .dashboard-cards {
-    grid-template-columns: 1fr;
-  }
-  .dashboard-card h2 { font-size: 20px; }
+  .modal-content { width: 95%; margin: 10% auto; }
 }
