@@ -2,7 +2,7 @@
 
 :root {
   --font-body: 'Roboto', sans-serif;
-  --font-heading: 'Press+Start+2P', cursive;
+  --font-heading: 'Press Start 2P', cursive;
 
   /* 🎨 Applied Color Palette */
   --color-bg-parchment: #E6D3A3;
@@ -74,6 +74,7 @@ header {
   padding: 0;
   gap: 24px;
   justify-content: center;
+  flex-wrap: wrap; /* Allow nav items to wrap on small screens */
 }
 
 .nav-item .nav-link {
@@ -136,7 +137,8 @@ aside {
   overflow-y: auto;
   min-height: calc(100vh - 60px);
   /* Dynamic Enhancement: Transition for potential sidebar toggling */
-  transition: width var(--transition-speed-slow);
+  transition: width var(--transition-speed-slow), transform var(--transition-speed-slow);
+  flex-shrink: 0; /* Prevent sidebar from shrinking */
 }
 
 .player-profile h2 {
@@ -182,7 +184,7 @@ aside {
 
 .xp-text {
   font-size: 12px;
-  color: var(--color-text-charcoal);
+  color: var(--color-bg-off-white); /* Changed for contrast on brown bg */
   text-align: center;
 }
 
@@ -197,9 +199,9 @@ aside {
   align-items: center;
   padding: 8px;
   margin-bottom: 8px;
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(75, 46, 46, 0.1); /* Lighter brown */
   border-radius: var(--border-radius-sm);
-  opacity: 0.5;
+  opacity: 0.6;
   /* Dynamic Enhancement: Transition more properties */
   transition: opacity var(--transition-speed), background-color var(--transition-speed), transform var(--transition-speed);
 }
@@ -207,22 +209,32 @@ aside {
   opacity: 1;
   background-color: var(--color-text-brown); /* Make unlocked stand out */
 }
+/* Unlocked achievements should have white text */
+.achievement.unlocked .achievement-name {
+    color: var(--color-bg-off-white);
+}
+/* Locked achievements have brown text */
+.achievement .achievement-name {
+    color: var(--color-text-brown);
+}
+
 
 /* Dynamic Enhancement: Add hover effect to achievements */
 .achievement:hover {
   transform: translateX(5px);
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(75, 46, 46, 0.2);
 }
+.achievement.unlocked:hover {
+    background-color: #3a2222; /* Slightly lighter brown */
+}
+
 
 .achievement-icon {
   margin-right: 10px;
   font-size: 16px;
   color: var(--color-accent-gold);
 }
-.achievement-name {
-  font-size: 12px;
-  color: var(--color-bg-off-white);
-}
+
 
 main {
   flex: 1;
@@ -251,7 +263,7 @@ main {
   margin-bottom: 20px;
 }
 
-/* --- NEW STYLES FOR SEARCH BAR --- */
+/* --- SEARCH BAR --- */
 .quest-search {
   display: flex;
   gap: 10px;
@@ -305,7 +317,7 @@ main {
 #search-quests-btn:active {
   transform: translateY(0) scale(0.98);
 }
-/* --- END OF NEW STYLES --- */
+/* --- END OF SEARCH STYLES --- */
 
 
 .add-quest {
@@ -602,19 +614,110 @@ main {
   transform: scale(0.98);
 }
 
+/* --- Styles for Your Dashboard Cards (from screenshot) --- */
+
+.welcome-header {
+  margin-bottom: 20px;
+}
+.welcome-header h2 {
+  font-family: var(--font-body); /* Use Roboto for this one */
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--color-text-brown);
+}
+.welcome-header p {
+  font-size: 16px;
+  color: var(--color-text-charcoal);
+  margin-top: 5px; /* Add a little space */
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 column by default */
+  gap: 20px;
+}
+
+.dashboard-card {
+  background-color: var(--color-bg-off-white);
+  padding: 20px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--color-highlight-orange);
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.dashboard-card h3 {
+  font-family: var(--font-body); /* Use Roboto */
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--color-text-brown);
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.dashboard-card p {
+  font-size: 14px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  color: var(--color-text-charcoal); /* Ensure text color */
+}
+
+.dashboard-btn {
+  background-color: var(--color-accent-blue);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.dashboard-btn:hover {
+  background-color: #008fbf; /* Darker blue */
+  transform: translateY(-2px);
+}
+
+.dashboard-btn:active {
+  transform: translateY(0);
+}
+
+/* --- Media Queries for Responsiveness --- */
+
+/* On wider screens, make dashboard cards 2-column */
+@media (min-width: 1024px) {
+  .dashboard-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 1024px) {
   .main-content { flex-direction: column; }
   .quest-board { flex: none; max-height: 60vh; }
   .profile-section { flex: none; }
 }
+
 @media (max-width: 768px) {
-  .container { flex-direction: column; }
+  .container { 
+    flex-direction: column; /* Stack sidebar on top of main */
+  }
   aside { 
     width: 100%; 
     height: auto; 
-    max-height: 250px; /* Dynamic Enhancement: Allow a bit more space */
+    max-height: 250px; 
     overflow-y: auto; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Dynamic Enhancement: Add shadow when stacked */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    border-right: none; /* Remove side border */
+    border-bottom: 2px solid var(--color-highlight-orange); /* Add bottom border */
   }
   .main-content { flex-direction: column; height: auto; }
   .quest-board, .profile-section { flex: none; }
@@ -623,13 +726,23 @@ main {
   /* Make search bar stack vertically */
   .quest-search { flex-direction: column; }
 }
+
 @media (max-width: 480px) {
   body { font-size: 14px; }
   header { padding: 15px 0 0 0; }
   .center-title { font-size: 20px; }
   .navbar.horizontal-navbar { margin-bottom: 10px; }
-  .navbar-nav { flex-direction: column; gap: 0; align-items: center; }
-  .nav-item .nav-link { padding: 10px 15px; font-size: 16px; width: 100%; justify-content: center; }
+  .navbar-nav { 
+    flex-direction: column; 
+    gap: 0; 
+    align-items: center; 
+  }
+  .nav-item .nav-link { 
+    padding: 10px 15px; 
+    font-size: 14px; /* Slightly smaller */
+    width: 100%; 
+    justify-content: center; 
+  }
   /* Dynamic Enhancement: Remove hover transform on mobile nav */
   .nav-item .nav-link:hover,
   .nav-item .nav-link.active {
@@ -644,8 +757,15 @@ main {
   .modal-content { 
     width: 95%; 
     margin: 10% auto; 
-    padding: 15px; /* Dynamic Enhancement: Adjust padding */
+    padding: 15px; 
   }
   /* Dynamic Enhancement: Adjust calendar for small screens */
   .weekday, .day { font-size: 11px; padding: 4px 2px; }
+
+  /* Stack dashboard cards on small screens (already default) */
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+  .welcome-header h2 { font-size: 20px; }
+  .welcome-header p { font-size: 14px; }
 }
