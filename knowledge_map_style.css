@@ -124,19 +124,22 @@ select:disabled {
 }
 
 .flowchart-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     width: 100%;
     padding: 2rem;
     box-sizing: border-box;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .flowchart-placeholder {
-    font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */
+    font-family: var(--font-heading);
     color: var(--color-text-charcoal);
     font-size: 1.2rem;
     text-align: center;
+    padding: 40px;
 }
 
 .topic-node {
@@ -158,44 +161,106 @@ select:disabled {
     border-color: var(--color-accent-gold);
 }
 
-.topic-node:not(:last-child) {
-    margin-bottom: 60px;
+.topic-node {
+    margin: 10px;
+    min-width: 280px;
 }
 
 .topic-node h3 {
     margin: 0 0 0.75rem 0;
-    font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */
+    font-family: var(--font-heading);
     font-size: 1rem;
     color: var(--color-accent-gold);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .topic-node p {
-    margin: 0;
-    font-size: 0.95rem;
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
     color: var(--color-bg-off-white);
     line-height: 1.5;
     white-space: normal;
 }
 
-/* --- CONNECTOR ARROWS (VERTICAL STYLE) --- */
-.topic-node:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 3px;
-    height: 42px;
-    background: var(--color-accent-blue);
+.difficulty-indicator {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-top: 8px;
 }
-.topic-node:not(:last-child)::before {
-    content: '';
+
+.difficulty-beginner,
+.difficulty-easy {
+    background-color: var(--green);
+    color: white;
+}
+
+.difficulty-intermediate,
+.difficulty-medium {
+    background-color: var(--color-accent-gold);
+    color: var(--color-text-brown);
+}
+
+.difficulty-advanced,
+.difficulty-hard {
+    background-color: var(--color-accent-red);
+    color: white;
+}
+
+/* --- FLOWCHART LAYOUT --- */
+.flowchart-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flowchart-level {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    position: relative;
+    width: 100%;
+}
+
+.flowchart-svg {
     position: absolute;
-    top: calc(100% + 42px);
-    left: 50%;
-    transform: translateX(-50%);
-    border: 8px solid transparent;
-    border-top-color: var(--color-accent-blue);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.flowchart-svg .arrow {
+    stroke: var(--color-accent-blue);
+    stroke-width: 3;
+    fill: none;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.loading-state,
+.error-state,
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-text-charcoal);
+    font-family: var(--font-heading);
+}
+
+.loading-state p,
+.error-state p,
+.empty-state p {
+    margin: 10px 0;
 }
 
 /* ====================================
@@ -242,11 +307,171 @@ select:disabled {
 /* ====================================
 5. MODAL STYLES (for topic content)
 ==================================== */
-.topic-view { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; padding: 1rem; box-sizing: border-box; }
-.topic-view-content { background-color: var(--color-bg-off-white); padding: 2rem 2.5rem; border-radius: var(--border-radius-lg); border: 3px solid var(--color-accent-gold); max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 0 20px rgba(75, 46, 46, 0.3); }
-.close-btn { font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */ color: var(--color-text-charcoal); position: absolute; top: 15px; right: 20px; font-size: 28px; border: none; background: none; cursor: pointer; transition: color var(--transition-speed); }
-.close-btn:hover { color: var(--color-text-brown); }
-#topic-content { line-height: 1.7; }
-#topic-content h3 { font-family: var(--font-heading); /* Assumes --font-heading is defined elsewhere */ color: var(--color-accent-blue); border-bottom: 2px solid var(--color-bg-parchment); padding-bottom: 8px; margin-top: 1.5rem; }
-#topic-content code { background-color: var(--color-bg-parchment); color: var(--color-text-brown); padding: 3px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; }
-#topic-content strong { color: var(--color-accent-gold); font-weight: bold; }
+.topic-view { 
+    display: none; 
+    position: fixed; 
+    z-index: 2000; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.7); 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    padding: 1rem; 
+    box-sizing: border-box; 
+    animation: fadeIn 0.3s ease;
+}
+
+.topic-view-content { 
+    background-color: var(--color-bg-off-white); 
+    padding: 2rem 2.5rem; 
+    border-radius: var(--border-radius-lg); 
+    border: 3px solid var(--color-accent-gold); 
+    max-width: 900px; 
+    width: 100%; 
+    max-height: 90vh; 
+    overflow-y: auto; 
+    position: relative; 
+    box-shadow: 0 10px 40px rgba(75, 46, 46, 0.4);
+    animation: slideUp 0.3s ease;
+}
+
+.close-btn { 
+    font-family: var(--font-heading);
+    color: var(--color-text-charcoal); 
+    position: absolute; 
+    top: 15px; 
+    right: 20px; 
+    font-size: 32px; 
+    line-height: 1;
+    border: none; 
+    background: none; 
+    cursor: pointer; 
+    transition: color var(--transition-speed), transform var(--transition-speed);
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-btn:hover { 
+    color: var(--color-accent-red);
+    background-color: rgba(233, 69, 96, 0.1);
+    transform: rotate(90deg);
+}
+
+#topic-content { 
+    line-height: 1.7; 
+    color: var(--color-text-charcoal);
+}
+
+.topic-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--color-highlight-orange);
+}
+
+.topic-header h2 {
+    font-family: var(--font-heading);
+    color: var(--color-text-brown);
+    font-size: 20px;
+    margin: 0 0 10px 0;
+}
+
+.topic-description {
+    color: var(--color-text-charcoal);
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+.difficulty-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-top: 8px;
+    background-color: var(--color-accent-gold);
+    color: var(--color-text-brown);
+}
+
+.topic-explanation {
+    margin-top: 20px;
+}
+
+#topic-content h3 { 
+    font-family: var(--font-heading);
+    color: var(--color-accent-blue); 
+    border-bottom: 2px solid var(--color-bg-parchment); 
+    padding-bottom: 8px; 
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+
+#topic-content h2 {
+    font-family: var(--font-heading);
+    color: var(--color-text-brown);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 16px;
+}
+
+#topic-content p {
+    margin: 1rem 0;
+    line-height: 1.6;
+}
+
+#topic-content ul,
+#topic-content ol {
+    margin: 1rem 0;
+    padding-left: 2rem;
+}
+
+#topic-content li {
+    margin: 0.5rem 0;
+}
+
+#topic-content code { 
+    background-color: var(--color-bg-parchment); 
+    color: var(--color-text-brown); 
+    padding: 3px 6px; 
+    border-radius: 4px; 
+    font-family: 'Courier New', Courier, monospace; 
+    font-size: 0.9em;
+}
+
+#topic-content strong { 
+    color: var(--color-accent-gold); 
+    font-weight: bold; 
+}
+
+.loading-message {
+    text-align: center;
+    padding: 40px;
+}
+
+.loading-message h3 {
+    color: var(--color-accent-blue);
+    margin-bottom: 10px;
+}
+
+.error-message {
+    text-align: center;
+    padding: 40px;
+    color: var(--color-accent-red);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

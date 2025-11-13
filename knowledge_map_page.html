@@ -81,19 +81,13 @@
     <main class="knowledge-map-layout">
         
         <aside class="sidebar">
-            <p class="page-description">Select a subject and chapter to see how concepts are connected. Click a topic to learn more!</p>
+            <p class="page-description">Select a subject to see how topics are connected. Click a topic to learn more!</p>
             <div class="controls">
                 <div class="select-wrapper">
                     <label for="subject-select">Subject:</label>
                     <select id="subject-select">
                         <option value="">-- Select a Subject --</option>
-                        <option value="Maths">Maths (Class 10)</option>
-                    </select>
-                </div>
-                <div class="select-wrapper">
-                    <label for="chapter-select">Chapter:</label>
-                    <select id="chapter-select" disabled>
-                        <option value="">-- Select a subject first --</option>
+                        <!-- Subjects will be populated from API -->
                     </select>
                 </div>
             </div>
@@ -101,8 +95,8 @@
 
         <div class="map-panel">
             <div class="flowchart-container" id="flowchart">
-                 <div class="flowchart-placeholder">Select a chapter to begin your quest!</div>
-                </div>
+                <div class="flowchart-placeholder">Select a subject to begin your quest!</div>
+            </div>
         </div>
     </main>
 

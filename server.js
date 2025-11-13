@@ -1028,21 +1028,23 @@ app.get("/api/knowledge-map/topics", requireLogin, attachSchoolContext, async (r
     }
 });
 
-app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => { // Added requireLogin
-    const { topic, chapter } = req.body;
+app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
+    const { topic, subject, description, difficulty_level } = req.body;
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
-    if (!topic || !chapter) {
-        return res.status(400).json({ error: "Topic and chapter are required." });
+    if (!topic) {
+        return res.status(400).json({ error: "Topic name is required." });
     }
 
     const prompt = `
-    Act as a friendly and engaging tutor for a Class 10 student.
+    Act as a friendly and engaging tutor for students.
     Explain the following topic in a simple and interesting way.
 
-    **Chapter:** "${chapter}"
+    **Subject:** ${subject || 'General'}
     **Topic:** "${topic}"
+    ${description ? `**Description:** ${description}` : ''}
+    ${difficulty_level ? `**Difficulty Level:** ${difficulty_level}` : ''}
 
     Your explanation MUST include the following sections, formatted in Markdown:
     1.  **### 💡 The Big Idea (Analogy)**: Start with a simple, real-world analogy to make the concept relatable.
