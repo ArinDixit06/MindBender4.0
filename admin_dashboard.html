@@ -4,154 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="style.css"> <!-- General styles -->
-    <style>
-        body {
-            font-family: var(--font-body);
-            background-color: var(--color-bg-parchment);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        header {
-            background-color: var(--color-text-brown);
-            color: var(--color-accent-gold);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 1.8em;
-            font-family: var(--font-heading);
-            color: var(--color-accent-gold);
-        }
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-        nav ul li {
-            margin-left: 20px;
-        }
-        nav ul li a {
-            color: var(--color-accent-gold);
-            text-decoration: none;
-            font-weight: bold;
-            transition: color var(--transition-speed);
-        }
-        nav ul li a:hover {
-            color: var(--color-accent-blue);
-        }
-        .container {
-            flex-grow: 1;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 20px auto;
-            background-color: var(--color-bg-off-white);
-            border-radius: var(--border-radius-lg);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            color: var(--color-text-charcoal);
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--color-highlight-orange);
-            padding-bottom: 10px;
-        }
-        .dashboard-sections {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background-color: var(--color-bg-parchment);
-            border: 1px solid var(--color-highlight-orange);
-            border-radius: var(--border-radius-md);
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            transition: transform var(--transition-speed);
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card h3 {
-            color: var(--color-text-brown);
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-        .card p {
-            color: var(--color-text-charcoal);
-            line-height: 1.6;
-        }
-        .card a {
-            display: inline-block;
-            margin-top: 15px;
-            background-color: var(--color-accent-blue);
-            color: white;
-            padding: 8px 15px;
-            border-radius: var(--border-radius-sm);
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color var(--transition-speed);
-        }
-        .card a:hover {
-            background-color: var(--color-accent-gold);
-            color: var(--color-text-brown);
-        }
-        footer {
-            margin-top: auto;
-            background-color: var(--color-text-brown);
-            color: var(--color-bg-off-white);
-            text-align: center;
-            padding: 15px 0;
-            font-size: 0.9em;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>Admin Dashboard</h1>
-        <nav>
-            <ul>
-                <li><a href="/admin_dashboard.html">Dashboard</a></li>
-                <li><a href="/manage_users.html">Manage Users</a></li>
-                <li><a href="/manage_schools.html">Manage Schools</a></li>
-                <li><a href="/manage_curriculum.html">Manage Curriculum</a></li>
-                <li><a href="#" id="logout-button">Logout</a></li>
+        <h1 class="center-title">Admin Dashboard</h1>
+        <nav class="navbar horizontal-navbar">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="admin_dashboard.html" class="nav-link active">Dashboard</a></li>
+                <li class="nav-item"><a href="manage_users.html" class="nav-link">Manage Users</a></li>
+                <li class="nav-item"><a href="manage_schools.html" class="nav-link">Manage Schools</a></li>
+                <li class="nav-item"><a href="manage_curriculum.html" class="nav-link">Manage Curriculum</a></li>
+                <li class="nav-item"><a href="system_settings.html" class="nav-link">Settings</a></li>
+                <li class="nav-item"><a href="#" id="logout-button" class="nav-link">Logout</a></li>
             </ul>
         </nav>
     </header>
 
     <main class="container">
-        <h2>Welcome, Admin!</h2>
-        <p>Here you can manage various aspects of the platform.</p>
+        <div class="welcome-card dashboard-card">
+            <h2>Welcome, Admin!</h2>
+            <p>Manage the platform, oversee schools, users, and system settings.</p>
+        </div>
 
-        <div class="dashboard-sections">
-            <div class="card">
-                <h3>School Management</h3>
-                <p>View and manage registered schools, update school details, and oversee domain registrations.</p>
-                <a href="/manage_schools.html">Go to Schools</a>
+        <div class="features-grid">
+            <div class="dashboard-card">
+                <h3><i class="fas fa-school"></i> School Management</h3>
+                <p>View and manage registered schools, update school details, and oversee domain registrations across the platform.</p>
+                <a href="manage_schools.html" class="dashboard-btn">Go to Schools</a>
             </div>
-            <div class="card">
-                <h3>User Management</h3>
-                <p>Manage user accounts, roles (student, teacher, admin), and school associations.</p>
-                <a href="/manage_users.html">Go to Users</a>
+            <div class="dashboard-card">
+                <h3><i class="fas fa-users"></i> User Management</h3>
+                <p>Manage user accounts, roles (student, teacher, admin), and school associations. Control access and permissions.</p>
+                <a href="manage_users.html" class="dashboard-btn">Go to Users</a>
             </div>
-            <div class="card">
-                <h3>Curriculum Management</h3>
-                <p>Oversee curriculum subjects and knowledge map topics across all schools.</p>
-                <a href="/manage_curriculum.html">Go to Curriculum</a>
+            <div class="dashboard-card">
+                <h3><i class="fas fa-book-open"></i> Curriculum Management</h3>
+                <p>Oversee curriculum subjects and knowledge map topics across all schools. Monitor curriculum development.</p>
+                <a href="manage_curriculum.html" class="dashboard-btn">Go to Curriculum</a>
             </div>
-            <div class="card">
-                <h3>System Settings</h3>
-                <p>Configure global platform settings and monitor system health.</p>
-                <a href="/system_settings.html">Go to Settings</a>
+            <div class="dashboard-card">
+                <h3><i class="fas fa-cog"></i> System Settings</h3>
+                <p>Configure global platform settings and monitor system health. Manage system-wide configurations.</p>
+                <a href="system_settings.html" class="dashboard-btn">Go to Settings</a>
             </div>
         </div>
     </main>
@@ -160,9 +56,64 @@
         &copy; 2023 StudyQuest. All rights reserved.
     </footer>
 
-    <script src="script.js"></script> <!-- For general client-side logic like logout -->
+    <script src="script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // Function to check session and redirect if unauthorized
+        async function checkSession() {
+            try {
+                const res = await fetch('/api/me', {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (!res.ok) {
+                    window.location.href = "login.html";
+                    return null;
+                }
+                const data = await res.json();
+                return data;
+            } catch (error) {
+                console.error("Session check failed:", error);
+                window.location.href = "login.html";
+                return null;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check session first
+            const sessionData = await checkSession();
+            if (!sessionData) return;
+
+            const { user, school } = sessionData;
+
+            // Redirect if not admin
+            if (user.role !== 'admin') {
+                if (user.role === 'teacher') {
+                    window.location.href = '/teacher_dashboard.html';
+                } else if (user.role === 'student') {
+                    window.location.href = '/student_dashboard.html';
+                } else {
+                    window.location.href = '/login.html';
+                }
+                return;
+            }
+
+            // Check if school is registered (for new admins)
+            const mainContent = document.querySelector('main.container');
+            if (!school) {
+                // Admin is logged in but no school is registered
+                mainContent.innerHTML = `
+                    <div class="welcome-card dashboard-card" style="text-align: center; padding: 50px;">
+                        <h2>Welcome, Admin!</h2>
+                        <p>It looks like your school hasn't been registered yet.</p>
+                        <p>Please register your school to access the full admin dashboard features.</p>
+                        <a href="/admin_register_school.html" class="dashboard-btn" style="margin-top: 20px;">Register Your School</a>
+                    </div>
+                `;
+            }
+
+            // Logout functionality
             const logoutButton = document.getElementById('logout-button');
             if (logoutButton) {
                 logoutButton.addEventListener('click', async (event) => {
@@ -173,6 +124,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
+                            credentials: 'include',
                         });
                         const data = await response.json();
                         if (response.ok) {
@@ -189,64 +141,6 @@
                     }
                 });
             }
-
-            // Admin Dashboard specific logic: Check for school registration
-            const mainContent = document.querySelector('main.container');
-            const header = document.querySelector('header');
-            const footer = document.querySelector('footer');
-
-            async function checkSchoolRegistration() {
-                try {
-                    const response = await fetch('/api/me');
-                    if (!response.ok) {
-                        // If not logged in or session expired, redirect to login
-                        window.location.href = '/login.html';
-                        return;
-                    }
-                    const data = await response.json();
-                    const currentUser = data.user;
-                    const currentSchool = data.school;
-
-                    if (currentUser && currentUser.role === 'admin' && !currentSchool) {
-                        // Admin is logged in but no school is registered
-                        mainContent.innerHTML = `
-                            <div style="text-align: center; padding: 50px;">
-                                <h2>Welcome, Admin!</h2>
-                                <p>It looks like your school hasn't been registered yet.</p>
-                                <p>Please register your school to access the full admin dashboard features.</p>
-                                <a href="/admin_register_school.html" style="
-                                    display: inline-block;
-                                    margin-top: 20px;
-                                    background-color: var(--color-accent-blue);
-                                    color: white;
-                                    padding: 10px 20px;
-                                    border-radius: var(--border-radius-sm);
-                                    text-decoration: none;
-                                    font-weight: bold;
-                                    transition: background-color var(--transition-speed);
-                                ">Register Your School</a>
-                            </div>
-                        `;
-                        // Optionally hide other dashboard elements if needed
-                        // header.style.display = 'none';
-                        // footer.style.display = 'none';
-                    } else if (currentUser && currentUser.role !== 'admin') {
-                        // If a non-admin user somehow lands here, redirect them
-                        if (currentUser.role === 'teacher') {
-                            window.location.href = '/teacher_dashboard.html';
-                        } else {
-                            window.location.href = '/student_dashboard.html';
-                        }
-                    }
-                    // If admin has a school, or it's not an admin, proceed with normal dashboard display
-                } catch (error) {
-                    console.error('Error checking school registration:', error);
-                    // Fallback to login in case of API error
-                    window.location.href = '/login.html';
-                }
-            }
-
-            checkSchoolRegistration();
         });
     </script>
 </body>

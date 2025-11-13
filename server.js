@@ -76,7 +76,7 @@ app.get("/manage_users.html", requireAdmin, (req, res) => {
 app.get("/manage_schools.html", requireAdmin, (req, res) => {
   res.sendFile("manage_schools.html", { root: "." });
 });
-app.get("/manage_curriculum.html", requireAdmin, (req, res) => {
+app.get("/manage_curriculum.html", requireLogin, requireTeacher, (req, res) => {
   res.sendFile("manage_curriculum.html", { root: "." });
 });
 app.get("/system_settings.html", requireAdmin, (req, res) => {
