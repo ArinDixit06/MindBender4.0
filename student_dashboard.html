@@ -23,13 +23,45 @@
         </nav>
     </header>
 
-    <main class="container">
-        <div class="welcome-card dashboard-card">
-            <h2>Welcome, Student!</h2>
-            <p>Explore your learning journey and track your progress.</p>
-        </div>
+    <div class="container">
+        <aside>
+            <div class="player-profile">
+                <h2>Player Stats</h2>
+                <div class="player-stats">
+                    <div id="player-level" class="player-level"></div>
+                    <div class="xp-bar-container">
+                        <div id="xp-bar" class="xp-bar"></div>
+                    </div>
+                    <div id="xp-text" class="xp-text"></div>
+                </div>
+                <div class="user-info">
+                    <p>Name: <span id="profile-user-name"></span></p>
+                    <p>Role: <span id="profile-user-role"></span></p>
+                </div>
+                <h2>Achievements</h2>
+                <ul class="achievements-list">
+                    <li id="quest-badge-1" class="achievement">
+                        <span class="achievement-icon">🏆</span>
+                        <span class="achievement-name">First Quest</span>
+                    </li>
+                    <li class="achievement">
+                        <span class="achievement-icon">🔒</span>
+                        <span class="achievement-name">Math Master</span>
+                    </li>
+                    <li class="achievement">
+                        <span class="achievement-icon">🔒</span>
+                        <span class="achievement-name">History Buff</span>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        <main>
+            <div class="welcome-card dashboard-card">
+                <h2>Welcome, Student!</h2>
+                <p>Explore your learning journey and track your progress.</p>
+            </div>
 
-        <div class="features-grid">
+            <div class="features-grid">
             <div class="dashboard-card">
                 <h3>Knowledge Map</h3>
                 <p>Visualize your learning path, explore topics, and understand prerequisites.</p>
@@ -56,7 +88,8 @@
                 <a href="student_dashboard.html" class="dashboard-btn">View Progress</a>
             </div>
         </div>
-    </main>
+        </main>
+    </div>
 
     <footer>
         &copy; 2023 StudyQuest. All rights reserved.
@@ -64,7 +97,99 @@
 
     <script src="script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        // Function to check session and redirect if unauthorized
+        async function checkSession() {
+            try {
+                const res = await fetch('/api/me', {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (!res.ok) {
+                    window.location.href = "login.html";
+                    return null;
+                }
+                const data = await res.json();
+                return data;
+            } catch (error) {
+                console.error("Session check failed:", error);
+                window.location.href = "login.html";
+                return null;
+            }
+        }
+
+        // --- Player Stats Logic ---
+        let player = {
+            level: 0, // Initialize with 0, will be updated by fetchPlayerStats
+            xp: 0,    // Initialize with 0, will be updated by fetchPlayerStats
+            xpToNextLevel: 100, // Default, will be dynamically calculated based on fetched level
+        };
+
+        const levelDisplay = document.getElementById('player-level');
+        const xpText = document.getElementById('xp-text');
+        const xpBar = document.getElementById('xp-bar');
+        const firstQuestBadge = document.getElementById('quest-badge-1');
+        const profileUserName = document.getElementById('profile-user-name');
+        const profileUserRole = document.getElementById('profile-user-role');
+
+        function updateUI() {
+            if (levelDisplay) {
+                levelDisplay.textContent = `Level ${player.level}`;
+            }
+            if (xpBar && xpText) {
+                const xpPercentage = (player.xp / player.xpToNextLevel) * 100;
+                xpBar.style.width = `${xpPercentage}%`;
+                xpText.textContent = `${player.xp} / ${player.xpToNextLevel} XP`;
+            }
+        }
+
+        async function fetchPlayerStats() {
+            try {
+                const res = await fetch('/api/me', {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                const { studentInfo, user } = await res.json();
+
+                if (studentInfo) {
+                    player.level = studentInfo.level;
+                    player.xp = studentInfo.xp;
+
+                    // Recalculate xpToNextLevel based on the fetched level
+                    let base_xp_to_next_level = 100 + (studentInfo.student_id % 10); // Match server-side logic
+                    player.xpToNextLevel = base_xp_to_next_level;
+                    for (let i = 1; i < player.level; i++) {
+                        player.xpToNextLevel = Math.floor(player.xpToNextLevel * 1.5);
+                    }
+                }
+
+                // Update user info in sidebar
+                if (user) {
+                    if (profileUserName) profileUserName.textContent = user.name || '';
+                    if (profileUserRole) profileUserRole.textContent = user.role || '';
+                }
+
+                updateUI();
+            } catch (error) {
+                console.error("Error fetching player stats:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check session first
+            const sessionData = await checkSession();
+            if (!sessionData) return;
+
+            // Fetch and display player stats
+            await fetchPlayerStats();
+
+            // Logout functionality
             const logoutButton = document.getElementById('logout-button');
             if (logoutButton) {
                 logoutButton.addEventListener('click', async (event) => {
@@ -75,6 +200,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
+                            credentials: 'include',
                         });
                         const data = await response.json();
                         if (response.ok) {

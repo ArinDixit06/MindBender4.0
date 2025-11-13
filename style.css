@@ -131,10 +131,12 @@ header {
 
 /* Dashboard Layout */
 .container {
-  max-width: 1200px;
+  display: flex;
+  min-height: calc(100vh - 200px);
+  gap: 20px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
-  min-height: calc(100vh - 200px);
 }
 
 aside {
@@ -170,6 +172,23 @@ aside {
   font-weight: bold;
   color: var(--color-accent-gold);
   margin-bottom: 10px;
+}
+
+.user-info {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(75, 46, 46, 0.2);
+}
+
+.user-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: var(--color-text-charcoal);
+}
+
+.user-info span {
+  font-weight: 500;
+  color: var(--color-text-brown);
 }
 
 .xp-bar-container {
@@ -247,6 +266,9 @@ aside {
 main {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 .main-content {
   display: flex;
@@ -746,6 +768,7 @@ footer {
 
 @media (max-width: 768px) {
   .container { 
+    flex-direction: column;
     padding: 15px;
   }
   aside { 
