@@ -616,11 +616,29 @@ main {
 
 /* --- Styles for Your Dashboard Cards --- */
 
+/* MODIFIED: This main container now just stacks its children 
+  (the welcome card and the features-grid) vertically.
+*/
 .dashboard-cards {
   display: grid;
-  grid-template-columns: 1fr; /* 1 column by default */
+  grid-template-columns: 1fr;
   gap: 20px;
 }
+
+/* NEW: This class is for the "Welcome" card to center its text
+*/
+.welcome-card {
+  text-align: center;
+}
+
+/* NEW: This class holds the 4 feature cards
+*/
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 column on mobile by default */
+  gap: 20px;
+}
+
 
 .dashboard-card {
   background-color: var(--color-bg-off-white);
@@ -684,9 +702,11 @@ main {
 
 /* --- Media Queries for Responsiveness --- */
 
-/* On wider screens, make dashboard cards 2-column */
+/* MODIFIED: This media query now targets the .features-grid 
+  to create the 2x2 "square" layout on wide screens.
+*/
 @media (min-width: 1024px) {
-  .dashboard-cards {
+  .features-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -753,9 +773,9 @@ main {
   /* Dynamic Enhancement: Adjust calendar for small screens */
   .weekday, .day { font-size: 11px; padding: 4px 2px; }
 
-  /* Stack dashboard cards on small screens (already default) */
-  .dashboard-cards {
-    grid-template-columns: 1fr;
-  }
+  /* On mobile, .features-grid is already 1fr, 
+    so all cards (Welcome, and the 4 features) 
+    will stack vertically, which is correct.
+  */
   .dashboard-card h2 { font-size: 20px; }
 }
