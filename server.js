@@ -41,32 +41,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/favicon.ico", (req, res) => res.status(204).send());
-
-// Explicit routes for admin dashboard pages
-app.get("/manage_users.html", requireAdmin, (req, res) => {
-  res.sendFile("manage_users.html", { root: "." });
-});
-app.get("/manage_schools.html", requireAdmin, (req, res) => {
-  res.sendFile("manage_schools.html", { root: "." });
-});
-app.get("/manage_curriculum.html", requireAdmin, (req, res) => {
-  res.sendFile("manage_curriculum.html", { root: "." });
-});
-app.get("/system_settings.html", requireAdmin, (req, res) => {
-  res.sendFile("system_settings.html", { root: "." });
-});
-
-app.use(express.static(".", {
-  etag: false,
-  lastModified: false,
-  setHeaders: (res, path, stat) => {
-    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-    res.set("Pragma", "no-cache");
-    res.set("Expires", "0");
-  }
-}));
-
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) {
     console.error("FATAL ERROR: SESSION_SECRET is not set. Please set it in your .env file.");
@@ -93,6 +67,32 @@ app.use(
   })
 );
 
+app.get("/favicon.ico", (req, res) => res.status(204).send());
+
+// Explicit routes for admin dashboard pages
+app.get("/manage_users.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_users.html", { root: "." });
+});
+app.get("/manage_schools.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_schools.html", { root: "." });
+});
+app.get("/manage_curriculum.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_curriculum.html", { root: "." });
+});
+app.get("/system_settings.html", requireAdmin, (req, res) => {
+  res.sendFile("system_settings.html", { root: "." });
+});
+
+app.use(express.static(".", {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, path, stat) => {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+  }
+}));
+
 // ---------- Middleware Functions ----------
 function requireLogin(req, res, next) {
   if (!req.session.user_id) {
@@ -109,8 +109,8 @@ function requireTeacher(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  if (req.session.role !== 'admin') {
-    return res.status(403).json({ error: "Forbidden" });
+  if (!req.session || req.session.role !== 'admin') {
+    return res.status(403).json({ error: "Forbidden: Admin access required." });
   }
   next();
 }
@@ -437,7 +437,10 @@ app.get("/api/admin/users", requireAdmin, async (req, res) => {
       .from("users")
       .select("user_id, name, email, role, xp, level, school_id, created_at");
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error fetching all users:", error); // More specific logging
+      throw error;
+    }
     res.json({ users });
   } catch (err) {
     console.error("Fetch all users error:", err);
@@ -451,7 +454,10 @@ app.get("/api/admin/schools", requireAdmin, async (req, res) => {
       .from("schools")
       .select("school_id, school_name, domain_name, admin_email, description, logo_url, subscription_tier, created_at");
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error fetching all schools:", error); // More specific logging
+      throw error;
+    }
     res.json({ schools });
   } catch (err) {
     console.error("Fetch all schools error:", err);
