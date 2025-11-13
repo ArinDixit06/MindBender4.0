@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const API_URL = "https://mindbender4-0.onrender.com"; 
+    // Use empty string for relative URLs - cookies will be sent automatically
+    const API_URL = ""; 
     
     // DOM Elements
     const chatWindow = document.getElementById('chat-window');

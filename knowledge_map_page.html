@@ -8,12 +8,10 @@
     <link rel="stylesheet" href="knowledge_map_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
-        const API_URL = "https://mindbender4-0.onrender.com"; // Ensure this matches your deployed backend URL
-
         // Function to check session and redirect if unauthorized
         async function checkSession() {
             try {
-                const res = await fetch(`${API_URL}/api/me`, {
+                const res = await fetch('/api/me', {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     credentials: 'include',
@@ -22,22 +20,29 @@
                 if (!res.ok) {
                     // If session is not valid, redirect to login page
                     window.location.href = "login.html";
+                    return null;
                 }
+                const data = await res.json();
+                return data;
                 // If res.ok, session is valid, no action needed (user stays on page)
             } catch (error) {
                 console.error("Session check failed:", error);
                 window.location.href = "login.html"; // Redirect on network error
+                return null;
             }
         }
 
         // Call checkSession when the page loads
-        document.addEventListener("DOMContentLoaded", checkSession);
+        document.addEventListener("DOMContentLoaded", async () => {
+            const sessionData = await checkSession();
+            if (!sessionData) return;
+        });
 
         // Logout functionality
         document.getElementById("logout-btn").addEventListener("click", async (e) => {
             e.preventDefault();
             try {
-                const res = await fetch(`${API_URL}/logout`, {
+                const res = await fetch('/logout', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: 'include',

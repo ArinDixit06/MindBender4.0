@@ -1,4 +1,5 @@
-const API_URL = "http://localhost:3000"; // Use localhost for development, update for production
+// Use relative URLs for session management - cookies will be sent automatically
+const API_URL = ""; // Use empty string for relative URLs
 
 document.addEventListener('DOMContentLoaded', async () => {
     const resourceUploadSection = document.getElementById('resource-upload-section');
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Function to check session and redirect if unauthorized
     async function checkSession() {
         try {
-            const res = await fetch(`${API_URL}/api/me`, {
+            const res = await fetch('/api/me', {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include',
