@@ -470,7 +470,7 @@ main {
 
 /* This styles the BLUE card base */
 .features-grid .dashboard-card {
-  background-color: var(--color-accent-blue);
+  background-color: #EADDCA;
   border-radius: var(--border-radius-lg);
   /* Heavier shadow inspired by your image */
   box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2), 0 8px 10px -6px rgba(0,0,0,0.2);
@@ -581,7 +581,7 @@ main {
 
 .features-grid .dashboard-btn:hover {
   background-color: var(--color-text-brown);
-  color: var(--color-accent-blue); /* Text changes to blue on hover */
+  color: #FFFFFF; /* Text changes to white on hover */
   transform: none; /* Override previous hover */
 }
 .features-grid .dashboard-btn:active {
