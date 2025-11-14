@@ -18,26 +18,7 @@ const geminiProModel = genAI.getGenerativeModel({ model: "gemini-pro" });
 const geminiFlashModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 // ---------- Middleware ----------
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      const allowedOrigins = [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'https://mindbender4-0.onrender.com',
-        'https://scholarli.netlify.app',
-      ];
-      const isAllowed = !origin || allowedOrigins.includes(origin);
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  })
-);
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -66,59 +47,6 @@ app.use(
     },
   })
 );
-
-app.get("/favicon.ico", (req, res) => res.status(204).send());
-
-// Explicit routes for admin dashboard pages
-app.get("/manage_users.html", requireAdmin, (req, res) => {
-  res.sendFile("manage_users.html", { root: "." });
-});
-app.get("/manage_schools.html", requireAdmin, (req, res) => {
-  res.sendFile("manage_schools.html", { root: "." });
-});
-app.get("/manage_curriculum.html", requireLogin, requireTeacher, (req, res) => {
-  res.sendFile("manage_curriculum.html", { root: "." });
-});
-app.get("/system_settings.html", requireAdmin, (req, res) => {
-  res.sendFile("system_settings.html", { root: "." });
-});
-
-app.use(express.static(".", {
-  etag: false,
-  lastModified: false,
-  setHeaders: (res, path, stat) => {
-    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-    res.set("Pragma", "no-cache");
-    res.set("Expires", "0");
-  }
-}));
-
-// ---------- Middleware Functions ----------
-function requireLogin(req, res, next) {
-  if (!req.session.user_id) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  next();
-}
-
-function requireTeacher(req, res, next) {
-  if (req.session.role !== 'teacher' && req.session.role !== 'admin') {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-  next();
-}
-
-function requireAdmin(req, res, next) {
-  if (!req.session || req.session.role !== 'admin') {
-    return res.status(403).json({ error: "Forbidden: Admin access required." });
-  }
-  next();
-}
-
-function attachSchoolContext(req, res, next) {
-  req.school_id = req.session.school_id;
-  next();
-}
 
 // ---------- Supabase & API Init ----------
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -151,6 +79,41 @@ const getUser = async (req, res, next) => {
     res.status(500).json({ error: "Internal server error during authentication." });
   }
 };
+
+// Placeholder for old session-based middleware functions, will be removed or replaced
+// For now, I'm keeping them to avoid breaking existing routes that might still use them
+// but will update the relevant routes to use getUser.
+function requireLogin(req, res, next) {
+  // This will be replaced by getUser for new chat routes
+  // For existing routes, we'll need to decide if they should also use JWT or be removed.
+  // For now, assuming req.user will be set by getUser for new routes.
+  if (!req.user) { // Check for req.user set by getUser
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+}
+
+function requireTeacher(req, res, next) {
+  // This needs to be updated to check req.user.role
+  if (!req.user || (req.user.user_metadata.role !== 'teacher' && req.user.user_metadata.role !== 'admin')) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  // This needs to be updated to check req.user.role
+  if (!req.user || req.user.user_metadata.role !== 'admin') {
+    return res.status(403).json({ error: "Forbidden: Admin access required." });
+  }
+  next();
+}
+
+function attachSchoolContext(req, res, next) {
+  // This needs to be updated to get school_id from req.user.user_metadata
+  req.school_id = req.user.user_metadata.school_id;
+  next();
+}
 
 
 // ---------- KNOWLEDGE MAP DATA (NEW) ----------
@@ -237,7 +200,7 @@ app.get("/api/schools/:domain", async (req, res) => {
   }
 });
 
-// ---------- AUTH ROUTES ----------
+// ---------- AUTH ROUTES (will need refactoring to use Supabase auth directly) ----------
 app.post("/register", async (req, res) => {
   const { name, email, password, role = 'student' } = req.body;
 
@@ -268,37 +231,45 @@ app.post("/register", async (req, res) => {
       schoolRegistered = true;
     }
 
-    const { data: existingUser } = await supabase
-      .from("users")
-      .select("email")
-      .eq("email", email)
-      .single();
+    // Using Supabase auth.signUp
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          name: name,
+          role: role,
+          school_id: schoolId,
+          xp: 0,
+          level: 1,
+        }
+      }
+    });
 
-    if (existingUser) {
-      return res.status(409).json({ error: "User with this email already exists" });
-    }
+    if (authError) throw authError;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password with bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
+    // Insert into public.users table
     const { data: user, error: userError } = await supabase
       .from("users")
       .insert([
         {
+          user_id: authData.user.id,
           name,
           email,
-          hashed_password: hashedPassword,
+          password_hash: hashedPassword, // Store the bcrypt hashed password
           role,
-          school_id: schoolId, // Use the determined schoolId
+          school_id: schoolId,
+          xp: 0,
+          level: 1,
         },
       ])
       .select("user_id, name, email, role, school_id, xp, level")
       .single();
 
     if (userError) throw userError;
-
-    req.session.user_id = user.user_id;
-    req.session.school_id = user.school_id;
-    req.session.role = user.role;
 
     // Special redirection for admins who just registered and need to create a school
     if (role === 'admin' && !schoolRegistered) {
@@ -316,67 +287,76 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const { data: user, error } = await supabase
+    // First, retrieve the user from our public.users table to get the bcrypt hashed password
+    const { data: userData, error: userError } = await supabase
       .from("users")
-      .select("user_id, name, email, hashed_password, role, school_id, xp, level")
+      .select("user_id, password_hash, role, school_id, name, xp, level")
       .eq("email", email)
       .single();
 
-    if (error || !user) {
-      return res.status(400).json({ error: "Invalid email or password" });
+    if (userError || !userData) {
+      return res.status(400).json({ error: "Invalid credentials." });
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
-    if (!passwordMatch) {
-      return res.status(400).json({ error: "Invalid email or password" });
+    // Compare the provided password with the bcrypt hashed password
+    const isPasswordValid = await bcrypt.compare(password, userData.password_hash);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: "Invalid credentials." });
     }
+
+    // If bcrypt comparison is successful, sign in with Supabase using the original password
+    // This is necessary to get a Supabase session and JWT.
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (authError) {
+      console.error("Supabase signInWithPassword error after bcrypt success:", authError);
+      return res.status(500).json({ error: "Authentication failed. Please try again." });
+    }
+
+    const user = data.user;
+    const session = data.session;
 
     let school = null;
-    if (user.school_id) {
+    if (user.user_metadata.school_id) {
       const { data: schoolData, error: schoolError } = await supabase
         .from("schools")
         .select("school_id, school_name, domain_name, logo_url")
-        .eq("school_id", user.school_id)
+        .eq("school_id", user.user_metadata.school_id)
         .single();
 
       if (schoolError || !schoolData) {
-        console.error("School not found for user:", user.school_id);
-        // For admins, this might be expected if they haven't registered a school yet
-        if (user.role !== 'admin') {
+        console.error("School not found for user:", user.user_metadata.school_id);
+        if (user.user_metadata.role !== 'admin') {
           return res.status(500).json({ error: "Associated school not found." });
         }
       }
       school = schoolData;
-    } else if (user.role !== 'admin') {
-        // Non-admin users must have an associated school
+    } else if (user.user_metadata.role !== 'admin') {
         return res.status(500).json({ error: "Associated school not found." });
     }
 
-
-    req.session.user_id = user.user_id;
-    req.session.school_id = user.school_id;
-    req.session.role = user.role;
-
-    // Determine redirection based on role and school registration status
-    let redirectUrl = '/index.html'; // Default for students and teachers with school
-    if (user.role === 'admin') {
-      redirectUrl = '/admin_dashboard.html'; // Admin always goes to admin dashboard on login
-    } else if (user.role === 'teacher') {
-      redirectUrl = '/teacher_dashboard.html'; // Teacher dashboard
-    } else { // Student
-      redirectUrl = '/student_dashboard.html'; // Student dashboard
+    let redirectUrl = '/index.html';
+    if (user.user_metadata.role === 'admin') {
+      redirectUrl = '/admin_dashboard.html';
+    } else if (user.user_metadata.role === 'teacher') {
+      redirectUrl = '/teacher_dashboard.html';
+    } else {
+      redirectUrl = '/student_dashboard.html';
     }
-
 
     res.json({
       message: "Login successful",
       user: {
-        user_id: user.user_id,
-        name: user.name,
+        user_id: user.id,
+        name: user.user_metadata.name,
         email: user.email,
-        role: user.role,
-        xp: user.xp,
-        level: user.level,
+        role: user.user_metadata.role,
+        xp: user.user_metadata.xp,
+        level: user.user_metadata.level,
       },
       school: school ? {
         school_id: school.school_id,
@@ -385,6 +365,7 @@ app.post("/login", async (req, res) => {
         logo_url: school.logo_url,
       } : null,
       redirect: redirectUrl,
+      token: session.access_token // Send JWT to frontend
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -393,39 +374,31 @@ app.post("/login", async (req, res) => {
 });
 
 
-
-app.post("/logout", (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ message: "Could not log out." });
-        }
-        res.clearCookie("connect.sid");
+app.post("/logout", getUser, async (req, res) => {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
         res.json({ message: "Logged out successfully" });
-    });
+    } catch (err) {
+        console.error("Logout error:", err);
+        res.status(500).json({ message: "Could not log out." });
+    }
 });
 
-app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
+app.get("/api/me", getUser, attachSchoolContext, async (req, res) => {
   try {
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("user_id, name, email, role, xp, level, school_id")
-      .eq("user_id", req.session.user_id)
-      .single();
-
-    if (error || !user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = req.user; // User object from getUser middleware
 
     let school = null;
-    if (user.school_id) {
+    if (user.user_metadata.school_id) {
       const { data: schoolData, error: schoolError } = await supabase
         .from("schools")
         .select("school_id, school_name, domain_name, logo_url")
-        .eq("school_id", user.school_id)
+        .eq("school_id", user.user_metadata.school_id)
         .single();
 
-      if (schoolError && schoolError.code !== 'PGRST116') { // PGRST116 means no rows found
-        console.error("Error fetching school info for user:", user.school_id, schoolError);
+      if (schoolError && schoolError.code !== 'PGRST116') {
+        console.error("Error fetching school info for user:", user.user_metadata.school_id, schoolError);
         return res.status(500).json({ message: "Error fetching school info" });
       }
       school = schoolData;
@@ -433,14 +406,14 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
 
     res.json({
       user: {
-        user_id: user.user_id,
-        name: user.name,
+        user_id: user.id,
+        name: user.user_metadata.name,
         email: user.email,
-        role: user.role,
-        xp: user.xp,
-        level: user.level,
+        role: user.user_metadata.role,
+        xp: user.user_metadata.xp,
+        level: user.user_metadata.level,
       },
-        school: school ? {
+      school: school ? {
         school_id: school.school_id,
         school_name: school.school_name,
         domain_name: school.domain_name,
@@ -453,15 +426,40 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
   }
 });
 
+// Explicit routes for admin dashboard pages (updated to use getUser)
+app.get("/manage_users.html", getUser, requireAdmin, (req, res) => {
+  res.sendFile("manage_users.html", { root: "." });
+});
+app.get("/manage_schools.html", getUser, requireAdmin, (req, res) => {
+  res.sendFile("manage_schools.html", { root: "." });
+});
+app.get("/manage_curriculum.html", getUser, requireTeacher, (req, res) => {
+  res.sendFile("manage_curriculum.html", { root: "." });
+});
+app.get("/system_settings.html", getUser, requireAdmin, (req, res) => {
+  res.sendFile("system_settings.html", { root: "." });
+});
+
+app.use(express.static(".", {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, path, stat) => {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+  }
+}));
+
+
 // ---------- ADMIN DATA ROUTES ----------
-app.get("/api/admin/users", requireAdmin, async (req, res) => {
+app.get("/api/admin/users", getUser, requireAdmin, async (req, res) => {
   try {
     const { data: users, error } = await supabase
       .from("users")
       .select("user_id, name, email, role, xp, level, school_id, created_at");
 
     if (error) {
-      console.error("Supabase error fetching all users:", error); // More specific logging
+      console.error("Supabase error fetching all users:", error);
       throw error;
     }
     res.json({ users });
@@ -471,14 +469,14 @@ app.get("/api/admin/users", requireAdmin, async (req, res) => {
   }
 });
 
-app.get("/api/admin/schools", requireAdmin, async (req, res) => {
+app.get("/api/admin/schools", getUser, requireAdmin, async (req, res) => {
   try {
     const { data: schools, error } = await supabase
       .from("schools")
       .select("school_id, school_name, domain_name, admin_email, description, logo_url, subscription_tier, created_at");
 
     if (error) {
-      console.error("Supabase error fetching all schools:", error); // More specific logging
+      console.error("Supabase error fetching all schools:", error);
       throw error;
     }
     res.json({ schools });
@@ -488,7 +486,7 @@ app.get("/api/admin/schools", requireAdmin, async (req, res) => {
   }
 });
 
-app.get("/api/admin/curriculum", requireAdmin, async (req, res) => {
+app.get("/api/admin/curriculum", getUser, requireAdmin, async (req, res) => {
   try {
     const { data: curriculums, error } = await supabase
       .from("curriculums")
@@ -504,7 +502,7 @@ app.get("/api/admin/curriculum", requireAdmin, async (req, res) => {
 
     const formattedCurriculums = curriculums.map(curriculum => ({
       ...curriculum,
-      school_name: curriculum.schools ? curriculum.schools.school_name : null,
+      school_name: curriculum.schools ? curriculum.schools.subject_name : null,
       schools: undefined,
     }));
 
@@ -515,186 +513,106 @@ app.get("/api/admin/curriculum", requireAdmin, async (req, res) => {
   }
 });
 
-// ---------- CHAT API ROUTES ----------
+// ---------- CHAT API ROUTES (NEW) ----------
 
-// Create a new chat session
-app.post("/api/chat-sessions", requireLogin, async (req, res) => {
-    const { title } = req.body;
-    const user_id = req.session.user_id;
+// Endpoint 1: GET /api/chat-history
+app.get("/api/chat-history", getUser, async (req, res) => {
+  const user_id = req.user.id;
 
-    try {
-        const { data: session, error } = await supabase
-            .from("chat_sessions")
-            .insert([{ user_id, title }])
-            .select()
-            .single();
+  try {
+    const { data: sessions, error } = await supabase
+      .from('chat_sessions')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        res.status(201).json({ message: "Chat session created", session });
-    } catch (err) {
-        console.error("Error creating chat session:", err);
-        res.status(500).json({ error: err.message || "Failed to create chat session." });
-    }
+    if (error) throw error;
+    res.json(sessions);
+  } catch (err) {
+    console.error("Error fetching chat history:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch chat history." });
+  }
 });
 
-// Get all chat sessions for the user
-app.get("/api/chat-sessions", requireLogin, async (req, res) => {
-    const user_id = req.session.user_id;
+// Endpoint 2: POST /api/chat
+app.post("/api/chat", getUser, async (req, res) => {
+  const user_id = req.user.id;
+  const { message, sessionId } = req.body;
 
-    try {
-        const { data: sessions, error } = await supabase
-            .from("chat_sessions")
-            .select("session_id, title, created_at, updated_at")
-            .eq("user_id", user_id)
-            .order("updated_at", { ascending: false });
+  let currentSessionId = sessionId;
+  let isNewSession = false;
 
-        if (error) throw error;
-        res.json({ sessions });
-    } catch (err) {
-        console.error("Error fetching chat sessions:", err);
-        res.status(500).json({ error: err.message || "Failed to load chat history." });
+  try {
+    if (!currentSessionId) {
+      isNewSession = true;
+      const { data: newSession, error: sessionError } = await supabase
+        .from('chat_sessions')
+        .insert({
+          user_id: user_id,
+          title: message.substring(0, 50) + '...'
+        })
+        .select('session_id') // Ensure 'session_id' is selected as per schema
+        .single();
+
+      if (sessionError) {
+        console.error("Failed to create new chat session:", sessionError);
+        return res.status(500).json({ error: "Failed to create new chat session", details: sessionError.message });
+      }
+      currentSessionId = newSession.session_id;
+    } else {
+      // Security Check: Verify this user owns this session
+      const { data: sessionData, error: permError } = await supabase
+        .from('chat_sessions')
+        .select('session_id')
+        .eq('user_id', user_id)
+        .eq('session_id', currentSessionId)
+        .single();
+
+      if (permError || !sessionData) {
+        return res.status(403).json({ error: "You do not have permission to access this chat." });
+      }
     }
+
+    // Save User's Message
+    await supabase.from('chat_messages').insert({ session_id: currentSessionId, role: 'user', content: message, user_id: user_id });
+
+    // Fetch Chat History for Gemini
+    const { data: messages, error: historyError } = await supabase
+      .from('chat_messages')
+      .select('role, content')
+      .eq('session_id', currentSessionId)
+      .order('created_at', { ascending: true });
+
+    if (historyError) throw historyError;
+
+    const geminiHistory = messages.slice(0, -1).map(msg => ({ role: msg.role, parts: [{ text: msg.content }] }));
+    const lastUserMessage = messages[messages.length - 1].content;
+
+    // Call Gemini API
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const chat = model.startChat({ history: geminiHistory });
+    const result = await chat.sendMessage(lastUserMessage);
+    const modelResponse = result.response.text();
+
+    // Save Model's Response
+    await supabase.from('chat_messages').insert({ session_id: currentSessionId, role: 'model', content: modelResponse, user_id: user_id });
+
+    // Send Response to Frontend
+    res.json({
+      reply: modelResponse,
+      sessionId: currentSessionId,
+      isNewSession: isNewSession
+    });
+
+  } catch (err) {
+    console.error("Error in /api/chat endpoint:", err);
+    res.status(500).json({ error: "Failed to process chat message.", details: err.message });
+  }
 });
 
-// Update a chat session (e.g., rename)
-app.patch("/api/chat-sessions/:id", requireLogin, async (req, res) => {
-    const sessionId = req.params.id;
-    const { title } = req.body;
-    const user_id = req.session.user_id;
-
-    try {
-        const { data: session, error } = await supabase
-            .from("chat_sessions")
-            .update({ title, updated_at: new Date().toISOString() })
-            .eq("session_id", sessionId)
-            .eq("user_id", user_id) // Ensure user owns the session
-            .select()
-            .single();
-
-        if (error) throw error;
-        if (!session) return res.status(404).json({ error: "Chat session not found or unauthorized." });
-
-        res.json({ message: "Chat session updated", session });
-    } catch (err) {
-        console.error("Error updating chat session:", err);
-        res.status(500).json({ error: err.message || "Failed to update chat session." });
-    }
-});
-
-// Delete a chat session
-app.delete("/api/chat-sessions/:id", requireLogin, async (req, res) => {
-    const sessionId = req.params.id;
-    const user_id = req.session.user_id;
-
-    try {
-        const { error } = await supabase
-            .from("chat_sessions")
-            .delete()
-            .eq("session_id", sessionId)
-            .eq("user_id", user_id); // Ensure user owns the session
-
-        if (error) throw error;
-        res.json({ message: "Chat session deleted successfully." });
-    } catch (err) {
-        console.error("Error deleting chat session:", err);
-        res.status(500).json({ error: err.message || "Failed to delete chat session." });
-    }
-});
-
-// Get messages for a specific chat session
-app.get("/api/chat-messages/:session_id", requireLogin, async (req, res) => {
-    const sessionId = req.params.session_id;
-    const user_id = req.session.user_id;
-
-    try {
-        // Verify session belongs to user
-        const { data: sessionCheck, error: sessionCheckError } = await supabase
-            .from("chat_sessions")
-            .select("session_id")
-            .eq("session_id", sessionId)
-            .eq("user_id", user_id)
-            .single();
-
-        if (sessionCheckError || !sessionCheck) {
-            return res.status(403).json({ error: "Forbidden: Session not found or not accessible." });
-        }
-
-        const { data: messages, error } = await supabase
-            .from("chat_messages")
-            .select("message_id, content, message_type, created_at")
-            .eq("session_id", sessionId)
-            .order("created_at", { ascending: true });
-
-        if (error) throw error;
-        res.json({ messages });
-    } catch (err) {
-        console.error("Error fetching chat messages:", err);
-        res.status(500).json({ error: err.message || "Failed to load chat messages." });
-    }
-});
-
-
-// ---------- AI ROUTES ----------
-app.post("/chat", requireLogin, async (req, res) => { // Added requireLogin
-    const { message, subject, session_id } = req.body;
-    const user_id = req.session.user_id; // Get user_id from session
-
-    if (!geminiApiKey) {
-        return res.status(500).json({ error: "Gemini API key not configured" });
-    }
-    if (!session_id) {
-        return res.status(400).json({ error: "Session ID is required for chat messages." });
-    }
-
-    try {
-        // Save user message to database
-        await supabase.from("chat_messages").insert([
-            { session_id, user_id, content: message, message_type: 'user' }
-        ]);
-
-        const result = await geminiFlashModel.generateContent(`Subject: ${subject || "General"}. Question: ${message}`);
-        const response = await result.response;
-        const reply = response.text();
-
-        // Save bot reply to database
-        await supabase.from("chat_messages").insert([
-            { session_id, user_id, content: reply, message_type: 'bot' }
-        ]);
-
-        // Update session's updated_at timestamp
-        await supabase.from("chat_sessions")
-            .update({ updated_at: new Date().toISOString() })
-            .eq("session_id", session_id);
-
-        res.json({ reply });
-    } catch (err) {
-        console.error("Gemini API or chat message saving error:", err);
-        res.status(500).json({ error: "Failed to get response from Gemini API or save chat message." });
-    }
-});
-
-app.post("/api/generate-plan", requireLogin, async (req, res) => {
-    const { topic, deadline, studentClass } = req.body;
-    if (!topic || !deadline || !studentClass) {
-        return res.status(400).json({ error: "Topic, deadline, and class are required." });
-    }
-    if (!geminiApiKey) {
-        return res.status(500).json({ error: "Gemini API key not configured" });
-    }
-    try {
-        const prompt = `Generate a study plan for the topic "${topic}" for a Class ${studentClass} student, with a deadline of ${deadline}.`;
-        const result = await geminiFlashModel.generateContent(prompt);
-        const response = await result.response;
-        const plan = response.text();
-        res.json({ plan });
-    } catch (err) {
-        console.error("Generate plan API error:", err);
-        res.status(500).json({ error: "Failed to generate study plan from AI." });
-    }
-});
 
 // ---------- CURRICULUM & KNOWLEDGE MAP ROUTES ----------
-app.post("/api/curriculum", requireLogin, requireTeacher, attachSchoolContext, async (req, res) => {
+app.post("/api/curriculum", getUser, requireTeacher, attachSchoolContext, async (req, res) => {
   const { subject_name, description } = req.body;
   const school_id = req.school_id;
 
@@ -713,7 +631,7 @@ app.post("/api/curriculum", requireLogin, requireTeacher, attachSchoolContext, a
   }
 });
 
-app.get("/api/curriculum", requireLogin, attachSchoolContext, async (req, res) => {
+app.get("/api/curriculum", getUser, attachSchoolContext, async (req, res) => {
   const school_id = req.school_id;
   try {
     const { data: curriculums, error } = await supabase
@@ -730,7 +648,7 @@ app.get("/api/curriculum", requireLogin, attachSchoolContext, async (req, res) =
   }
 });
 
-app.post("/api/knowledge-map", requireLogin, requireTeacher, attachSchoolContext, async (req, res) => {
+app.post("/api/knowledge-map", getUser, requireTeacher, attachSchoolContext, async (req, res) => {
   const { curriculum_id, topic_name, description, difficulty_level, prerequisite_topic_id } = req.body;
   const school_id = req.school_id;
 
@@ -768,7 +686,7 @@ app.post("/api/knowledge-map", requireLogin, requireTeacher, attachSchoolContext
   }
 });
 
-app.get("/api/knowledge-map", requireLogin, attachSchoolContext, async (req, res) => {
+app.get("/api/knowledge-map", getUser, attachSchoolContext, async (req, res) => {
   const school_id = req.school_id;
   try {
     const { data: knowledgeMapNodes, error } = await supabase
@@ -796,10 +714,10 @@ app.get("/api/knowledge-map", requireLogin, attachSchoolContext, async (req, res
 });
 
 // ---------- QUEST ROUTES ----------
-app.post("/api/quests", requireLogin, requireTeacher, attachSchoolContext, async (req, res) => {
+app.post("/api/quests", getUser, requireTeacher, attachSchoolContext, async (req, res) => {
   const { title, subject, description, due_date, xp_reward, importance, is_published = false } = req.body;
   const school_id = req.school_id;
-  const created_by = req.session.user_id;
+  const created_by = req.user.id;
 
   try {
     const { data: quest, error } = await supabase
@@ -826,11 +744,11 @@ app.post("/api/quests", requireLogin, requireTeacher, attachSchoolContext, async
   }
 });
 
-app.get("/api/quests", requireLogin, attachSchoolContext, async (req, res) => {
+app.get("/api/quests", getUser, attachSchoolContext, async (req, res) => {
   try {
     const { search } = req.query;
     const school_id = req.school_id;
-    const user_id = req.session.user_id;
+    const user_id = req.user.id;
 
     let query = supabase
       .from('quests')
@@ -884,9 +802,9 @@ app.get("/api/quests", requireLogin, attachSchoolContext, async (req, res) => {
   }
 });
 
-app.patch("/api/quests/:id/complete", requireLogin, attachSchoolContext, async (req, res) => {
+app.patch("/api/quests/:id/complete", getUser, attachSchoolContext, async (req, res) => {
   const questId = req.params.id;
-  const user_id = req.session.user_id;
+  const user_id = req.user.id;
   const school_id = req.school_id;
 
   try {
@@ -968,10 +886,10 @@ app.patch("/api/quests/:id/complete", requireLogin, attachSchoolContext, async (
 });
 
 // ---------- RESOURCES ROUTES ----------
-app.post("/api/resources", requireLogin, requireTeacher, attachSchoolContext, async (req, res) => {
+app.post("/api/resources", getUser, requireTeacher, attachSchoolContext, async (req, res) => {
   const { title, url, type } = req.body;
   const school_id = req.school_id;
-  const uploaded_by = req.session.user_id;
+  const uploaded_by = req.user.id;
 
   try {
     const { data: resource, error } = await supabase
@@ -988,7 +906,7 @@ app.post("/api/resources", requireLogin, requireTeacher, attachSchoolContext, as
   }
 });
 
-app.get("/api/resources", requireLogin, attachSchoolContext, async (req, res) => {
+app.get("/api/resources", getUser, attachSchoolContext, async (req, res) => {
   const school_id = req.school_id;
   const { q: searchQuery } = req.query;
 
@@ -1027,11 +945,11 @@ app.get("/api/resources", requireLogin, attachSchoolContext, async (req, res) =>
   }
 });
 
-app.delete("/api/resources/:id", requireLogin, attachSchoolContext, async (req, res) => {
+app.delete("/api/resources/:id", getUser, attachSchoolContext, async (req, res) => {
   const resourceId = req.params.id;
-  const user_id = req.session.user_id;
+  const user_id = req.user.id;
   const school_id = req.school_id;
-  const user_role = req.session.role;
+  const user_role = req.user.user_metadata.role;
 
   try {
     const { data: resource, error: fetchError } = await supabase
@@ -1067,8 +985,8 @@ app.delete("/api/resources/:id", requireLogin, attachSchoolContext, async (req, 
 });
 
 // ---------- ACHIEVEMENTS & PROGRESS ROUTES ----------
-app.get("/api/achievements", requireLogin, async (req, res) => {
-  const user_id = req.session.user_id;
+app.get("/api/achievements", getUser, async (req, res) => {
+  const user_id = req.user.id;
   try {
     const { data: achievements, error } = await supabase
       .from("achievements")
@@ -1084,8 +1002,8 @@ app.get("/api/achievements", requireLogin, async (req, res) => {
   }
 });
 
-app.get("/api/progress", requireLogin, async (req, res) => {
-  const user_id = req.session.user_id;
+app.get("/api/progress", getUser, async (req, res) => {
+  const user_id = req.user.id;
   try {
     const { data: user, error: userError } = await supabase
       .from("users")
@@ -1136,46 +1054,8 @@ app.get("/api/progress", requireLogin, async (req, res) => {
 });
 
 
-// ---------- AI ROUTES ----------
-app.post("/chat", requireLogin, async (req, res) => { // Added requireLogin
-    const { message, subject, session_id } = req.body;
-    const user_id = req.session.user_id; // Get user_id from session
-
-    if (!geminiApiKey) {
-        return res.status(500).json({ error: "Gemini API key not configured" });
-    }
-    if (!session_id) {
-        return res.status(400).json({ error: "Session ID is required for chat messages." });
-    }
-
-    try {
-        // Save user message to database
-        await supabase.from("chat_messages").insert([
-            { session_id, user_id, content: message, message_type: 'user' }
-        ]);
-
-        const result = await geminiFlashModel.generateContent(`Subject: ${subject || "General"}. Question: ${message}`);
-        const response = await result.response;
-        const reply = response.text();
-
-        // Save bot reply to database
-        await supabase.from("chat_messages").insert([
-            { session_id, user_id, content: reply, message_type: 'bot' }
-        ]);
-
-        // Update session's updated_at timestamp
-        await supabase.from("chat_sessions")
-            .update({ updated_at: new Date().toISOString() })
-            .eq("session_id", session_id);
-
-        res.json({ reply });
-    } catch (err) {
-        console.error("Gemini API or chat message saving error:", err);
-        res.status(500).json({ error: "Failed to get response from Gemini API or save chat message." });
-    }
-});
-
-app.post("/api/generate-plan", requireLogin, async (req, res) => {
+// ---------- AI ROUTES (updated to use getUser) ----------
+app.post("/api/generate-plan", getUser, async (req, res) => {
     const { topic, deadline, studentClass } = req.body;
     if (!topic || !deadline || !studentClass) {
         return res.status(400).json({ error: "Topic, deadline, and class are required." });
@@ -1197,7 +1077,7 @@ app.post("/api/generate-plan", requireLogin, async (req, res) => {
 
 // ---------- KNOWLEDGE MAP ROUTES (NEW) ----------
 
-app.get("/api/knowledge-map/chapters", requireLogin, attachSchoolContext, async (req, res) => { // Modified to use new KM tables
+app.get("/api/knowledge-map/chapters", getUser, attachSchoolContext, async (req, res) => {
     const school_id = req.school_id;
     try {
         const { data: curriculums, error } = await supabase
@@ -1214,7 +1094,7 @@ app.get("/api/knowledge-map/chapters", requireLogin, attachSchoolContext, async 
     }
 });
 
-app.get("/api/knowledge-map/topics", requireLogin, attachSchoolContext, async (req, res) => {
+app.get("/api/knowledge-map/topics", getUser, attachSchoolContext, async (req, res) => {
     const { subject_name, curriculum_id } = req.query;
     const school_id = req.school_id;
 
@@ -1257,7 +1137,7 @@ app.get("/api/knowledge-map/topics", requireLogin, attachSchoolContext, async (r
     }
 });
 
-app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
+app.post("/api/knowledge-map/teach-topic", getUser, async (req, res) => {
     const { topic, subject, description, difficulty_level } = req.body;
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
@@ -1299,4 +1179,3 @@ app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-

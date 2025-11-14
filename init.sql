@@ -43,7 +43,7 @@ CREATE TABLE users (
     user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    hashed_password TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'student', -- student, teacher, admin
     school_id UUID REFERENCES schools(school_id) ON DELETE CASCADE,
     xp INTEGER DEFAULT 0,
