@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Initialize Gemini AI
-const geminiApiKey = "AIzaSyAWZI5sD7YqqTqMgh4KsKvktrPTOQe4hHM"; // Hardcoded as per user request
+const geminiApiKey = process.env.GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 const geminiProModel = genAI.getGenerativeModel({ model: "gemini-pro" });
 const geminiFlashModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -122,12 +122,35 @@ function attachSchoolContext(req, res, next) {
 
 // ---------- Supabase & API Init ----------
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+const supabaseKey = process.env.SUPABASE_ANON_KEY; // Use ANON_KEY for client-side operations with RLS
 if (!supabaseUrl || !supabaseKey) {
-    console.error("FATAL ERROR: Supabase URL or Key is not set.");
+    console.error("FATAL ERROR: Supabase URL or Anon Key is not set.");
     process.exit(1);
 }
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Authentication Middleware (getUser)
+const getUser = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: No token provided.' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      return res.status(401).json({ error: 'Unauthorized: Invalid token.', details: error?.message });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error("Error in getUser middleware:", err);
+    res.status(500).json({ error: "Internal server error during authentication." });
+  }
+};
 
 
 // ---------- KNOWLEDGE MAP DATA (NEW) ----------
@@ -1276,3 +1299,4 @@ app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
