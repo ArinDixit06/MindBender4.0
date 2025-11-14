@@ -241,6 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create a new session if none exists
         if (!currentSessionId) {
             await createNewChatSession();
+            // If session creation still failed, prevent sending message
+            if (!currentSessionId) {
+                showError('Failed to start a new chat session. Please try again.');
+                return;
+            }
         }
 
         const currentSubject = subjectSelect.value;
