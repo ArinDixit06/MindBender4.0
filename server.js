@@ -76,7 +76,7 @@ app.get("/manage_users.html", requireAdmin, (req, res) => {
 app.get("/manage_schools.html", requireAdmin, (req, res) => {
   res.sendFile("manage_schools.html", { root: "." });
 });
-app.get("/manage_curriculum.html", requireAdmin, (req, res) => {
+app.get("/manage_curriculum.html", requireLogin, requireTeacher, (req, res) => {
   res.sendFile("manage_curriculum.html", { root: "." });
 });
 app.get("/system_settings.html", requireAdmin, (req, res) => {
@@ -994,30 +994,39 @@ app.get("/api/knowledge-map/chapters", requireLogin, attachSchoolContext, async 
     }
 });
 
-app.get("/api/knowledge-map/topics", requireLogin, attachSchoolContext, async (req, res) => { // Modified to use new KM tables
-    const { subject_name } = req.query;
+app.get("/api/knowledge-map/topics", requireLogin, attachSchoolContext, async (req, res) => {
+    const { subject_name, curriculum_id } = req.query;
     const school_id = req.school_id;
 
-    if (!subject_name) {
-        return res.status(400).json({ error: "Subject name is required." });
+    if (!subject_name && !curriculum_id) {
+        return res.status(400).json({ error: "Either subject_name or curriculum_id is required." });
     }
 
     try {
-        const { data: curriculum, error: curriculumError } = await supabase
-            .from("curriculums")
-            .select("curriculum_id")
-            .eq("school_id", school_id)
-            .eq("subject_name", subject_name)
-            .single();
+        let targetCurriculumId = curriculum_id;
 
-        if (curriculumError || !curriculum) {
-            return res.status(404).json({ error: "Curriculum not found for this school and subject." });
+        if (subject_name) {
+            const { data: curriculum, error: curriculumError } = await supabase
+                .from("curriculums")
+                .select("curriculum_id")
+                .eq("school_id", school_id)
+                .eq("subject_name", subject_name)
+                .single();
+
+            if (curriculumError || !curriculum) {
+                return res.status(404).json({ error: "Curriculum not found for this school and subject." });
+            }
+            targetCurriculumId = curriculum.curriculum_id;
+        }
+
+        if (!targetCurriculumId) {
+            return res.status(400).json({ error: "A valid curriculum ID could not be determined." });
         }
 
         const { data: topics, error } = await supabase
             .from("knowledge_maps")
             .select("map_id, topic_name, description, difficulty_level, prerequisite_topic_id")
-            .eq("curriculum_id", curriculum.curriculum_id)
+            .eq("curriculum_id", targetCurriculumId)
             .order("topic_name", { ascending: true });
 
         if (error) throw error;
@@ -1028,21 +1037,23 @@ app.get("/api/knowledge-map/topics", requireLogin, attachSchoolContext, async (r
     }
 });
 
-app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => { // Added requireLogin
-    const { topic, chapter } = req.body;
+app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
+    const { topic, subject, description, difficulty_level } = req.body;
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
-    if (!topic || !chapter) {
-        return res.status(400).json({ error: "Topic and chapter are required." });
+    if (!topic) {
+        return res.status(400).json({ error: "Topic name is required." });
     }
 
     const prompt = `
-    Act as a friendly and engaging tutor for a Class 10 student.
+    Act as a friendly and engaging tutor for students.
     Explain the following topic in a simple and interesting way.
 
-    **Chapter:** "${chapter}"
+    **Subject:** ${subject || 'General'}
     **Topic:** "${topic}"
+    ${description ? `**Description:** ${description}` : ''}
+    ${difficulty_level ? `**Difficulty Level:** ${difficulty_level}` : ''}
 
     Your explanation MUST include the following sections, formatted in Markdown:
     1.  **### 💡 The Big Idea (Analogy)**: Start with a simple, real-world analogy to make the concept relatable.

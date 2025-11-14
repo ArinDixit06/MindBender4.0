@@ -7,7 +7,59 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="knowledge_map_style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="auth_check.js" defer></script>
+    <script>
+        // Function to check session and redirect if unauthorized
+        async function checkSession() {
+            try {
+                const res = await fetch('/api/me', {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (!res.ok) {
+                    // If session is not valid, redirect to login page
+                    window.location.href = "login.html";
+                    return null;
+                }
+                const data = await res.json();
+                return data;
+                // If res.ok, session is valid, no action needed (user stays on page)
+            } catch (error) {
+                console.error("Session check failed:", error);
+                window.location.href = "login.html"; // Redirect on network error
+                return null;
+            }
+        }
+
+        // Call checkSession when the page loads
+        document.addEventListener("DOMContentLoaded", async () => {
+            const sessionData = await checkSession();
+            if (!sessionData) return;
+        });
+
+        // Logout functionality
+        document.getElementById("logout-btn").addEventListener("click", async (e) => {
+            e.preventDefault();
+            try {
+                const res = await fetch('/logout', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: 'include',
+                });
+
+                if (res.ok) {
+                    window.location.href = "login.html";
+                } else {
+                    const data = await res.json();
+                    alert("Logout failed: " + (data.message || "Unknown error"));
+                }
+            } catch (error) {
+                console.error("Logout error:", error);
+                alert("Logout error: " + error.message);
+            }
+        });
+    </script>
     <script src="knowledge_map_js.js" defer></script>
 </head>
 <body>
@@ -16,7 +68,6 @@
         <nav class="navbar horizontal-navbar">
             <ul class="navbar-nav" id="main-nav">
                 <!-- Navigation will be populated by JavaScript based on user role -->
-                <li class="nav-item"><a href="#" class="nav-link logout-link" id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </nav>
     </header>

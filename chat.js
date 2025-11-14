@@ -241,11 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create a new session if none exists
         if (!currentSessionId) {
             await createNewChatSession();
-            // If session creation still failed, prevent sending message
-            if (!currentSessionId) {
-                showError('Failed to start a new chat session. Please try again.');
-                return;
-            }
         }
 
         const currentSubject = subjectSelect.value;
@@ -424,23 +419,22 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        // Logout functionality is now handled by auth_check.js
-        // if (logoutLink) {
-        //     logoutLink.addEventListener('click', async e => {
-        //         e.preventDefault();
-        //         try {
-        //             await fetch(`${API_URL}/logout`, { 
-        //                 method: 'POST', 
-        //                 credentials: 'include' 
-        //             });
-        //         } catch (err) {
-        //             console.error("Logout failed:", err);
-        //         } finally {
-        //             localStorage.clear(); 
-        //             window.location.href = 'login.html';
-        //         }
-        //     });
-        // }
+        if (logoutLink) {
+            logoutLink.addEventListener('click', async e => {
+                e.preventDefault();
+                try {
+                    await fetch(`${API_URL}/logout`, { 
+                        method: 'POST', 
+                        credentials: 'include' 
+                    });
+                } catch (err) {
+                    console.error("Logout failed:", err);
+                } finally {
+                    localStorage.clear(); 
+                    window.location.href = 'login.html';
+                }
+            });
+        }
     }
 
     // Initialize the application
