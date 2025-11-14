@@ -122,7 +122,7 @@ function attachSchoolContext(req, res, next) {
 
 // ---------- Supabase & API Init ----------
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY; // Use ANON_KEY for client-side operations with RLS
+const supabaseKey = process.env.SUPABASE_KEY; // Use ANON_KEY for client-side operations with RLS
 if (!supabaseUrl || !supabaseKey) {
     console.error("FATAL ERROR: Supabase URL or Anon Key is not set.");
     process.exit(1);
@@ -1299,4 +1299,5 @@ app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
 
