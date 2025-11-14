@@ -1,10 +1,9 @@
 import express from "express";
-import session from "express-session";
 import cors from "cors";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import bcrypt from "bcrypt";
+import bcrypt from "bcrypt"; // Keeping bcrypt for existing auth routes for now, will remove if auth is fully refactored to Supabase client-side auth.
 
 dotenv.config();
 
@@ -48,9 +47,62 @@ app.use(
   })
 );
 
+app.get("/favicon.ico", (req, res) => res.status(204).send());
+
+// Explicit routes for admin dashboard pages
+app.get("/manage_users.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_users.html", { root: "." });
+});
+app.get("/manage_schools.html", requireAdmin, (req, res) => {
+  res.sendFile("manage_schools.html", { root: "." });
+});
+app.get("/manage_curriculum.html", requireLogin, requireTeacher, (req, res) => {
+  res.sendFile("manage_curriculum.html", { root: "." });
+});
+app.get("/system_settings.html", requireAdmin, (req, res) => {
+  res.sendFile("system_settings.html", { root: "." });
+});
+
+app.use(express.static(".", {
+  etag: false,
+  lastModified: false,
+  setHeaders: (res, path, stat) => {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+  }
+}));
+
+// ---------- Middleware Functions ----------
+function requireLogin(req, res, next) {
+  if (!req.session.user_id) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  next();
+}
+
+function requireTeacher(req, res, next) {
+  if (req.session.role !== 'teacher' && req.session.role !== 'admin') {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (!req.session || req.session.role !== 'admin') {
+    return res.status(403).json({ error: "Forbidden: Admin access required." });
+  }
+  next();
+}
+
+function attachSchoolContext(req, res, next) {
+  req.school_id = req.session.school_id;
+  next();
+}
+
 // ---------- Supabase & API Init ----------
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY; // Use ANON_KEY for client-side operations with RLS
+const supabaseKey = process.env.SUPABASE_KEY; // Use ANON_KEY for client-side operations with RLS
 if (!supabaseUrl || !supabaseKey) {
     console.error("FATAL ERROR: Supabase URL or Anon Key is not set.");
     process.exit(1);
@@ -231,27 +283,18 @@ app.post("/register", async (req, res) => {
       schoolRegistered = true;
     }
 
-    // Using Supabase auth.signUp
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          name: name,
-          role: role,
-          school_id: schoolId,
-          xp: 0,
-          level: 1,
-        }
-      }
-    });
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("email")
+      .eq("email", email)
+      .single();
 
-    if (authError) throw authError;
+    if (existingUser) {
+      return res.status(409).json({ error: "User with this email already exists" });
+    }
 
-    // Hash the password with bcrypt
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert into public.users table
     const { data: user, error: userError } = await supabase
       .from("users")
       .insert([
@@ -259,7 +302,7 @@ app.post("/register", async (req, res) => {
           user_id: authData.user.id,
           name,
           email,
-          password_hash: hashedPassword, // Store the bcrypt hashed password
+          hashed_password: hashedPassword,
           role,
           school_id: schoolId,
           xp: 0,
@@ -287,38 +330,20 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    // First, retrieve the user from our public.users table to get the bcrypt hashed password
-    const { data: userData, error: userError } = await supabase
+    const { data: user, error } = await supabase
       .from("users")
-      .select("user_id, password_hash, role, school_id, name, xp, level")
+      .select("user_id, name, email, hashed_password, role, school_id, xp, level")
       .eq("email", email)
       .single();
 
-    if (userError || !userData) {
-      return res.status(400).json({ error: "Invalid credentials." });
+    if (error || !user) {
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // Compare the provided password with the bcrypt hashed password
-    const isPasswordValid = await bcrypt.compare(password, userData.password_hash);
-
-    if (!isPasswordValid) {
-      return res.status(400).json({ error: "Invalid credentials." });
+    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
+    if (!passwordMatch) {
+      return res.status(400).json({ error: "Invalid email or password" });
     }
-
-    // If bcrypt comparison is successful, sign in with Supabase using the original password
-    // This is necessary to get a Supabase session and JWT.
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-
-    if (authError) {
-      console.error("Supabase signInWithPassword error after bcrypt success:", authError);
-      return res.status(500).json({ error: "Authentication failed. Please try again." });
-    }
-
-    const user = data.user;
-    const session = data.session;
 
     let school = null;
     if (user.user_metadata.school_id) {
