@@ -73,33 +73,6 @@ app.use(express.static(".", {
   }
 }));
 
-// ---------- Middleware Functions ----------
-function requireLogin(req, res, next) {
-  if (!req.session.user_id) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-  next();
-}
-
-function requireTeacher(req, res, next) {
-  if (req.session.role !== 'teacher' && req.session.role !== 'admin') {
-    return res.status(403).json({ error: "Forbidden" });
-  }
-  next();
-}
-
-function requireAdmin(req, res, next) {
-  if (!req.session || req.session.role !== 'admin') {
-    return res.status(403).json({ error: "Forbidden: Admin access required." });
-  }
-  next();
-}
-
-function attachSchoolContext(req, res, next) {
-  req.school_id = req.session.school_id;
-  next();
-}
-
 // ---------- Supabase & API Init ----------
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY; // Use ANON_KEY for client-side operations with RLS
@@ -132,21 +105,15 @@ const getUser = async (req, res, next) => {
   }
 };
 
-// Placeholder for old session-based middleware functions, will be removed or replaced
-// For now, I'm keeping them to avoid breaking existing routes that might still use them
-// but will update the relevant routes to use getUser.
+// Middleware functions updated to use req.user from getUser
 function requireLogin(req, res, next) {
-  // This will be replaced by getUser for new chat routes
-  // For existing routes, we'll need to decide if they should also use JWT or be removed.
-  // For now, assuming req.user will be set by getUser for new routes.
-  if (!req.user) { // Check for req.user set by getUser
+  if (!req.user) {
     return res.status(401).json({ error: "Unauthorized" });
   }
   next();
 }
 
 function requireTeacher(req, res, next) {
-  // This needs to be updated to check req.user.role
   if (!req.user || (req.user.user_metadata.role !== 'teacher' && req.user.user_metadata.role !== 'admin')) {
     return res.status(403).json({ error: "Forbidden" });
   }
@@ -154,7 +121,6 @@ function requireTeacher(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  // This needs to be updated to check req.user.role
   if (!req.user || req.user.user_metadata.role !== 'admin') {
     return res.status(403).json({ error: "Forbidden: Admin access required." });
   }
@@ -162,7 +128,6 @@ function requireAdmin(req, res, next) {
 }
 
 function attachSchoolContext(req, res, next) {
-  // This needs to be updated to get school_id from req.user.user_metadata
   req.school_id = req.user.user_metadata.school_id;
   next();
 }
