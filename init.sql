@@ -123,6 +123,25 @@ CREATE TABLE achievements (
     UNIQUE (user_id, title) -- A user can earn an achievement only once
 );
 
+-- Table: chat_sessions
+CREATE TABLE chat_sessions (
+    session_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: chat_messages
+CREATE TABLE chat_messages (
+    message_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id UUID REFERENCES chat_sessions(session_id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    message_type VARCHAR(50) NOT NULL, -- 'user' or 'bot'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance
 CREATE INDEX idx_users_school_id ON users(school_id);
 CREATE INDEX idx_curriculums_school_id ON curriculums(school_id);
@@ -135,3 +154,6 @@ CREATE INDEX idx_resources_uploaded_by ON resources(uploaded_by);
 CREATE INDEX idx_student_progress_user_id ON student_progress(user_id);
 CREATE INDEX idx_student_progress_quest_id ON student_progress(quest_id);
 CREATE INDEX idx_achievements_user_id ON achievements(user_id);
+CREATE INDEX idx_chat_sessions_user_id ON chat_sessions(user_id);
+CREATE INDEX idx_chat_messages_session_id ON chat_messages(session_id);
+CREATE INDEX idx_chat_messages_user_id ON chat_messages(user_id);

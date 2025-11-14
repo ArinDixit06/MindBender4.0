@@ -1,64 +1,20 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  // Function to check session and redirect if unauthorized
-  async function checkSession() {
-    try {
-      const res = await fetch('/api/me', { // Use relative path
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-      });
+  // The session check, logout, and initial role-based redirection are now handled by auth_check.js
+  // This script will focus on dashboard-specific functionalities.
 
-      if (!res.ok) {
-        window.location.href = "login.html";
-        return null;
-      }
-      const data = await res.json();
-      return data;
-    } catch (error) {
-      console.error("Session check failed:", error);
+  // Fetch session data from localStorage (set by auth.js on login)
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const currentSchool = JSON.parse(localStorage.getItem('currentSchool'));
+
+  if (!currentUser) {
+      // If currentUser is not in localStorage, auth_check.js should have redirected.
+      // This is a fallback, though ideally auth_check.js handles it.
       window.location.href = "login.html";
-      return null;
-    }
-  }
-
-  const sessionData = await checkSession();
-  if (!sessionData) return;
-
-  const { user, school } = sessionData;
-
-  // Role-based redirection if user lands on index.html
-  if (window.location.pathname === '/index.html' || window.location.pathname === '/') {
-    if (user.role === 'teacher') {
-      window.location.href = 'teacher_dashboard.html';
       return;
-    } else if (user.role === 'admin') {
-      window.location.href = 'admin_dashboard.html';
-      return;
-    }
   }
 
-  // Update header with user and school info
-  const schoolNameElement = document.getElementById('school-name');
-  const schoolLogoElement = document.getElementById('school-logo');
-  const userNameElement = document.getElementById('user-name');
-  const userRoleElement = document.getElementById('user-role');
-  const profileUserNameElement = document.getElementById('profile-user-name');
-  const profileUserRoleElement = document.getElementById('profile-user-role');
-
-  if (school) {
-    schoolNameElement.textContent = school.school_name;
-    if (school.logo_url) {
-      schoolLogoElement.src = school.logo_url;
-      schoolLogoElement.style.display = 'inline-block';
-    }
-  } else {
-    schoolNameElement.textContent = 'Individual Learner'; // Or some default for non-school users
-  }
-
-  userNameElement.textContent = user.name;
-  userRoleElement.textContent = user.role;
-  profileUserNameElement.textContent = user.name;
-  profileUserRoleElement.textContent = user.role;
+  const user = currentUser;
+  const school = currentSchool;
 
   let player = {
     level: user.level,
@@ -314,29 +270,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('click', event => {
     if (event.target === profileModal) closeProfileModal();
   });
-
-  document.querySelectorAll('.logout-link').forEach(el => el.addEventListener('click', async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('/logout', { // Use relative path
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        localStorage.removeItem('currentUser');
-        localStorage.removeItem('currentSchool');
-        window.location.href = "login.html";
-      } else {
-        const data = await res.json();
-        alert("Logout failed: " + (data.message || "Unknown error"));
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("Logout error: " + error.message);
-    }
-  }));
 
   updateUI();
 });
