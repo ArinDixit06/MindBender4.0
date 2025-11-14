@@ -419,22 +419,23 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        if (logoutLink) {
-            logoutLink.addEventListener('click', async e => {
-                e.preventDefault();
-                try {
-                    await fetch(`${API_URL}/logout`, { 
-                        method: 'POST', 
-                        credentials: 'include' 
-                    });
-                } catch (err) {
-                    console.error("Logout failed:", err);
-                } finally {
-                    localStorage.clear(); 
-                    window.location.href = 'login.html';
-                }
-            });
-        }
+        // Logout functionality is now handled by auth_check.js
+        // if (logoutLink) {
+        //     logoutLink.addEventListener('click', async e => {
+        //         e.preventDefault();
+        //         try {
+        //             await fetch(`${API_URL}/logout`, { 
+        //                 method: 'POST', 
+        //                 credentials: 'include' 
+        //             });
+        //         } catch (err) {
+        //             console.error("Logout failed:", err);
+        //         } finally {
+        //             localStorage.clear(); 
+        //             window.location.href = 'login.html';
+        //         }
+        //     });
+        // }
     }
 
     // Initialize the application

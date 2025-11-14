@@ -417,7 +417,7 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
         xp: user.xp,
         level: user.level,
       },
-      school: school ? {
+        school: school ? {
         school_id: school.school_id,
         school_name: school.school_name,
         domain_name: school.domain_name,
@@ -430,39 +430,182 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
   }
 });
 
-// ---------- ADMIN DATA ROUTES ----------
-app.get("/api/admin/users", requireAdmin, async (req, res) => {
-  try {
-    const { data: users, error } = await supabase
-      .from("users")
-      .select("user_id, name, email, role, xp, level, school_id, created_at");
+// ---------- CHAT API ROUTES ----------
 
-    if (error) {
-      console.error("Supabase error fetching all users:", error); // More specific logging
-      throw error;
+// Create a new chat session
+app.post("/api/chat-sessions", requireLogin, async (req, res) => {
+    const { title } = req.body;
+    const user_id = req.session.user_id;
+
+    try {
+        const { data: session, error } = await supabase
+            .from("chat_sessions")
+            .insert([{ user_id, title }])
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.status(201).json({ message: "Chat session created", session });
+    } catch (err) {
+        console.error("Error creating chat session:", err);
+        res.status(500).json({ error: err.message || "Failed to create chat session." });
     }
-    res.json({ users });
-  } catch (err) {
-    console.error("Fetch all users error:", err);
-    res.status(500).json({ error: err.message || "Failed to fetch users." });
-  }
 });
 
-app.get("/api/admin/schools", requireAdmin, async (req, res) => {
-  try {
-    const { data: schools, error } = await supabase
-      .from("schools")
-      .select("school_id, school_name, domain_name, admin_email, description, logo_url, subscription_tier, created_at");
+// Get all chat sessions for the user
+app.get("/api/chat-sessions", requireLogin, async (req, res) => {
+    const user_id = req.session.user_id;
 
-    if (error) {
-      console.error("Supabase error fetching all schools:", error); // More specific logging
-      throw error;
+    try {
+        const { data: sessions, error } = await supabase
+            .from("chat_sessions")
+            .select("session_id, title, created_at, updated_at")
+            .eq("user_id", user_id)
+            .order("updated_at", { ascending: false });
+
+        if (error) throw error;
+        res.json({ sessions });
+    } catch (err) {
+        console.error("Error fetching chat sessions:", err);
+        res.status(500).json({ error: err.message || "Failed to load chat history." });
     }
-    res.json({ schools });
-  } catch (err) {
-    console.error("Fetch all schools error:", err);
-    res.status(500).json({ error: err.message || "Failed to fetch schools." });
-  }
+});
+
+// Update a chat session (e.g., rename)
+app.patch("/api/chat-sessions/:id", requireLogin, async (req, res) => {
+    const sessionId = req.params.id;
+    const { title } = req.body;
+    const user_id = req.session.user_id;
+
+    try {
+        const { data: session, error } = await supabase
+            .from("chat_sessions")
+            .update({ title, updated_at: new Date().toISOString() })
+            .eq("session_id", sessionId)
+            .eq("user_id", user_id) // Ensure user owns the session
+            .select()
+            .single();
+
+        if (error) throw error;
+        if (!session) return res.status(404).json({ error: "Chat session not found or unauthorized." });
+
+        res.json({ message: "Chat session updated", session });
+    } catch (err) {
+        console.error("Error updating chat session:", err);
+        res.status(500).json({ error: err.message || "Failed to update chat session." });
+    }
+});
+
+// Delete a chat session
+app.delete("/api/chat-sessions/:id", requireLogin, async (req, res) => {
+    const sessionId = req.params.id;
+    const user_id = req.session.user_id;
+
+    try {
+        const { error } = await supabase
+            .from("chat_sessions")
+            .delete()
+            .eq("session_id", sessionId)
+            .eq("user_id", user_id); // Ensure user owns the session
+
+        if (error) throw error;
+        res.json({ message: "Chat session deleted successfully." });
+    } catch (err) {
+        console.error("Error deleting chat session:", err);
+        res.status(500).json({ error: err.message || "Failed to delete chat session." });
+    }
+});
+
+// Get messages for a specific chat session
+app.get("/api/chat-messages/:session_id", requireLogin, async (req, res) => {
+    const sessionId = req.params.session_id;
+    const user_id = req.session.user_id;
+
+    try {
+        // Verify session belongs to user
+        const { data: sessionCheck, error: sessionCheckError } = await supabase
+            .from("chat_sessions")
+            .select("session_id")
+            .eq("session_id", sessionId)
+            .eq("user_id", user_id)
+            .single();
+
+        if (sessionCheckError || !sessionCheck) {
+            return res.status(403).json({ error: "Forbidden: Session not found or not accessible." });
+        }
+
+        const { data: messages, error } = await supabase
+            .from("chat_messages")
+            .select("message_id, content, message_type, created_at")
+            .eq("session_id", sessionId)
+            .order("created_at", { ascending: true });
+
+        if (error) throw error;
+        res.json({ messages });
+    } catch (err) {
+        console.error("Error fetching chat messages:", err);
+        res.status(500).json({ error: err.message || "Failed to load chat messages." });
+    }
+});
+
+
+// ---------- AI ROUTES ----------
+app.post("/chat", requireLogin, async (req, res) => { // Added requireLogin
+    const { message, subject, session_id } = req.body;
+    const user_id = req.session.user_id; // Get user_id from session
+
+    if (!geminiApiKey) {
+        return res.status(500).json({ error: "Gemini API key not configured" });
+    }
+    if (!session_id) {
+        return res.status(400).json({ error: "Session ID is required for chat messages." });
+    }
+
+    try {
+        // Save user message to database
+        await supabase.from("chat_messages").insert([
+            { session_id, user_id, content: message, message_type: 'user' }
+        ]);
+
+        const result = await geminiFlashModel.generateContent(`Subject: ${subject || "General"}. Question: ${message}`);
+        const response = await result.response;
+        const reply = response.text();
+
+        // Save bot reply to database
+        await supabase.from("chat_messages").insert([
+            { session_id, user_id, content: reply, message_type: 'bot' }
+        ]);
+
+        // Update session's updated_at timestamp
+        await supabase.from("chat_sessions")
+            .update({ updated_at: new Date().toISOString() })
+            .eq("session_id", session_id);
+
+        res.json({ reply });
+    } catch (err) {
+        console.error("Gemini API or chat message saving error:", err);
+        res.status(500).json({ error: "Failed to get response from Gemini API or save chat message." });
+    }
+});
+
+app.post("/api/generate-plan", requireLogin, async (req, res) => {
+    const { topic, deadline, studentClass } = req.body;
+    if (!topic || !deadline || !studentClass) {
+        return res.status(400).json({ error: "Topic, deadline, and class are required." });
+    }
+    if (!geminiApiKey) {
+        return res.status(500).json({ error: "Gemini API key not configured" });
+    }
+    try {
+        const prompt = `Generate a study plan for the topic "${topic}" for a Class ${studentClass} student, with a deadline of ${deadline}.`;
+        const result = await geminiFlashModel.generateContent(prompt);
+        const response = await result.response;
+        const plan = response.text();
+        res.json({ plan });
+    } catch (err) {
+        console.error("Generate plan API error:", err);
+        res.status(500).json({ error: "Failed to generate study plan from AI." });
+    }
 });
 
 app.get("/api/admin/curriculum", requireAdmin, async (req, res) => {

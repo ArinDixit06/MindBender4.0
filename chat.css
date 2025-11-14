@@ -1,78 +1,27 @@
-/* === RETRO GAMIFIED CHAT UI - THEMED === */
+/* === CHAT UI - THEMED & MINIMAL === */
 
-/* 1. Font Import & Root Variables */
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap');
+/* 1. Base Styles (Leveraging style.css for fonts and root variables) */
+/* No @import or :root here, as style.css handles it */
 
-:root {
-  --font-body: 'Roboto', sans-serif;
-  --font-heading: 'Press Start 2P', cursive;
-  
-  /* 🎨 Applied Color Palette */
-  --color-bg-parchment: #E6D3A3;
-  --color-bg-off-white: #F9F4E3;
-  --color-text-brown: #4B2E2E;
-  --color-text-charcoal: #333333;
-  --color-accent-blue: #00AEEF;
-  --color-accent-gold: #F4C542;
-  --color-highlight-orange: #E5B87A;
-  
-  /* Retained vibrant accents from original file */
-  --color-accent-red: #e94560;
-  --color-green: #4ade80;
-  
-  /* UI Sizing & Effects */
-  --border-radius-sm: 5px;
-  --border-radius-md: 8px;
-  --border-radius-lg: 10px;
-  --transition-speed: 0.2s ease;
-  
-  /* Themed Glow Effects */
-  --shadow-glow-gold: 0 0 15px rgba(244, 197, 66, 0.4);
-  --shadow-glow-red: 0 0 15px rgba(233, 69, 96, 0.4);
-  --shadow-glow-green: 0 0 15px rgba(74, 222, 128, 0.4);
-  
-  /* Scanline Pattern using new theme color */
-  --scanlines: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(75, 46, 46, 0.04) 2px,
-    rgba(75, 46, 46, 0.04) 4px
-  );
-}
-
-/* 2. Reset & Body Styles */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
+/* 2. Body Styles - Consistent with main theme */
 body, html {
   margin: 0;
   padding: 0;
   font-family: var(--font-body);
-  background: 
-    var(--scanlines),
-    radial-gradient(ellipse at center, var(--color-bg-parchment) 0%, var(--color-text-brown) 120%);
-  color: var(--color-bg-off-white);
+  background-color: var(--color-bg-parchment); /* Use main theme background */
+  color: var(--color-text-charcoal); /* Use main theme text color */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Themed grid overlay */
+/* Remove themed grid overlay from chat.css, rely on style.css if it has one */
 body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: 
-    linear-gradient(rgba(244, 197, 66, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(244, 197, 66, 0.08) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
-  z-index: -1;
+  content: none;
 }
 
-/* 3. Header with Consistent Styling */
+/* 3. Header & Navigation - Consistent with main theme */
+/* These styles are already in style.css, no need to duplicate */
 header {
   padding: 22px 0 0 0;
 }
@@ -83,30 +32,23 @@ header {
   color: var(--color-accent-gold);
   font-size: 36px;
   margin: 0;
-  text-shadow: 2px 2px #000;
-  animation: neonPulse 3s ease-in-out infinite alternate;
+  text-shadow: 2px 2px var(--color-text-brown); /* Use theme brown */
+  /* animation: neonPulse 3s ease-in-out infinite alternate; - Removed for minimalism */
 }
 
-@keyframes neonPulse {
-  from { text-shadow: 2px 2px #000, 0 0 20px var(--color-accent-gold); }
-  to { text-shadow: 2px 2px #000, 0 0 10px var(--color-accent-gold); }
-}
+/* @keyframes neonPulse { ... } - Removed for minimalism */
 
-/* 4. Horizontal Navigation Bar */
 .navbar.horizontal-navbar {
   width: 100%;
   background-color: var(--color-text-brown);
   border-bottom: 2px solid var(--color-highlight-orange);
   margin-bottom: 20px;
-  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Consistent with style.css */
 }
 
+/* Remove scanlines from navbar, rely on main theme */
 .navbar.horizontal-navbar::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--scanlines);
-  pointer-events: none;
+  content: none;
 }
 
 .navbar-nav {
@@ -116,6 +58,7 @@ header {
   padding: 0;
   gap: 24px;
   justify-content: center;
+  flex-wrap: wrap;
   position: relative;
   z-index: 1;
 }
@@ -128,7 +71,7 @@ header {
   color: var(--color-accent-gold);
   font-family: var(--font-heading);
   text-decoration: none;
-  transition: all var(--transition-speed);
+  transition: color var(--transition-speed), background-color var(--transition-speed), transform var(--transition-speed);
   border-radius: var(--border-radius-md);
   outline: none;
   text-transform: uppercase;
@@ -136,182 +79,143 @@ header {
   overflow: hidden;
 }
 
+/* Remove ::before glow effect for minimalism */
 .nav-item .nav-link::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(244, 197, 66, 0.2), transparent);
-  transition: left 0.3s;
+  content: none;
 }
 
-.nav-item .nav-link:hover::before {
-  left: 100%;
-}
-
-.nav-item .nav-link:focus {
-  box-shadow: 0 0 0 2px var(--color-accent-gold);
+.nav-item .nav-link:focus-visible { /* Use :focus-visible for accessibility */
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
 }
 
 .nav-item .nav-link i {
   margin-right: 10px;
   font-size: 20px;
-  filter: drop-shadow(0 0 5px currentColor);
+  /* filter: drop-shadow(0 0 5px currentColor); - Removed for minimalism */
+  transition: color var(--transition-speed);
 }
 
 .nav-item .nav-link:hover,
 .nav-item .nav-link.active {
-  color: var(--color-accent-red);
-  background: rgba(244, 197, 66, 0.08);
+  color: var(--color-accent-blue); /* Consistent with style.css */
+  background: rgba(244, 197, 66, 0.1);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-red);
+  /* box-shadow: var(--shadow-glow-red); - Removed for minimalism */
 }
 
-/* 5. Two-Column Chat Layout */
-.chat-layout {
+.nav-item .nav-link:hover i,
+.nav-item .nav-link.active i {
+  color: var(--color-accent-blue);
+}
+
+/* 5. Main Chat Layout - Simplified */
+.container {
   display: flex;
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - 120px); /* Adjust height based on header/footer */
+  padding: 20px;
   gap: 20px;
-  padding: 20px;
 }
 
-/* 6. Sidebar with Player Profile Style */
-.chat-sidebar {
-  width: 270px;
-  background-color: var(--color-bg-off-white);
-  border-right: 2px solid var(--color-text-brown);
+/* Remove empty aside, chat-layout will be the main content */
+aside {
+  display: none; /* Hide the empty aside for a minimal layout */
+}
+
+.chat-layout {
+  flex: 1; /* Take full width */
+  display: flex;
+  gap: 20px;
+  padding: 0; /* Remove padding, container handles it */
+  min-height: auto; /* Let content define height */
+}
+
+/* 6. Chat History Container - Minimal Integration */
+.chat-history-container {
+  width: 280px; /* Fixed width for history */
+  background-color: var(--color-bg-off-white); /* Consistent with main content background */
   border-radius: var(--border-radius-lg);
   padding: 20px;
-  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Consistent with dashboard cards */
+  border: 1px solid var(--color-highlight-orange); /* Consistent with dashboard cards */
+  display: flex;
+  flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
-.chat-sidebar::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--scanlines);
-  pointer-events: none;
-  border-radius: var(--border-radius-lg);
+/* Remove scanlines from history container */
+.chat-history-container::before {
+  content: none;
 }
 
-.player-profile h2 {
+.history-header h2 {
   font-family: var(--font-heading);
   color: var(--color-text-brown);
-  font-size: 14px;
-  margin-bottom: 15px;
-  position: relative;
-  z-index: 1;
-}
-
-/* XP Bar Component */
-.player-stats {
-  background-color: var(--color-text-brown);
-  padding: 15px;
-  border-radius: var(--border-radius-md);
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.player-level {
-  font-size: 18px;
-  font-weight: bold;
-  color: var(--color-accent-gold);
-  margin-bottom: 10px;
-  font-family: var(--font-heading);
-}
-
-.xp-bar-container {
-  width: 100%;
-  height: 20px;
-  background-color: var(--color-bg-parchment);
-  border-radius: var(--border-radius-sm);
-  border: 2px solid var(--color-accent-red);
-  padding: 2px;
-  margin-bottom: 8px;
-}
-
-.xp-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-accent-gold), var(--color-green));
-  border-radius: 3px;
-  transition: width 0.5s ease;
-  width: 75%; /* Example progress */
-  box-shadow: 0 0 10px rgba(244, 197, 66, 0.5);
-}
-
-.xp-text {
-  font-size: 12px;
-  color: var(--color-highlight-orange);
-  text-align: center;
-}
-
-/* Chat History with Achievement Style */
-.chat-history-container {
-  background-color: var(--color-text-brown);
-  border-radius: var(--border-radius-md);
-  padding: 15px;
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.history-header h3 {
-  font-family: var(--font-heading);
-  color: var(--color-accent-gold);
-  font-size: 12px;
+  font-size: 16px;
   margin-bottom: 15px;
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .history-list {
-  max-height: 200px;
+  flex: 1; /* Allow history list to grow */
   overflow-y: auto;
+  padding-right: 5px; /* For scrollbar */
+}
+
+.history-placeholder {
+  text-align: center;
+  color: var(--color-text-brown);
+  opacity: 0.6;
+  padding: 20px;
+}
+
+.history-placeholder i {
+  font-size: 3em;
+  margin-bottom: 10px;
 }
 
 .history-item {
   display: flex;
-  align-items: center;
-  padding: 8px;
-  margin-bottom: 8px;
-  background-color: rgba(0,0,0,0.2);
-  border-radius: var(--border-radius-sm);
-  border-left: 3px solid var(--color-accent-red);
+  flex-direction: column; /* Stack title and date */
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: var(--color-bg-parchment); /* Lighter background */
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid var(--color-accent-blue); /* Use accent blue */
   transition: all var(--transition-speed);
   cursor: pointer;
   position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+/* Remove ::before border glow */
 .history-item::before {
-  content: '';
-  position: absolute;
-  top: 2px; left: 2px; right: 2px; bottom: 2px;
-  border: 1px solid rgba(244, 197, 66, 0.2);
-  border-radius: var(--border-radius-sm);
-  pointer-events: none;
+  content: none;
 }
 
 .history-item:hover {
-  transform: translateX(3px);
-  border-left-color: var(--color-accent-gold);
-  background-color: rgba(244, 197, 66, 0.1);
-  box-shadow: var(--shadow-glow-gold);
+  transform: translateY(-2px);
+  border-left-color: var(--color-accent-gold); /* Gold on hover */
+  background-color: var(--color-bg-off-white);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .history-item-title {
-  font-size: 12px;
-  color: var(--color-bg-off-white);
+  font-size: 14px;
+  color: var(--color-text-brown);
   margin: 0;
-  flex: 1;
+  font-weight: 500;
 }
 
 .history-item-date {
-  font-size: 10px;
-  color: var(--color-highlight-orange);
-  font-family: var(--font-heading);
+  font-size: 11px;
+  color: var(--color-text-charcoal);
+  opacity: 0.7;
+  margin-top: 5px;
 }
 
 /* 7. Main Chat Container */
@@ -324,15 +228,13 @@ header {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border: 1px solid var(--color-highlight-orange);
 }
 
+/* Remove scanlines from chat container */
 .chat-container::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: var(--scanlines);
-  pointer-events: none;
-  border-radius: var(--border-radius-lg);
+  content: none;
 }
 
 .chat-container > * {
@@ -341,29 +243,35 @@ header {
 }
 
 /* 8. Chat Header */
-.chat-header h2 {
+.chat-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--color-bg-parchment);
+}
+
+.chat-header h1 { /* Changed from h2 to h1 for main chat title */
   font-family: var(--font-heading);
   color: var(--color-text-brown);
-  font-size: 16px;
-  margin-bottom: 20px;
+  font-size: 20px;
+  margin: 0;
   text-transform: uppercase;
 }
 
 .chat-controls {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: var(--color-text-brown);
-  border-radius: var(--border-radius-md);
-  flex-wrap: wrap;
+  margin-top: 10px; /* Adjust spacing */
 }
 
 .action-btn {
-  background-color: var(--color-accent-red);
+  background-color: var(--color-accent-blue); /* Use theme blue */
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-family: var(--font-body);
@@ -373,30 +281,21 @@ header {
   font-size: 12px;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
+/* Remove ::before glow effect for minimalism */
 .action-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.2);
-  transition: all 0.3s;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-}
-
-.action-btn:hover::before {
-  width: 100%;
-  height: 100%;
+  content: none;
 }
 
 .action-btn:hover {
-  background-color: var(--color-accent-gold);
+  background-color: var(--color-accent-gold); /* Gold on hover */
   color: var(--color-text-brown);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-gold);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow */
 }
 
 /* Subject Selector */
@@ -404,17 +303,32 @@ header {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: 10px;
+  width: 100%; /* Take full width on smaller screens */
+}
+
+.subject-selector label {
+  font-size: 14px;
+  color: var(--color-text-charcoal);
+  font-weight: 500;
 }
 
 .subject-selector select {
   flex: 1;
   min-width: 110px;
   padding: 8px;
-  border: 1px solid var(--color-bg-parchment);
+  border: 1px solid var(--color-highlight-orange);
   background-color: var(--color-bg-parchment);
   color: var(--color-text-brown);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-body);
+  outline: none;
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.subject-selector select:focus {
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 0 3px rgba(244, 197, 66, 0.3);
 }
 
 /* 9. Chat Window */
@@ -422,57 +336,46 @@ header {
   flex: 1;
   overflow-y: auto;
   padding: 15px;
-  background-color: var(--color-text-brown);
+  background-color: var(--color-bg-parchment); /* Lighter background for chat messages */
   border-radius: var(--border-radius-md);
   margin-bottom: 15px;
-  border-left: 4px solid var(--color-accent-red);
+  border-left: 4px solid var(--color-accent-red); /* Keep accent red for chat window border */
   position: relative;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* Subtle inner shadow */
 }
 
+/* Remove terminal active text for minimalism */
 .chat-window::before {
-  content: '> CHAT_TERMINAL_ACTIVE <';
-  position: absolute;
-  top: -12px;
-  left: 10px;
-  background: var(--color-bg-off-white);
-  color: var(--color-accent-gold);
-  padding: 0 10px;
-  font-family: var(--font-heading);
-  font-size: 8px;
-  text-shadow: 0 0 5px currentColor;
+  content: none;
 }
 
 /* Message Styling */
 .message {
   display: flex;
   margin-bottom: 15px;
-  max-width: 85%;
+  max-width: 90%; /* Slightly wider messages */
   animation: slideInMessage 0.5s ease-out;
 }
 
 @keyframes slideInMessage {
-  from { transform: translateX(-20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from { transform: translateY(10px); opacity: 0; } /* Slide up slightly */
+  to { transform: translateY(0); opacity: 1; }
 }
 
 .message p {
-  padding: 15px;
+  padding: 12px 15px; /* Slightly less padding */
   border-radius: var(--border-radius-md);
   margin: 0;
-  line-height: 1.6;
-  font-weight: 500;
-  border-left: 4px solid;
+  line-height: 1.5;
+  font-weight: 400; /* Lighter font weight */
+  border-left: 3px solid; /* Thinner border */
   position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Subtle shadow */
 }
 
+/* Remove ::before border glow */
 .message p::before {
-  content: '';
-  position: absolute;
-  top: 2px; left: 2px; right: 2px; bottom: 2px;
-  border: 1px solid;
-  border-color: inherit;
-  border-radius: var(--border-radius-md);
-  opacity: 0.3;
+  content: none;
 }
 
 .bot-message {
@@ -480,10 +383,9 @@ header {
 }
 
 .bot-message p {
-  background-color: rgba(0,0,0,0.25);
-  color: var(--color-bg-off-white);
+  background-color: var(--color-bg-off-white); /* Off-white for bot messages */
+  color: var(--color-text-charcoal);
   border-left-color: var(--color-accent-blue);
-  box-shadow: 0 2px 10px rgba(0, 174, 239, 0.2);
 }
 
 .user-message {
@@ -492,14 +394,13 @@ header {
 }
 
 .user-message p {
-  background: linear-gradient(135deg, rgba(244, 197, 66, 0.2), rgba(233, 69, 96, 0.2));
-  color: var(--color-bg-off-white);
-  border-left-color: var(--color-accent-gold);
-  box-shadow: 0 2px 10px rgba(244, 197, 66, 0.3);
-  font-weight: 600;
+  background-color: var(--color-accent-gold); /* Gold for user messages */
+  color: var(--color-text-brown);
+  border-left-color: var(--color-highlight-orange);
+  font-weight: 500;
 }
 
-/* Intro Row Layout */
+/* Intro Row Layout - Keep for initial messages */
 .intro-row {
   display: flex;
   flex-direction: row;
@@ -518,201 +419,180 @@ header {
   display: flex;
   gap: 10px;
   position: relative;
+  margin-top: 15px;
 }
 
+/* Remove user input label for minimalism */
 .chat-input-area::before {
-  content: '> USER_INPUT';
-  position: absolute;
-  top: -15px;
-  left: 0;
-  font-family: var(--font-heading);
-  font-size: 8px;
-  color: var(--color-text-brown);
+  content: none;
 }
 
 .chat-input-area textarea {
   flex: 1;
   min-width: 110px;
-  padding: 12px;
-  border: 2px solid var(--color-bg-parchment);
-  background-color: var(--color-bg-parchment);
-  color: var(--color-text-brown);
+  padding: 10px 12px; /* Adjusted padding */
+  border: 1px solid var(--color-highlight-orange);
+  background-color: var(--color-bg-off-white); /* Consistent with main theme */
+  color: var(--color-text-charcoal);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-body);
   resize: none;
   transition: all var(--transition-speed);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .chat-input-area textarea:focus {
   outline: none;
-  border-color: var(--color-accent-gold);
-  box-shadow: var(--shadow-glow-gold);
-  background-color: var(--color-bg-off-white);
+  border-color: var(--color-accent-blue); /* Blue focus */
+  box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.2); /* Blue glow */
+  background-color: white;
 }
 
 .chat-input-area button {
-  background-color: var(--color-green);
+  background-color: var(--color-accent-blue); /* Use theme blue */
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 10px 18px; /* Adjusted padding */
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-family: var(--font-body);
   font-weight: 500;
   transition: all var(--transition-speed);
-  min-width: 60px;
+  min-width: 50px;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Remove ::before glow effect for minimalism */
 .chat-input-area button::before {
-  content: '';
-  position: absolute;
-  top: -50%; left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: transform 0.5s;
-  transform: rotate(-45deg) translateX(-100%);
-}
-
-.chat-input-area button:hover::before {
-  transform: rotate(-45deg) translateX(100%);
+  content: none;
 }
 
 .chat-input-area button:hover {
-  background-color: #22c55e;
-  transform: scale(1.05);
-  box-shadow: var(--shadow-glow-green);
+  background-color: var(--color-accent-gold); /* Gold on hover */
+  color: var(--color-text-brown);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 /* 11. Quick Prompts */
 #quick-prompts {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px; /* Slightly smaller gap */
   margin-top: 15px;
 }
 
 .quick-prompt {
-  padding: 8px 16px;
-  background: transparent;
+  padding: 6px 12px; /* Smaller padding */
+  background-color: var(--color-bg-parchment); /* Parchment background */
   color: var(--color-text-brown);
-  border: 2px solid var(--color-text-brown);
+  border: 1px solid var(--color-highlight-orange); /* Highlight orange border */
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: all var(--transition-speed);
   font-size: 12px;
-  font-family: var(--font-heading);
-  text-transform: uppercase;
+  font-family: var(--font-body); /* Use body font */
+  font-weight: 500;
+  text-transform: none; /* No uppercase */
   position: relative;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
+/* Remove ::before glow effect for minimalism */
 .quick-prompt::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(244, 197, 66, 0.3), transparent);
-  transition: left 0.3s;
-}
-
-.quick-prompt:hover::before {
-  left: 100%;
+  content: none;
 }
 
 .quick-prompt:hover {
-  background-color: var(--color-accent-gold);
-  color: var(--color-text-brown);
-  border-color: var(--color-accent-gold);
+  background-color: var(--color-accent-blue); /* Blue on hover */
+  color: white;
+  border-color: var(--color-accent-blue);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-gold);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 /* 12. Responsive Design */
 @media (max-width: 1024px) {
-  .chat-layout { flex-direction: column; }
-  .chat-sidebar { width: 100%; height: auto; max-height: 250px; }
+  .container {
+    flex-direction: column;
+  }
+  .chat-layout {
+    flex-direction: column;
+  }
+  .chat-history-container {
+    width: 100%;
+    max-height: 300px; /* Limit height on smaller screens */
+  }
   .navbar-nav { gap: 12px; }
   .nav-item .nav-link { padding: 12px 20px; font-size: 16px; }
 }
 
 @media (max-width: 768px) {
-  .chat-layout { flex-direction: column; padding: 10px; }
-  .chat-sidebar { width: 100%; max-height: 200px; overflow-y: auto; }
-  .navbar-nav { flex-wrap: wrap; gap: 8px; }
-  .center-title { font-size: 22px; }
-  .chat-controls { flex-direction: column; }
-  .chat-controls input, .chat-controls select { min-width: 100%; }
-  .intro-row { flex-direction: column; }
+  .container { padding: 10px; }
+  .chat-layout { gap: 15px; }
+  .chat-history-container { padding: 15px; }
+  .chat-header h1 { font-size: 18px; }
+  .chat-controls { flex-direction: row; justify-content: center; margin-top: 15px; }
+  .subject-selector { flex-direction: column; align-items: flex-start; }
+  .subject-selector select { width: 100%; }
+  .chat-window { padding: 10px; }
+  .message { max-width: 100%; }
+  .message p { padding: 10px 12px; font-size: 0.9rem; }
+  .chat-input-area textarea { padding: 8px 10px; font-size: 0.9rem; }
+  .chat-input-area button { padding: 8px 15px; font-size: 0.9rem; }
+  #quick-prompts { gap: 6px; }
+  .quick-prompt { padding: 5px 10px; font-size: 11px; }
 }
 
 @media (max-width: 480px) {
-  .chat-layout { padding: 10px; gap: 15px; }
-  .chat-sidebar { padding: 15px; max-height: 180px; }
-  .player-profile h2 { font-size: 12px; }
-  .player-level { font-size: 14px; }
-  .player-stats { padding: 10px; }
-  .chat-history-container { padding: 10px; }
-  .history-header h3 { font-size: 10px; }
-  .history-item { padding: 6px; }
-  .history-item-title { font-size: 11px; }
-  .history-item-date { font-size: 9px; }
-  .chat-container { padding: 15px; }
-  .center-title { font-size: 18px; }
-  .chat-header h2 { font-size: 14px; margin-bottom: 15px; }
-  .chat-controls { padding: 10px; gap: 8px; }
-  .action-btn { padding: 8px 15px; font-size: 11px; }
-  .subject-selector select { padding: 6px; font-size: 0.8rem; }
-  .chat-window { padding: 10px; }
-  .chat-window::before { font-size: 7px; top: -10px; }
-  .message { margin-bottom: 10px; max-width: 95%; }
-  .message p { padding: 10px; font-size: 0.85rem; }
-  .intro-row { flex-direction: column; gap: 10px; }
-  .intro-row .message { max-width: 100%; }
-  .chat-input-area { gap: 8px; }
-  .chat-input-area::before { font-size: 7px; top: -12px; }
-  .chat-input-area textarea { padding: 8px; font-size: 0.85rem; }
-  .chat-input-area button { padding: 8px 15px; font-size: 0.85rem; min-width: 50px; }
-  #quick-prompts { gap: 8px; margin-top: 10px; }
-  .quick-prompt { padding: 6px 12px; font-size: 10px; }
+  .center-title { font-size: 24px; }
+  .navbar-nav { flex-direction: column; gap: 0; align-items: center; }
+  .nav-item .nav-link { padding: 10px 15px; font-size: 14px; width: 100%; justify-content: center; }
+  .chat-header h1 { font-size: 16px; }
+  .action-btn { font-size: 10px; padding: 6px 10px; }
+  .subject-selector label { font-size: 12px; }
+  .subject-selector select { font-size: 0.8rem; }
+  .chat-input-area textarea { font-size: 0.8rem; }
+  .chat-input-area button { font-size: 0.8rem; }
+  .quick-prompt { font-size: 10px; padding: 4px 8px; }
 }
 
-/* 13. Loading and Error States */
+/* 13. Loading and Error States - Minimal */
 .loading {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  color: var(--color-highlight-orange);
-  font-family: var(--font-heading);
-  font-size: 12px;
+  color: var(--color-accent-blue); /* Use theme blue */
+  font-family: var(--font-body); /* Use body font */
+  font-size: 14px;
   text-transform: uppercase;
 }
-.loading::before { content: '> LOADING'; animation: blink 1s infinite; }
-@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+.loading::before { content: 'Loading...'; animation: pulse 1s infinite; margin-right: 10px; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
 .error {
   color: var(--color-accent-red);
   padding: 15px;
   text-align: center;
-  background-color: rgba(233, 69, 96, 0.1);
-  border: 2px solid var(--color-accent-red);
+  background-color: rgba(233, 69, 96, 0.08); /* Lighter background */
+  border: 1px solid var(--color-accent-red); /* Thinner border */
   border-radius: var(--border-radius-md);
   margin-bottom: 15px;
-  font-family: var(--font-heading);
-  font-size: 12px;
-  text-transform: uppercase;
-  box-shadow: var(--shadow-glow-red);
+  font-family: var(--font-body); /* Use body font */
+  font-size: 14px;
+  text-transform: none; /* No uppercase */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
 }
 
 .error::before {
-  content: '⚠ SYSTEM ERROR ⚠\A';
-  white-space: pre;
-  display: block;
-  margin-bottom: 8px;
-  animation: neonPulse 1s ease-in-out infinite;
+  content: 'Error: ';
+  display: inline;
+  margin-right: 5px;
+  animation: none; /* Remove neon pulse */
 }
