@@ -490,7 +490,7 @@ li {
 
 li a {
   /* MODIFIED: Border color */
-  border: 1px solid var(--color-accent-blue);
+  border: 1px solid var(--color-accent-brown);
   border-radius: var(--border-radius-sm); /* Use 5px radius for the inner 'a' */
 }
 
