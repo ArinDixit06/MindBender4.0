@@ -25,7 +25,6 @@ app.use(
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'https://mindbender4-0.onrender.com',
-        'https://studyquest-cwbv.onrender.com',
         'https://scholarli.netlify.app',
       ];
       const isAllowed = !origin || allowedOrigins.includes(origin);
@@ -1277,4 +1276,5 @@ app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
 
