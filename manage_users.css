@@ -1,0 +1,196 @@
+/* --- StudyQuest Theme Variables --- */
+:root {
+    --font-body: 'Roboto', sans-serif;
+    --font-heading: 'Press Start 2P', cursive;
+    --color-bg-parchment: #E6D3A3;
+    --color-bg-off-white: #F9F4E3;
+    --color-text-brown: #4B2E2E;
+    --color-text-charcoal: #333333;
+    --color-accent-blue: #00AEEF;
+    --color-accent-gold: #F4C542;
+    --color-highlight-orange: #E5B87A;
+    --color-accent-red: #e94560;
+    --color-green: #4ade80;
+    --border-radius-sm: 5px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 10px;
+    --transition-speed: 0.2s ease;
+    --transition-speed-slow: 0.3s ease;
+}
+
+/* --- Base Page Styles --- */
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg-parchment);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    flex-grow: 1;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: var(--color-bg-off-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: var(--color-text-brown);
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--color-highlight-orange);
+    padding-bottom: 10px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 24px;
+}
+
+/* --- Header & Navigation --- */
+header {
+    background-color: var(--color-text-brown);
+    color: var(--color-accent-gold);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-wrap: wrap; /* Added for responsiveness */
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em;
+    font-family: var(--font-heading);
+    color: var(--color-accent-gold);
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap; /* Added for responsiveness */
+}
+
+nav ul li {
+    margin-left: 10px; /* Reduced margin */
+}
+
+nav ul li a {
+    color: var(--color-accent-gold);
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-size: 16px;
+    padding: 10px;
+    border-radius: var(--border-radius-sm);
+    transition: color var(--transition-speed), background-color var(--transition-speed);
+}
+
+nav ul li a:hover {
+    color: var(--color-accent-blue);
+    background-color: rgba(244, 197, 66, 0.1);
+}
+
+/* --- User List Table Styles --- */
+#user-list {
+    overflow-x: auto; /* Makes table scroll on small screens */
+}
+
+#user-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: var(--color-bg-off-white);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-highlight-orange);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-size: 14px;
+}
+
+#user-list th {
+    background-color: var(--color-text-brown);
+    color: var(--color-accent-gold);
+    padding: 12px 15px;
+    text-align: left;
+    font-family: var(--font-body);
+    font-weight: 700;
+    border-bottom: 2px solid var(--color-highlight-orange);
+}
+
+#user-list td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--color-bg-parchment);
+    color: var(--color-text-brown);
+}
+
+#user-list tbody tr {
+    transition: background-color var(--transition-speed);
+}
+
+#user-list tbody tr:hover {
+    background-color: var(--color-bg-parchment);
+}
+
+#user-list tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#user-list p {
+    color: var(--color-text-charcoal);
+    font-size: 16px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* --- Footer --- */
+footer {
+    margin-top: auto;
+    background-color: var(--color-text-brown);
+    color: var(--color-bg-off-white);
+    text-align: center;
+    padding: 15px 0;
+    font-size: 0.9em;
+}
+
+/* --- Responsive Media Queries --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    nav ul li {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .container {
+        padding: 10px;
+        margin: 10px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    #user-list table {
+        font-size: 12px;
+    }
+
+    #user-list th,
+    #user-list td {
+        padding: 8px 10px;
+    }
+}
