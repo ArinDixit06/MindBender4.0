@@ -388,3 +388,150 @@ main {
     padding: 1px 8px;
   }
 }
+/* --- ADDED: StudyQuest Theme Variables --- */
+:root {
+  --font-body: 'Roboto', sans-serif;
+  --font-heading: 'Press Start 2P', cursive;
+  --color-bg-parchment: #E6D3A3;
+  --color-bg-off-white: #F9F4E3;
+  --color-text-brown: #4B2E2E;
+  --color-accent-blue: #00AEEF;
+  --color-accent-gold: #F4C542;
+  --transition-speed: 0.2s ease;
+  --border-radius-sm: 5px;
+  --border-radius-md: 8px;
+}
+
+/* Page Styles */
+body {
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-family: var(--font-body); /* MODIFIED: Font */
+  /* MODIFIED: Background color */
+  background: var(--color-bg-parchment); 
+}
+
+ul {
+  margin: 0rem auto;
+  padding: 0;
+  width: auto;
+  list-style: none;
+}
+
+a {
+  display: block;
+  padding: 1.2rem 1.5rem 1.1rem;
+  text-decoration: none;
+  /* MODIFIED: Text color */
+  color: var(--color-text-brown); 
+  position: relative; 
+}
+
+h1 {
+  margin: 0;
+  padding: 1rem 0;
+  /* MODIFIED: Heading color */
+  color: var(--color-text-brown); 
+  font-size: 1.8rem;
+  font-family: var(--font-heading); /* MODIFIED: Font */
+}
+
+.container {
+  position: relative;
+}
+
+/* Fallback Notice styles (unchanged) */
+.notice {
+  max-width: 600px;
+  color: hsl(0, 70%, 10%);
+  background: hsl(0, 70%, 70%, .8);
+  padding: 1.5rem;
+  margin: 1rem 0;
+  border: 1px solid hsl(0, 100%, 70%);
+  border-radius: 5px;
+  line-height: 1.4;
+  
+  h2 {
+    margin: 0;  
+    color: hsl(0, 90%, 20%);
+  }
+  
+  p {
+    margin: 0;
+  }
+}
+@supports selector(:has(*)) {
+  .notice {
+    display: none;
+  }
+}
+
+/* Demo Code */
+li {
+  margin: 0.5rem 0;
+  padding: 0;
+  /* MODIFIED: Background color */
+  background: var(--color-bg-off-white);
+  
+  text-align: left;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  
+  /* NEW: Added rounded corners to the list item itself */
+  border-radius: var(--border-radius-md); 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Added a base shadow */
+}
+
+li a {
+  /* MODIFIED: Border color */
+  border: 1px solid var(--color-accent-blue);
+  border-radius: var(--border-radius-sm); /* Use 5px radius for the inner 'a' */
+}
+
+/* NEW: Added an underline pseudo-element */
+li a::after {
+  content: '';
+  position: absolute;
+  bottom: 0.8rem; 
+  left: 1.5rem;  
+  width: 0;
+  height: 2px;
+  /* MODIFIED: Underline color */
+  background: var(--color-accent-blue); 
+  transition: width 0.3s ease-in-out;
+}
+
+li:hover {
+  transform: scale(1.25);
+  /* MODIFIED: Removed filter, changed shadow color */
+  box-shadow: 0 0 20px rgba(75, 46, 46, 0.3); 
+  z-index: 5;
+  /* MODIFIED: Subtle background change on hover */
+  background: #fdf9ec;
+}
+
+/* NEW: Animate the underline on hover */
+li:hover a::after {
+  width: calc(100% - 3rem); 
+}
+
+li:hover a {
+  /* MODIFIED: Hover border color */
+  border-color: var(--color-accent-gold); 
+}
+
+li:hover + li {
+  transform: scale(1.15);
+  transition-delay: 0.1s;
+}
+
+li:has(+ li:hover) {
+  transform: scale(1.11);
+  transition-delay: 0.2s;
+}
