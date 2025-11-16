@@ -430,6 +430,68 @@ app.get("/api/me", requireLogin, attachSchoolContext, async (req, res) => {
   }
 });
 
+// ---------- ADMIN DATA ROUTES ----------
+app.get("/api/admin/users", requireAdmin, async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from("users")
+      .select("user_id, name, email, role, xp, level, school_id, created_at");
+
+    if (error) {
+      console.error("Supabase error fetching all users:", error); // More specific logging
+      throw error;
+    }
+    res.json({ users });
+  } catch (err) {
+    console.error("Fetch all users error:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch users." });
+  }
+});
+
+app.get("/api/admin/schools", requireAdmin, async (req, res) => {
+  try {
+    const { data: schools, error } = await supabase
+      .from("schools")
+      .select("school_id, school_name, domain_name, admin_email, description, logo_url, subscription_tier, created_at");
+
+    if (error) {
+      console.error("Supabase error fetching all schools:", error); // More specific logging
+      throw error;
+    }
+    res.json({ schools });
+  } catch (err) {
+    console.error("Fetch all schools error:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch schools." });
+  }
+});
+
+app.get("/api/admin/curriculum", requireAdmin, async (req, res) => {
+  try {
+    const { data: curriculums, error } = await supabase
+      .from("curriculums")
+      .select(`
+        curriculum_id,
+        subject_name,
+        description,
+        created_at,
+        schools(school_name)
+      `);
+
+    if (error) throw error;
+
+    const formattedCurriculums = curriculums.map(curriculum => ({
+      ...curriculum,
+      school_name: curriculum.schools ? curriculum.schools.school_name : null,
+      schools: undefined,
+    }));
+
+    res.json({ curriculums: formattedCurriculums });
+  } catch (err) {
+    console.error("Fetch all curriculums error:", err);
+    res.status(500).json({ error: err.message || "Failed to fetch curriculums." });
+  }
+});
+
 // ---------- CHAT API ROUTES ----------
 
 // Create a new chat session
@@ -606,33 +668,6 @@ app.post("/api/generate-plan", requireLogin, async (req, res) => {
         console.error("Generate plan API error:", err);
         res.status(500).json({ error: "Failed to generate study plan from AI." });
     }
-});
-
-app.get("/api/admin/curriculum", requireAdmin, async (req, res) => {
-  try {
-    const { data: curriculums, error } = await supabase
-      .from("curriculums")
-      .select(`
-        curriculum_id,
-        subject_name,
-        description,
-        created_at,
-        schools(school_name)
-      `);
-
-    if (error) throw error;
-
-    const formattedCurriculums = curriculums.map(curriculum => ({
-      ...curriculum,
-      school_name: curriculum.schools ? curriculum.schools.school_name : null,
-      schools: undefined,
-    }));
-
-    res.json({ curriculums: formattedCurriculums });
-  } catch (err) {
-    console.error("Fetch all curriculums error:", err);
-    res.status(500).json({ error: err.message || "Failed to fetch curriculums." });
-  }
 });
 
 // ---------- CURRICULUM & KNOWLEDGE MAP ROUTES ----------
@@ -1056,7 +1091,7 @@ app.get("/api/progress", requireLogin, async (req, res) => {
       return 100 * level;
     };
 
-    const nextLevelXpThreshold = calculateXpForLevel(user.level + 1);
+    let nextLevelXpThreshold = calculateXpForLevel(user.level + 1);
 
     res.json({
       user_xp: user.xp,
@@ -1079,26 +1114,45 @@ app.get("/api/progress", requireLogin, async (req, res) => {
 
 
 // ---------- AI ROUTES ----------
-app.post("/chat", async (req, res) => {
+app.post("/chat", requireLogin, async (req, res) => { // Added requireLogin
     const { message, subject, session_id } = req.body;
+    const user_id = req.session.user_id; // Get user_id from session
+
     if (!geminiApiKey) {
         return res.status(500).json({ error: "Gemini API key not configured" });
     }
+    if (!session_id) {
+        return res.status(400).json({ error: "Session ID is required for chat messages." });
+    }
+
     try {
+        // Save user message to database
+        await supabase.from("chat_messages").insert([
+            { session_id, user_id, content: message, message_type: 'user' }
+        ]);
+
         const result = await geminiFlashModel.generateContent(`Subject: ${subject || "General"}. Question: ${message}`);
         const response = await result.response;
         const reply = response.text();
-        if (session_id && req.session.user_id) { // Changed userId to user_id
-            // Function to save message to database
-        }
+
+        // Save bot reply to database
+        await supabase.from("chat_messages").insert([
+            { session_id, user_id, content: reply, message_type: 'bot' }
+        ]);
+
+        // Update session's updated_at timestamp
+        await supabase.from("chat_sessions")
+            .update({ updated_at: new Date().toISOString() })
+            .eq("session_id", session_id);
+
         res.json({ reply });
     } catch (err) {
-        console.error("Gemini API error:", err);
-        res.status(500).json({ error: "Failed to get response from Gemini API" });
+        console.error("Gemini API or chat message saving error:", err);
+        res.status(500).json({ error: "Failed to get response from Gemini API or save chat message." });
     }
 });
 
-app.post("/api/generate-plan", requireLogin, async (req, res) => { // Added requireLogin
+app.post("/api/generate-plan", requireLogin, async (req, res) => {
     const { topic, deadline, studentClass } = req.body;
     if (!topic || !deadline || !studentClass) {
         return res.status(400).json({ error: "Topic, deadline, and class are required." });
@@ -1222,3 +1276,5 @@ app.post("/api/knowledge-map/teach-topic", requireLogin, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+
+
