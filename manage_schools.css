@@ -1,0 +1,244 @@
+/* --- StudyQuest Theme Variables --- */
+:root {
+    --font-body: 'Roboto', sans-serif;
+    --font-heading: 'Press Start 2P', cursive;
+    --color-bg-parchment: #E6D3A3;
+    --color-bg-off-white: #F9F4E3;
+    --color-text-brown: #4B2E2E;
+    --color-text-charcoal: #333333;
+    --color-accent-blue: #00AEEF;
+    --color-accent-gold: #F4C542;
+    --color-highlight-orange: #E5B87A;
+    --color-accent-red: #e94560;
+    --color-green: #4ade80;
+    --border-radius-sm: 5px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 10px;
+    --transition-speed: 0.2s ease;
+
+    /* New variables for the button style */
+    --button-bg-dark: #2c2c2c; /* Dark background for the button face */
+    --button-border-color: var(--color-highlight-orange); /* Button border color */
+    --button-text-light: #ffffff; /* White text */
+}
+
+/* --- Base Page Styles --- */
+body {
+    font-family: var(--font-heading);
+    background-color: var(--color-bg-parchment);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-size: 12px; 
+    font-smooth: never;
+    -webkit-font-smoothing: none;
+}
+
+.container {
+    flex-grow: 1;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: var(--color-bg-off-white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: var(--color-text-brown); 
+    margin-bottom: 25px;
+    border-bottom: 2px solid var(--color-highlight-orange);
+    padding-bottom: 10px;
+    font-family: var(--font-heading); 
+    font-size: 20px; 
+    text-align: center; 
+    /* MODIFIED: Added shadow to the heading */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+/* --- Header & Navigation --- */
+header {
+    background-color: var(--color-text-brown);
+    color: var(--color-accent-gold);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-wrap: wrap; 
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8em; 
+    font-family: var(--font-heading);
+    color: var(--color-accent-gold);
+}
+
+nav {
+    flex-grow: 1; 
+    display: flex;
+    justify-content: center; 
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; 
+    gap: 15px; 
+}
+
+nav ul li {
+    margin: 0; 
+}
+
+/* Button style for navigation links */
+nav ul li a {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-light);
+    text-decoration: none;
+    font-family: var(--font-heading); 
+    font-size: 10px; 
+    padding: 15px 20px; 
+    border-radius: var(--border-radius-md); 
+    display: inline-block; 
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+    transition: all var(--transition-speed);
+    border: 1px solid transparent; 
+    outline: 2px solid var(--button-border-color); 
+    outline-offset: 0px; 
+}
+
+nav ul li a:hover {
+    background-color: #3e3e3e; 
+    color: var(--button-text-light); 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3); 
+    outline-offset: 2px; 
+}
+
+nav ul li a:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    outline-offset: 1px;
+}
+
+/* --- School List Table Styles --- */
+#school-list {
+    overflow-x: auto; 
+}
+
+#school-list table {
+    width: 100%;
+    /* MODIFIED: Changed collapse to separate */
+    border-collapse: separate;
+    /* ADDED: Required for border-collapse: separate */
+    border-spacing: 0; 
+    margin-top: 20px;
+    background-color: var(--color-bg-off-white);
+    /* This border-radius will now work */
+    border-radius: var(--border-radius-md); 
+    border: 1px solid var(--color-highlight-orange);
+    /* MODIFIED: Enhanced shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    font-size: 10px; 
+    line-height: 1.6; 
+    /* ADDED: Clips the corners of the cells */
+    overflow: hidden; 
+}
+
+#school-list th {
+    background-color: var(--color-text-brown);
+    color: var(--color-accent-gold);
+    padding: 12px 15px;
+    text-align: left;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    border-bottom: 2px solid var(--color-highlight-orange);
+    font-size: 10px;
+}
+
+#school-list td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--color-bg-parchment);
+    color: var(--color-text-brown);
+}
+
+#school-list tbody tr {
+    transition: background-color var(--transition-speed);
+}
+
+#school-list tbody tr:hover {
+    background-color: var(--color-bg-parchment);
+}
+
+#school-list tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#school-list p {
+    color: var(--color-text-charcoal);
+    font-size: 12px; 
+    padding: 20px;
+    text-align: center;
+}
+
+/* --- Footer --- */
+footer {
+    margin-top: auto;
+    background-color: var(--color-text-brown);
+    color: var(--color-bg-off-white);
+    text-align: center;
+    padding: 15px 0;
+    font-size: 10px; 
+}
+
+/* --- Responsive Media Queries --- */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    nav ul li {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+    }
+    
+    nav ul li a {
+        padding: 15px 20px; 
+        font-size: 10px; 
+    }
+
+    .container {
+        padding: 10px;
+        margin: 10px;
+    }
+
+    h2 {
+        font-size: 16px; 
+    }
+
+    #school-list table {
+        font-size: 10px; 
+    }
+
+    #school-list th,
+    #school-list td {
+        padding: 8px 10px;
+    }
+}
