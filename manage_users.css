@@ -18,7 +18,8 @@
 
     /* New variables for the button style */
     --button-bg-dark: #2c2c2c; /* Dark background for the button face */
-    --button-border-blue: #007bff; /* Blue border/glow */
+    /* MODIFIED: Changed blue to the theme's highlight color */
+    --button-border-color: var(--color-highlight-orange); 
     --button-text-light: #ffffff; /* White text */
 }
 
@@ -48,9 +49,10 @@ h2 {
     margin-bottom: 25px;
     border-bottom: 2px solid var(--color-highlight-orange);
     padding-bottom: 10px;
-    font-family: var(--font-body); 
+    /* MODIFIED: Applied pixel font */
+    font-family: var(--font-heading); 
     font-weight: 700;
-    font-size: 24px;
+    font-size: 20px; /* Adjusted size for pixel font */
     text-align: center; /* Centered title */
 }
 
@@ -93,22 +95,24 @@ nav ul li {
     margin: 0; /* Reset margin */
 }
 
-/* NEW: Button style for navigation links */
+/* MODIFIED: Button style for navigation links */
 nav ul li a {
     background-color: var(--button-bg-dark);
     color: var(--button-text-light);
     text-decoration: none;
-    font-family: var(--font-body); /* Using Roboto for readability */
+    /* MODIFIED: Applied pixel font */
+    font-family: var(--font-heading); 
     font-weight: 500;
-    font-size: 16px;
-    padding: 12px 25px; 
+    font-size: 10px; /* Adjusted size for pixel font */
+    padding: 15px 20px; /* Adjusted padding for pixel font */
     border-radius: var(--border-radius-md); 
     display: inline-block; 
     position: relative;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
     transition: all var(--transition-speed);
     border: 1px solid transparent; 
-    outline: 2px solid var(--button-border-blue); 
+    /* MODIFIED: Changed to use new border color variable */
+    outline: 2px solid var(--button-border-color); 
     outline-offset: 0px; 
 }
 
@@ -208,8 +212,8 @@ footer {
     }
     
     nav ul li a {
-        padding: 10px 20px;
-        font-size: 14px;
+        padding: 15px 20px; /* MODIFIED: Adjusted padding */
+        font-size: 10px; /* MODIFIED: Adjusted font size */
     }
 
     .container {
@@ -218,7 +222,7 @@ footer {
     }
 
     h2 {
-        font-size: 20px;
+        font-size: 16px; /* MODIFIED: Adjusted size for pixel font */
     }
 
     #user-list table {
