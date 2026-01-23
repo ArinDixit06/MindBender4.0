@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;500;700&display=swap');
 
 :root {
-  --font-body: 'Roboto', sans-serif;
+  --font-body: 'Roboto';
   --font-heading: 'Press Start 2P', cursive;
 
   /* New Theme Colors */
@@ -490,7 +490,7 @@ li {
 
 li a {
   /* MODIFIED: Border color */
-  border: 1px solid var(--color-accent-blue);
+  border: 1px solid var(--color-accent-brown);
   border-radius: var(--border-radius-sm); /* Use 5px radius for the inner 'a' */
 }
 
