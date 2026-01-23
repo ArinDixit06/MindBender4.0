@@ -1,6 +1,6 @@
-# MindBender 4.0
+# StudyQuest
 
- MindBender 4.0 is a comprehensive web-based educational platform designed to revolutionize the learning experience through AI-driven insights, interactive tools, and streamlined management for schools, teachers, and students.
+ StudyQuest is a comprehensive web-based educational platform designed to revolutionary the learning experience through AI-driven insights, interactive tools, and streamlined management for schools, teachers, and students.
 
 ## 🚀 Features
 
