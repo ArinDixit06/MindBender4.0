@@ -1,5 +1,5 @@
 {
-  "name": "mindbenders",
+  "name": "studyquest",
   "version": "1.0.0",
   "description": "Backend server for Supabase PostgreSQL (users, quests, knowledge-maps)",
   "main": "server.js",

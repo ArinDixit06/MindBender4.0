@@ -1,6 +1,6 @@
-# Contributing to MindBender 4.0
+# Contributing to StudyQuest
 
-Thank you for your interest in contributing to MindBender 4.0! We welcome contributions from the community to help make this project better.
+Thank you for your interest in contributing to StudyQuest! We welcome contributions from the community to help make this project better.
 
 ## How to Contribute
 
